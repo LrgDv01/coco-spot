@@ -8,6 +8,8 @@ use App\Models\admin\DOA;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+
 
 class AdminSeeder extends Seeder
 {
