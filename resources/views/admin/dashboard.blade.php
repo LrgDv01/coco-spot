@@ -168,7 +168,10 @@
                         </div>
                         <div class="card disease-chart">
                             <div class="card-body p-3">
-                                <div style="width: 100%; margin: auto;">
+                              {{--  <div style="width: 100%; margin: auto;">
+                                    <canvas id="diseases_chart"></canvas>
+                                </div>--}}
+                                <div id="chart" style="width: 100%; height:auto; margin: auto; ">
                                     <canvas id="diseases_chart"></canvas>
                                 </div>
                             </div>
@@ -187,7 +190,7 @@
                         </div>
                         <div class="card variety-chart">
                             <div class="card-body p-3">
-                                <div style="width: 100%; margin: auto;">
+                            <div id="chart" style="width: 100%; height:auto; margin: auto; ">
                                     <canvas id="coconut_chart"></canvas>
                                 </div>
                             </div>

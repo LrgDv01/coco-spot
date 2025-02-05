@@ -64,6 +64,8 @@ Route::middleware(['auth'])->group(function () {
 
         // Get Data For Datatable
         Route::get('/admin/get_dashboard_info', [dashboardController::class, 'get_dashboard_info'])->name('get_dashboard_info');
+        // Route::get('/admin/get_dashboard_info', [dashboardController::class, 'get_dashboard_info'])->name('get_dashboard_info');
+
    
         Route::middleware(['web'])->group(function () {
 

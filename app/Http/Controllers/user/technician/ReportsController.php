@@ -6,6 +6,7 @@ use App\Models\ServicesModel;
 use App\Models\technician\ReportsModel;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log; // Add this line to import the Log facade
 
 class ReportsController extends Controller
@@ -27,6 +28,7 @@ class ReportsController extends Controller
         $submittedReports = ReportsModel::select('farm_id', 'soil_type', 'disease_type', 'note')
             ->where('technician_id', $user)
             ->get()
+            
             ->mapWithKeys(function ($report) {
                 return [
                     $report->farm_id => [
@@ -36,8 +38,6 @@ class ReportsController extends Controller
                     ],
                 ];
             });
-        
-        // dd($submittedReports);
         return view('user.technician.pages.reports',
             compact(
                 'reports',
@@ -134,8 +134,8 @@ class ReportsController extends Controller
             // $diseaseTypes = json_encode($diseaseTypes); // Encode as 
 
             // Flatten the nested disease types and store as a JSON string
-$diseaseTypes = array_merge(...$validated['disease_types']); // Merge nested arrays directly
-$diseaseTypes = json_encode($diseaseTypes); // Encode as JSON string
+            $diseaseTypes = array_merge(...$validated['disease_types']); // Merge nested arrays directly
+            $diseaseTypes = json_encode($diseaseTypes); // Encode as JSON string
 
             
             $note = implode(' ', array_values($validated['note'])); // Flatten and convert to string
@@ -177,7 +177,7 @@ $diseaseTypes = json_encode($diseaseTypes); // Encode as JSON string
             // }
 
             // Redirect to reports page with success message
-            return redirect()->route('user.reports')->with('success', 'Report submitted successfully');
+            return redirect()->route(' .reports')->with('success', 'Report submitted successfully');
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return redirect()->route('user.reports')->with('error', 'The specified report could not be found.');
         } catch (\Exception $e) {

@@ -142,7 +142,6 @@
 @include('user.partials.__footer')
 
 <script>
-
     function submitReportForm(farmId) {
         const form = document.getElementById('submitForm' + farmId);
         if (!form) {
@@ -172,9 +171,7 @@
     }
   
     function validateAndOpenModal(event, farmId) {
-        event.preventDefault(); // Prevent default behavior initially
-
-        // Helper function to toggle error display and class
+        event.preventDefault(); 
         function toggleError(element, errorElement, condition) {
             if (!element || !errorElement) {
                 console.error('Element or error element is missing');
@@ -295,5 +292,4 @@
         }
         select.value = "";
     }
-
 </script>
