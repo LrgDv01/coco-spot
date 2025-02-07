@@ -160,7 +160,7 @@
                             <div class="col-lg-3 text-start mb-3">
                                 <!-- Dropdown for selecting a specific year -->
                                 <select id="diseaseYearSelect" class="form-select">
-                                    <option value="all" place-holder="">Select Year</option> <!-- Option for all years -->
+                                    <option value="all" selected place-holder="">Select Year</option> <!-- Option for all years -->
                                     <!-- Years will be added dynamically in JS -->
                                 </select>
 

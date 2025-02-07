@@ -2,10 +2,9 @@
 $(document).on('submit', '#registerform', function (e) { 
     e.preventDefault();
     let formData = new FormData(this);
-    // Show loading indicator
     showLoading();
     $.ajax({
-        type: "POST",
+        method: "POST",
         url: "/registersubmit",
         data: formData,
         processData: false,
@@ -14,11 +13,9 @@ $(document).on('submit', '#registerform', function (e) {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         },
         success: function (response) { 
-            console.log("response >>>", response); 
             hideLoading();
             $('#registerform')[0].reset();
             global_showalert(response.message, 'Congrats', 'green', '/login');
-            // Redirect to login page after displaying the message
         },
         error: function (xhr) {
             hideLoading();
@@ -39,10 +36,9 @@ $(document).on('submit', '#registerform', function (e) {
 $(document).on('submit', '#loginform', function (e) { 
     e.preventDefault();
     let formData = new FormData(this);
-    // Show loading indicator
     showLoading();
     $.ajax({
-        type: "POST",
+        method: "POST",
         url: "/loginsubmit",
         data: formData,
         processData: false,

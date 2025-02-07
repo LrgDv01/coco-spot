@@ -1,66 +1,14 @@
-$(document).ready(function () {
-    const currentYear = new Date().getFullYear();
-    const diseaseYearSelect = document.getElementById('diseaseYearSelect');
-
-    if (diseaseYearSelect) {
-        for (let year = 2020; year <= currentYear; year++) {
-            const option = document.createElement("option");
-            option.value = year;
-            option.textContent = year;
-            diseaseYearSelect.appendChild(option);
-        }
-
-        const options = Array.from(diseaseYearSelect.options).slice(1);
-        diseaseYearSelect.innerHTML = "";
-        options.reverse().forEach((option) => diseaseYearSelect.appendChild(option));
-        displayDiseaseChart(currentYear);
-    }
-});
+import { filter } from "./filterchart.js";
 
 let diseases_chart;
-function displayDiseaseChart(year = null) {
-    const currentYear = new Date().getFullYear();
-    let sendYear = year || currentYear;
-    $.ajax({
-        url: "/admin/get_dashboard_info",
-        method: "GET",
-        data: { year: "2024" },
-        success: function (data) {
-            console.log('data ', data);
-            if (!data.count_disease) {
-                console.error("Invalid data format received");
-                return;
-            }
-            const diseaseData = [];
-            for (const year in data.count_disease) {
-                for (const month in data.count_disease[year]) {
-                    diseaseData.push({
-                        year: parseInt(year),
-                        month: parseInt(month),
-                        coconut_wilt: data.count_disease[year][month].coconut_wilt || 0,
-                        bud_rot: data.count_disease[year][month].bud_rot || 0,
-                        leaf_spot_disease: data.count_disease[year][month].leaf_spot || 0,
-                        stem_bleeding: data.count_disease[year][month].stem_bleeding || 0
-                    });
-                }
-            }
-
-            updateChart(true, true, '2024', diseaseData);
-        },
-        error: function (err) {
-            console.error("Error fetching disease data:", err);
-        }
-    });
-}
-
 function updateChart(displayYearly, displayMonthly, selectedYear, diseaseData) {
     let labels = [];
     let coconutWiltData = [];
-    let budRotData = [];
+    let budRotData = []; 
     let leafSpotData = [];
     let stemBleedingData = [];
 
-    const filteredData = selectedYear === "2024"
+    const filteredData = selectedYear === "all"
         ? diseaseData
         : diseaseData.filter(item => item.year === parseInt(selectedYear));
 
@@ -148,3 +96,98 @@ function updateChart(displayYearly, displayMonthly, selectedYear, diseaseData) {
     const ctx = $("#diseases_chart")[0].getContext("2d");
     diseases_chart = new Chart(ctx, config);
 }
+
+function displayDiseaseChart(year = null) {
+    const currentYear = new Date().getFullYear();
+    let sendYear = year || currentYear;
+
+    function reqYear(yearly, monthly,  yearSelected) {
+        $.ajax({ 
+            url: "/admin/get_dashboard_info",
+            method: "GET",
+            data: { year: yearSelected },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+              }, 
+            success: function (data) {
+                if (!data.count_disease) {
+                    console.error("Invalid data format received");
+                    return;
+                }
+                const diseaseData = [];
+                for (const year in data.count_disease) {
+                    for (const month in data.count_disease[year]) {
+                        diseaseData.push({
+                            year: parseInt(year),
+                            month: parseInt(month),
+                            coconut_wilt: data.count_disease[year][month].coconut_wilt || 0,
+                            bud_rot: data.count_disease[year][month].bud_rot || 0,
+                            leaf_spot_disease: data.count_disease[year][month].leaf_spot || 0,
+                            stem_bleeding: data.count_disease[year][month].stem_bleeding || 0
+                        });
+                    }
+                }
+                updateChart(yearly, monthly, yearSelected, diseaseData);
+            },
+            error: function (err) {
+                console.error("Error fetching disease data:", err);
+            }
+        }); 
+    }
+    reqYear(true, true, currentYear);
+    filter(sendYear, reqYear);
+
+    // const district3Checkbox = document.getElementById("district3Filter");
+    // district3Checkbox.addEventListener("change", (event) => {
+    //     $("#district4Filter").prop("checked", false); 
+    //     if (event.target.checked && $("#yearlyFilter").is(":checked")) {  
+    //         updateChart(true, false, 'all'); 
+    //     }
+    //     if (event.target.checked &&  $("#monthlyFilter").is(":checked")) {
+    //         updateChart(false, true, $("#diseaseYearSelect").val()); 
+    //     }else {
+    //         if ($("#yearlyFilter").is(":checked")) {
+    //             updateChart(true, false, 'all'); 
+    //         }
+    //         else if ($("#monthlyFilter").is(":checked")) {
+    //             updateChart(false, true, $("#diseaseYearSelect").val()); 
+    //         } 
+    //     }
+    // });
+
+    // const district4Checkbox = document.getElementById("district4Filter");   
+    // district4Checkbox.addEventListener("change", (event) => {
+    //     $("#district3Filter").prop("checked", false); 
+    //     if (event.target.checked && $("#yearlyFilter").is(":checked")) {  
+    //         updateChart(true, false, 'all'); 
+    //     }
+    //     if (event.target.checked &&  $("#monthlyFilter").is(":checked")) {
+    //         updateChart(false, true, $("#diseaseYearSelect").val()); 
+    //     }else {
+    //         if ($("#yearlyFilter").is(":checked")) {
+    //             updateChart(true, false, 'all'); 
+    //         }
+    //         else if ($("#monthlyFilter").is(":checked")) {
+    //             updateChart(false, true, $("#diseaseYearSelect").val()); 
+    //         }
+    //     }
+    // });
+}
+
+$(document).ready(function () {
+    const currentYear = new Date().getFullYear();
+    const diseaseYearSelect = document.getElementById('diseaseYearSelect');
+    if (diseaseYearSelect) {
+        for (let year = 2020; year <= currentYear; year++) {
+            const option = document.createElement("option");
+            option.value = year;
+            option.textContent = year;
+            diseaseYearSelect.appendChild(option);
+        }
+        const options = Array.from(diseaseYearSelect.options).slice(1);
+        diseaseYearSelect.innerHTML = "";
+        options.reverse().forEach((option) => diseaseYearSelect.appendChild(option));
+        displayDiseaseChart(diseaseYearSelect);
+    }
+});
+

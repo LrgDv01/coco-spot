@@ -37,7 +37,7 @@
     integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" 
     crossorigin="anonymous"></script>
   <script src="https://api.mapbox.com/mapbox-gl-js/v2.14.0/mapbox-gl.js"></script>
-
+  <script src="{{ URL::asset('js/admin/geomap.js')}}"></script> 
   @endif
   <!-- Charts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -50,11 +50,10 @@
   <script src="{{ URL::asset('js/admin/settings.js')}}"></script>
   <script src="{{ URL::asset('js/admin/users.js')}}"></script> 
   <script src="{{ URL::asset('js/admin/audit.js')}}"></script>
-  <!-- <script src="{{ URL::asset('js/qrcode.min.js')}}"></script> -->
   <script src="{{ URL::asset('js/admin/app.js')}}"></script>
-  <script src="{{ URL::asset('js/admin/diseasechart.js')}}"></script>
-  <script src="{{ URL::asset('js/admin/cocovarietychart.js')}}"></script>
-  <script src="{{ URL::asset('js/admin/geomap.js')}}"></script> 
+  <script type="module" src="{{ URL::asset('js/admin/diseasechart.js')}}"></script>
+  <script type="module" src="{{ URL::asset('js/admin/cocovarietychart.js')}}"></script>
+
 
   @if(Request::routeIs('videocall'))
     <script src="https://sdk.videosdk.live/js-sdk/0.0.82/videosdk.js"></script>

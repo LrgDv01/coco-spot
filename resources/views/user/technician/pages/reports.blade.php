@@ -23,7 +23,7 @@
                                     @php
                                         $isSubmitted = in_array($farm->id, $submitted);
                                         $buttonClass = $isSubmitted ? 'btn-outline-secondary active' : 'btn-success active';
-                                        $buttonText = $isSubmitted ? 'Submitted' : 'Submit';
+                                        $buttonText = $isSubmitted ? 'Report Submitted' : 'Submit';
                                     @endphp
                                     <ul class="list-group mb-3">
                                         <li class="list-group-item shadow-sm px-3">
