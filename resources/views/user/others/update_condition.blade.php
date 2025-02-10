@@ -19,7 +19,7 @@
                             id="toggleCondition_{{ $farmId }}" 
                             value="{{ $farmCondition === 'is Healthy' ? 'is Infected' : 'is Healthy' }}">
                         <label class="form-check-label" for="toggleCondition_{{ $farmId }}">
-                            {{ $farmCondition === 'is Healthy' ? 'Mark as Infected' : 'Mark as Healthy' }}
+                            Mark as <strong>{{ $farmCondition === 'is Healthy' ? 'Infected' : 'Healthy' }}</strong> 
                         </label>
                     </div>
                     <small class="text-muted">

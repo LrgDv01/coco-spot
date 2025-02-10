@@ -59,7 +59,6 @@
         outline: 1px solid rgba(220, 53, 69, 0.6); 
         transition: outline-color 0.3s ease; 
     }
-
 </style>
 
 <main id="main" class="main">
@@ -87,50 +86,52 @@
 
     @if (auth()->user()->isFarmer())
         <section class="section farm">
-            <div class="container">
+            <div class="container p-0 m-0">
                 <div class="position-fixed bg-white text-center" 
                     style="top:7%; right:0; left:0; z-index: 995; width: 100%;">
                     <h2 class="py-2 mt-2">My Farm</h2>
                     <div class="d-flex flex-start px-4 mb-3">
                         <button type="button" class="btn btn-success rounded rounded-3" data-bs-toggle="modal" data-bs-target="#addFarmModal">
-                            Add Farm
+                            <strong>Add Farm</strong>
                         </button>
                     </div>
                 </div>
-                    <!-- Spacer to prevent content overlap -->
                 <div style="margin-top: 100px;">
                 </div>
-                <!-- Farm Cards -->
                 <div id="farm-list">
                     @foreach($farms as $farm)
-                        <div class="card mb-2">
+                        <div class="card mb-2 p-0">
                             <div class="card-body">
-                                <h5 class="card-title p-0">
-                                    <strong>{{ $farm->name }}</strong>
-                                    <span class="{{ $farm->condition === 'is Healthy' ? 'text-success' : 'text-danger' }}">
-                                        <strong> - {{ $farm->condition }}</strong>
-                                    </span>
-                                    <hr>
+                                <h5 class="card-title p-0 d-flex flex-row justify-content-between">
+                                    <strong>{{ $farm->name }}</strong> 
+                                    <div class="d-flex justify-content-end" style="width:50%;">
+                                        <div class="{{ $farm->condition === 'is Healthy' ? 'bg-success' : 'bg-danger' }} 
+                                            align-self-center" style="height:0.5px; width:50%;"> </div> 
+                                        <span class="{{ $farm->condition === 'is Healthy' ? 'text-success' : 'text-danger' }}" style="font-size: 70%;">
+                                            ( <strong>{{ $farm->condition }}</strong> 
+                                        </span>
+                                    </div>
+                            
                                 </h5>
+                                <hr>
                                 <p class="card-text text-truncate">
                                     <strong>Address :</strong> {{ $farm->location }}<br>
                                     <strong>Variety :</strong> {{ $farm->variety }}<br>
                                     <strong>Hectares :</strong> {{ $farm->hectares }}<br>
                                     <strong>Tree Age :</strong> {{ $farm->tree_age }}<br>
                                     <strong>Planted Coconut :</strong> {{ $farm->planted_coconut }}<br>
-                                    <strong>Soil Type :</strong> {{ $farm->soil_type }}
                                 </p>
                             </div>
                             <div class="card-footer d-flex flex-wrap {{ $farm->condition === 'is Healthy' ? 'justify-content-end' : 'justify-content-between' }}">
                                 <a href="{{ route('user.services') }}" class="btn btn-success {{ $farm->condition === 'is Healthy' ? 'd-none' : '' }}">
-                                    Hire a Technician
+                                   <strong>Hire a Technician</strong> 
                                 </a>
                                 <button 
                                     type="button" 
                                     data-bs-toggle="modal" 
                                     class="btn btn-primary"
                                     data-bs-target="#updateFarmCondition{{ $farm->id }}">
-                                    Update Condition
+                                    <strong>Update Condition</strong>
                                 </button>
                             </div>  
                         </div>
@@ -139,7 +140,6 @@
                             'farmCondition' => $farm->condition])
                     @endforeach
                 </div>
-            
             </div>
             @include('user.others.add_farm') 
         </section>

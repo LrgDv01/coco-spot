@@ -20,6 +20,7 @@ class ReportsController extends Controller
                 ['status', '=', 'accepted']
             ])
             ->get();
+            
         $user = auth()->id();
         $submitted = ReportsModel::where('technician_id', $user)
             ->pluck('farm_id')
@@ -28,7 +29,6 @@ class ReportsController extends Controller
         $submittedReports = ReportsModel::select('farm_id', 'soil_type', 'disease_type', 'note')
             ->where('technician_id', $user)
             ->get()
-            
             ->mapWithKeys(function ($report) {
                 return [
                     $report->farm_id => [
@@ -38,6 +38,7 @@ class ReportsController extends Controller
                     ],
                 ];
             });
+
         return view('user.technician.pages.reports',
             compact(
                 'reports',

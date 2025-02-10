@@ -8,39 +8,41 @@
 </style>
 <main id="main" class="main">
     <section class="section reports">
-        <div class="card container p-0">
-            <div class="card-header">
-                <h1>New Reports</h1>
-            </div>
+        <div class="container p-0">
             @if($reports->isEmpty())
                 <p class="text-center">- No Reports available at the moment -</p>
             @else
                 @foreach ($reports as $report)
                     <div class="card p-0" style="max-height: 80vh; overflow-y: auto;">
-                        <div class="card-header bg-success text-white sticky-top" style="z-index: 1;">
-                            <h6 class="card-title text-center"><strong>Farmer</strong></h6>
+                        <div class="card-header bg-success text-white sticky-top" style="z-index: 10;">
+                            <h2><strong>New Report</strong></h2><strong><hr></strong>
+                            <h6 class="card-title text-center p-0"><strong>Farmer</strong></h6>
                             <div class="card-text">
                                 <h6><strong>Name:</strong> <span id="farmer_name">{{ $report->farmer_name }}</span></h6>
                                 <h6><strong>Contact Information:</strong> <span id="contact_info">{{ $report->user->contact }}</span></h6>
                                 <h6><strong>Recipient:</strong> <span id="recipient">{{ $recipient }}</span></h6>
                             </div>
                         </div>
-                        @foreach ($report->userFarms as $farm)
-                            @if ($farm->condition === 'is Infected')
-                                @php
-                                    $isSubmitted = in_array($farm->id, $submitted);
-                                    $buttonClass = $isSubmitted ? 'btn-outline-secondary active' : 'btn-success active';
-                                    $buttonText = $isSubmitted ? 'Report Submitted' : 'Submit';
-                                @endphp
-                                <ul class="list-group">
-                                    <li class="list-group-item p-0"> 
+                        <ul class="list-group">
+                            @foreach ($report->userFarms as $farm)
+                                @if ($farm->condition === 'is Infected')
+                                    @php
+                                        $isSubmitted = in_array($farm->id, $submitted);
+                                        $buttonClass = $isSubmitted ? 'btn-outline-secondary active' : 'btn-success active';
+                                        $buttonText = $isSubmitted ? 'Report Submitted' : 'Submit';
+                                    @endphp
+                                    <li class="card list-group p-0 mb-3 rounded rounded-0"> 
                                         <form action="{{ route('reports.submit') }}" method="POST" id="submitForm{{ $farm->id }}">
                                             @csrf
                                             <input type="hidden" name="farm_id" value="{{ $farm->id }}">
                                             <input type="hidden" name="farm_id" value="{{ $farm->id }}">
                                             <div class="card-body" id="report-details">
+                                                <div class="card-text d-none">
+                                                    <span id="farmer_name">{{ $report->farmer_name }}</span>
+                                                    <span id="contact_info">{{ $report->user->contact }}</span>
+                                                    <span id="recipient">{{ $recipient }}</span>
+                                                </div>
                                                 <h6 class="card-title text-center p-0"><strong>Farm</strong></h6>
-                                                <hr>
                                                 <div class="card-text">
                                                     <strong>Name:</strong> <span id="farm_name">{{ $farm->name }}</span><br>
                                                     <strong>Location:</strong> <span id="farm_location">{{ $farm->location }}</span><br>
@@ -120,22 +122,21 @@
                                                         </div> 
                                                     @endif
                                                 </div>
-
-                                                <div class="card-footer d-flex justify-content-end mb-2">
-                                                    <button type="button" class="btn {{ $buttonClass }} px-3 w-35 btn-block rounded-pill"
-                                                        data-bs-target="#actionModal{{ $farm->id }}" 
-                                                        onclick="validateAndOpenModal(event, {{ $farm->id }})"
-                                                        {{ $isSubmitted ? 'disabled' : '' }}>
-                                                        <i class="bi bi-check-circle"></i> {{ $buttonText }}
-                                                    </button> 
-                                                </div>
-                                            </div> 
+                                            </div>
+                                            <div class="card-footer d-flex justify-content-end">
+                                                <button type="button" class="btn {{ $buttonClass }} px-3 w-35 btn-block rounded-pill"
+                                                    data-bs-target="#actionModal{{ $farm->id }}" 
+                                                    onclick="validateAndOpenModal(event, {{ $farm->id }})"
+                                                    {{ $isSubmitted ? 'disabled' : '' }}>
+                                                    <i class="bi bi-check-circle"></i> {{ $buttonText }}
+                                                </button> 
+                                            </div>
                                         </form>
                                     </li>
-                                </ul>
-                                @include('user.technician.others.submit_report', ['farmId' => $farm->id])
-                            @endif
-                        @endforeach
+                                    @include('user.technician.others.submit_report', ['farmId' => $farm->id])
+                                @endif
+                            @endforeach
+                        </ul>
                     </div>
                 @endforeach
             @endif

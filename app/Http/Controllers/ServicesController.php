@@ -16,13 +16,18 @@ class ServicesController extends Controller
             ->get();
 
         $user = auth()->id();
-        $hiredTechnicians = ServicesModel::where('farmer_id', $user)
+        $hiredTechnicians = ServicesModel::where( 'farmer_id', $user)
+            ->select('technician_id','status')
+            ->get();
+      
+        $hirebySomeone = ServicesModel::where([['farmer_id','!=', $user], ['status', 'accepted']])
             ->pluck('technician_id')
             ->toArray();
             
         return view('user.pages.services', [
             'technicians' => $technicians,
             'hiredTechnicians' => $hiredTechnicians,
+            'hirebySomeone' => $hirebySomeone
         ]);
     }
 
@@ -43,7 +48,6 @@ class ServicesController extends Controller
         $confirmation->status = 'pending';
         $confirmation->save();
 
-         // Add a flash session message for success
         Session::flash('success', 'Technician hired successfully.');
         return response()->json(['success' => true,  'message' => 'Technician hired successfully!']);
     }
@@ -69,7 +73,6 @@ class ServicesController extends Controller
     public function updateStatus(Request $request, $id, $status)
     {
         try {
-            // Process the status update logic
             $requestDetails = ServicesModel::findOrFail($id);
             $requestDetails->status = $status;
             $requestDetails->save();

@@ -49,7 +49,6 @@ class FarmController extends Controller
                 'hectares' => 'required|numeric|min:0',
                 'tree_age' => 'nullable|integer|min:0',
                 'planted_coconut' => 'nullable|integer|min:0',
-                'soil_type' => 'nullable|string|max:255',
                 'condition' => 'nullable|string|max:255',
             ]);
             if (!isset($validated['condition'])) {

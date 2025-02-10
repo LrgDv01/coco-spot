@@ -37,16 +37,6 @@
                         <input type="number" class="form-control" id="planted_coconut" name="planted_coconut" required>
                     </div>
                     <div class="mb-3">
-                        <label for="soil_type" class="form-label">Soil Type</label>
-                        <select class="form-select" id="soil_type" name="soil_type" required>
-                            <option value="" disabled selected hidden>Select Type</option>
-                            <option value="Loamy">Loamy</option>
-                            <option value="Sandy">Sandy</option>
-                            <option value="Clay">Clay</option>
-                            <option value="Silty">Silty</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
                         <label for="variety" class="form-label">Variety</label>
                         <select class="form-select" id="variety" name="variety" required>
                             <option value="" disabled selected hidden>Select Variety</option>
