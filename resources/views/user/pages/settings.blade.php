@@ -127,7 +127,6 @@
 </main>
 @include('user.partials.__footer')
 
-
 <script>
     function editField(field, value) {
         document.getElementById('fieldName').value = field;

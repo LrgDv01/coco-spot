@@ -8,131 +8,134 @@
 </style>
 <main id="main" class="main">
     <section class="section reports">
-        <div class="container p-0">
+        <div class="card container p-0">
+            <div class="card-header">
+                <h1>New Reports</h1>
+            </div>
             @if($reports->isEmpty())
                 <p class="text-center">- No Reports available at the moment -</p>
             @else
                 @foreach ($reports as $report)
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-success text-white text-center sticky-top" style="z-index: 1;">
-                            <h4>New Report</h4>
+                    <div class="card p-0" style="max-height: 80vh; overflow-y: auto;">
+                        <div class="card-header bg-success text-white sticky-top" style="z-index: 1;">
+                            <h6 class="card-title text-center"><strong>Farmer</strong></h6>
+                            <div class="card-text">
+                                <h6><strong>Name:</strong> <span id="farmer_name">{{ $report->farmer_name }}</span></h6>
+                                <h6><strong>Contact Information:</strong> <span id="contact_info">{{ $report->user->contact }}</span></h6>
+                                <h6><strong>Recipient:</strong> <span id="recipient">{{ $recipient }}</span></h6>
+                            </div>
                         </div>
-                        <div class="card-body p-0" style="max-height: 80vh; overflow-y: auto;">
-                            @foreach ($report->userFarms as $farm)
-                                @if ($farm->condition === 'is Infected')
-                                    @php
-                                        $isSubmitted = in_array($farm->id, $submitted);
-                                        $buttonClass = $isSubmitted ? 'btn-outline-secondary active' : 'btn-success active';
-                                        $buttonText = $isSubmitted ? 'Report Submitted' : 'Submit';
-                                    @endphp
-                                    <ul class="list-group mb-3">
-                                        <li class="list-group-item shadow-sm px-3">
-                                            <form action="{{ route('reports.submit') }}" method="POST" id="submitForm{{ $farm->id }}">
-                                                @csrf
-                                                <input type="hidden" name="farm_id" value="{{ $farm->id }}">
-                                                <input type="hidden" name="farm_id" value="{{ $farm->id }}">
-                                                <div id="report-details" class="mb-3">
-                                                    <h6 class="text-center"><strong>Farmer Details</strong></h6>
-                                                    <h6><strong>Farmer Name:</strong> <span id="farmer_name">{{ $report->farmer_name }}</span></h6>
-                                                    <h6><strong>Contact Information:</strong> <span id="contact_info">{{ $report->user->contact }}</span></h6>
-                                                    <h6><strong>Recipient:</strong> <span id="recipient">{{ $recipient }}</span></h6>
-                                                    <div>
-                                                        <h6 class="text-center"><strong>Farm Details</strong></h6>
-                                                        <strong>Farm Name:</strong> <span id="farm_name">{{ $farm->name }}</span><br>
-                                                        <strong>Farm Location:</strong> <span id="farm_location">{{ $farm->location }}</span><br>
-                                                        <strong>Farm Size:</strong> <span id="farm_size">{{ $farm->hectares }} hectares</span><br>
-                                                        <strong>No. of Coconut Trees:</strong> <span id="coconut_trees">{{ $farm->planted_coconut }}</span><br>
-                                                        <strong>Coconut Variety:</strong> <span id="coconut_variety">{{ $farm->variety }}</span>
-
-                                                        @if ($isSubmitted)
-                                                            <div class="mb-3">
-                                                                <strong>Soil Type:</strong>
-                                                                <input 
-                                                                    type="text" 
-                                                                    class="form-control" 
-                                                                    value="{{ $submittedReports[$farm->id]['soil_type'] ?? 'No Soil Type recorded' }}"
-                                                                    disabled>
-                                                            </div>
-                                                            <div class="mb-3">
-                                                                <strong>Types of Diseases:</strong>
-                                                                @php
-                                                                    $diseaseTypes = $submittedReports[$farm->id]['disease_types'] ?? [];
-                                                                    $string = implode(", ", $diseaseTypes);
-                                                                @endphp
+                        @foreach ($report->userFarms as $farm)
+                            @if ($farm->condition === 'is Infected')
+                                @php
+                                    $isSubmitted = in_array($farm->id, $submitted);
+                                    $buttonClass = $isSubmitted ? 'btn-outline-secondary active' : 'btn-success active';
+                                    $buttonText = $isSubmitted ? 'Report Submitted' : 'Submit';
+                                @endphp
+                                <ul class="list-group">
+                                    <li class="list-group-item p-0"> 
+                                        <form action="{{ route('reports.submit') }}" method="POST" id="submitForm{{ $farm->id }}">
+                                            @csrf
+                                            <input type="hidden" name="farm_id" value="{{ $farm->id }}">
+                                            <input type="hidden" name="farm_id" value="{{ $farm->id }}">
+                                            <div class="card-body" id="report-details">
+                                                <h6 class="card-title text-center p-0"><strong>Farm</strong></h6>
+                                                <hr>
+                                                <div class="card-text">
+                                                    <strong>Name:</strong> <span id="farm_name">{{ $farm->name }}</span><br>
+                                                    <strong>Location:</strong> <span id="farm_location">{{ $farm->location }}</span><br>
+                                                    <strong>District:</strong> <span id="farm_district">{{ $farm->district }}</span><br>
+                                                    <strong>Size:</strong> <span id="farm_size">{{ $farm->hectares }} hectares</span><br>
+                                                    <strong>No. of Coconut Trees:</strong> <span id="coconut_trees">{{ $farm->planted_coconut }}</span><br>
+                                                    <strong>Coconut Variety:</strong> <span id="coconut_variety">{{ $farm->variety }}</span>
+                                                    @if ($isSubmitted)
+                                                        <div class="mb-3">
+                                                            <strong>Soil Type:</strong>
                                                             <input 
+                                                                type="text" 
                                                                 class="form-control" 
-                                                                value="{{ is_array($decoded = json_decode($string, true)) ? implode(',  ', $decoded) 
-                                                                    : 'No disease types recorded' }}"
-                                                                disabled> 
-                                                            </div>
-                                                            <div class="mb-3">
-                                                                <strong>Condition Description:</strong>
-                                                                <textarea 
-                                                                    class="form-control" 
-                                                                    required disabled>{{ $submittedReports[$farm->id]['note'] ?? 'No Description recorded' }}</textarea>
-                                                            </div>
-                                                        @else
-                                                            <div class="mb-3">
-                                                                <strong>Soil Type:</strong>
-                                                                <select 
-                                                                    name="soil_type[{{ $farm->id }}]" 
-                                                                    id="soil_type_{{ $farm->id }}" 
-                                                                    class="form-select" 
-                                                                    required>
-                                                                    <option value="" selected disabled>Select a soil type</option>
-                                                                    <option value="Clay">Clay</option>
-                                                                    <option value="Sandy">Sandy</option>
-                                                                    <option value="Loamy">Loamy</option>
-                                                                    <option value="Silty">Silty</option>
-                                                                </select>
-                                                                <small id="error_soil_{{ $farm->id }}" class="text-danger" style="display: none;">Please select a soil type.</small>
-                                                            </div>
-                                                            <div class="mb-3">
-                                                                <strong>Types of Diseases:</strong>
-                                                                <select 
-                                                                    name="disease_type[{{ $farm->id }}][]" 
-                                                                    id="disease_type_select_{{ $farm->id }}" 
-                                                                    class="form-select" 
-                                                                    onchange="addDiseaseType(event, {{ $farm->id }})">
-                                                                    <option value="" selected disabled>Select a disease type</option>
-                                                                    <option value="Coconut Wilt">Coconut Wilt</option>
-                                                                    <option value="Bud Rot">Bud Rot</option>
-                                                                    <option value="Leaf Spot">Leaf Spot</option>
-                                                                    <option value="Stem Bleeding">Stem Bleeding</option>
-                                                                </select>
-                                                                <div id="disease_type_container_{{ $farm->id }}" class="mt-2"></div>
-                                                                <small id="error_disease_{{ $farm->id }}" class="text-danger" style="display: none;">Please add at least one disease type.</small>
-                                                            </div>
-                                                            <div class="mb-3">
-                                                                <strong>Condition Description:</strong>
-                                                                <textarea 
-                                                                    name="note[{{ $farm->id }}]" 
-                                                                    id="condition_description_{{ $farm->id }}"
-                                                                    class="form-control" 
-                                                                    rows="2"  
-                                                                    placeholder="Add a note here..."
-                                                                    required></textarea>
-                                                                <small id="error_note_{{ $farm->id }}" class="text-danger" style="display: none;">This field is required.</small>
-                                                            </div> 
-                                                        @endif
-
-                                                        <div class="d-flex justify-content-end mb-2">
-                                                            <button type="button" class="btn {{ $buttonClass }} px-3 w-35 btn-block rounded-pill"
-                                                                data-bs-target="#actionModal{{ $farm->id }}" 
-                                                                onclick="validateAndOpenModal(event, {{ $farm->id }})"
-                                                                {{ $isSubmitted ? 'disabled' : '' }}>
-                                                                <i class="bi bi-check-circle"></i> {{ $buttonText }}
-                                                            </button> 
+                                                                value="{{ $submittedReports[$farm->id]['soil_type'] ?? 'No Soil Type recorded' }}"
+                                                                disabled>
                                                         </div>
-                                                    </div>
+                                                        <div class="mb-3">
+                                                            <strong>Types of Diseases:</strong>
+                                                            @php
+                                                                $diseaseTypes = $submittedReports[$farm->id]['disease_types'] ?? [];
+                                                                $string = implode(", ", $diseaseTypes);
+                                                            @endphp
+                                                        <input 
+                                                            class="form-control" 
+                                                            value="{{ is_array($decoded = json_decode($string, true)) ? implode(',  ', $decoded) 
+                                                                : 'No disease types recorded' }}"
+                                                            disabled> 
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <strong>Condition Description:</strong>
+                                                            <textarea 
+                                                                class="form-control" 
+                                                                required disabled>{{ $submittedReports[$farm->id]['note'] ?? 'No Description recorded' }}</textarea>
+                                                        </div>
+                                                    @else
+                                                        <div class="mb-3">
+                                                            <strong>Soil Type:</strong>
+                                                            <select 
+                                                                name="soil_type[{{ $farm->id }}]" 
+                                                                id="soil_type_{{ $farm->id }}" 
+                                                                class="form-select" 
+                                                                required>
+                                                                <option value="" selected disabled>Select a soil type</option>
+                                                                <option value="Clay">Clay</option>
+                                                                <option value="Sandy">Sandy</option>
+                                                                <option value="Loamy">Loamy</option>
+                                                                <option value="Silty">Silty</option>
+                                                            </select>
+                                                            <small id="error_soil_{{ $farm->id }}" class="text-danger" style="display: none;">Please select a soil type.</small>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <strong>Types of Diseases:</strong>
+                                                            <select 
+                                                                name="disease_type[{{ $farm->id }}][]" 
+                                                                id="disease_type_select_{{ $farm->id }}" 
+                                                                class="form-select" 
+                                                                onchange="addDiseaseType(event, {{ $farm->id }})">
+                                                                <option value="" selected disabled>Select a disease type</option>
+                                                                <option value="Coconut Wilt">Coconut Wilt</option>
+                                                                <option value="Bud Rot">Bud Rot</option>
+                                                                <option value="Leaf Spot">Leaf Spot</option>
+                                                                <option value="Stem Bleeding">Stem Bleeding</option>
+                                                            </select>
+                                                            <div id="disease_type_container_{{ $farm->id }}" class="mt-2"></div>
+                                                            <small id="error_disease_{{ $farm->id }}" class="text-danger" style="display: none;">Please add at least one disease type.</small>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <strong>Condition Description:</strong>
+                                                            <textarea 
+                                                                name="note[{{ $farm->id }}]" 
+                                                                id="condition_description_{{ $farm->id }}"
+                                                                class="form-control" 
+                                                                rows="2"  
+                                                                placeholder="Add a note here..."
+                                                                required></textarea>
+                                                            <small id="error_note_{{ $farm->id }}" class="text-danger" style="display: none;">This field is required.</small>
+                                                        </div> 
+                                                    @endif
                                                 </div>
-                                            </form>
-                                        </li>
-                                    </ul>
-                                    @include('user.technician.others.submit_report', ['farmId' => $farm->id])
-                                @endif
-                            @endforeach
-                        </div>
+
+                                                <div class="card-footer d-flex justify-content-end mb-2">
+                                                    <button type="button" class="btn {{ $buttonClass }} px-3 w-35 btn-block rounded-pill"
+                                                        data-bs-target="#actionModal{{ $farm->id }}" 
+                                                        onclick="validateAndOpenModal(event, {{ $farm->id }})"
+                                                        {{ $isSubmitted ? 'disabled' : '' }}>
+                                                        <i class="bi bi-check-circle"></i> {{ $buttonText }}
+                                                    </button> 
+                                                </div>
+                                            </div> 
+                                        </form>
+                                    </li>
+                                </ul>
+                                @include('user.technician.others.submit_report', ['farmId' => $farm->id])
+                            @endif
+                        @endforeach
                     </div>
                 @endforeach
             @endif
@@ -153,7 +156,8 @@
             contact_info: document.querySelector(`#submitForm${farmId} #contact_info`)?.textContent || '',
             recipient: document.querySelector(`#submitForm${farmId} #recipient`)?.textContent || '',
             farm_name: document.querySelector(`#submitForm${farmId} #farm_name`)?.textContent || '',
-            farm_location: document.querySelector(`#submitForm${farmId} #farm_location`)?.textContent || '',
+            farm_location: document.querySelector(`#submitForm${farmId} #farm_location`)?.textContent || '', 
+            farm_district: document.querySelector(`#submitForm${farmId} #farm_district`)?.textContent || '', 
             farm_size: document.querySelector(`#submitForm${farmId} #farm_size`)?.textContent || '',
             coconut_trees: document.querySelector(`#submitForm${farmId} #coconut_trees`)?.textContent || '',
             coconut_variety: document.querySelector(`#submitForm${farmId} #coconut_variety`)?.textContent || '',

@@ -22,6 +22,7 @@ class FarmModelFactory extends Factory
             'farmer_id' => User::factory(),
             'name' => fake()->company(),
             'location' => fake()->address(),
+            'district' => fake()->randomElement(['III', 'IV']),
             'variety' => fake()->randomElement(['Laguna Tall', 'Dwarf Coconut', 'Hybrid']),
             'hectares' => fake()->numberBetween(1, 100), 
             'tree_age' => fake()->numberBetween(1, 50), 

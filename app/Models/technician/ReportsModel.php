@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Models\technician;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -9,7 +8,7 @@ class ReportsModel extends Model
 {
     use HasFactory;
 
-    public $table = 'reports';
+    protected $table = 'reports';
     protected $fillable = [
         'technician_id',
         'farm_id',
@@ -18,6 +17,7 @@ class ReportsModel extends Model
         'recipient',
         'farm_name',
         'farm_location',
+        'district',
         'farm_size',
         'coconut_trees',
         'coconut_variety',

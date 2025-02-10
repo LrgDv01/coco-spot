@@ -14,7 +14,6 @@ function updateChart(displayYearly, displayMonthly, selectedYear, diseaseData) {
 
     if (displayYearly) {
         const yearlyData = {};
-
         filteredData.forEach((item) => {
             if (!yearlyData[item.year]) {
                 yearlyData[item.year] = { coconut_wilt: 0, bud_rot: 0, leaf_spot_disease: 0, stem_bleeding: 0 };
@@ -24,7 +23,6 @@ function updateChart(displayYearly, displayMonthly, selectedYear, diseaseData) {
             yearlyData[item.year].leaf_spot_disease += item.leaf_spot_disease;
             yearlyData[item.year].stem_bleeding += item.stem_bleeding;
         });
-
         for (const year in yearlyData) {
             labels.push(year.toString());
             coconutWiltData.push(yearlyData[year].coconut_wilt);
@@ -92,7 +90,6 @@ function updateChart(displayYearly, displayMonthly, selectedYear, diseaseData) {
             },
         },
     };
-
     const ctx = $("#diseases_chart")[0].getContext("2d");
     diseases_chart = new Chart(ctx, config);
 }

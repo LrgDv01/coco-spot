@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('farmer_id')->constrained('users')->onDelete('cascade');
             $table->string('name');
             $table->string('location');
+            $table->string('district');
             $table->string('variety'); 
             $table->decimal('hectares', 8, 2); 
             $table->integer('tree_age'); 

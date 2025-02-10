@@ -16,6 +16,7 @@ class FarmModel extends Model
         'farmer_id',
         'name',
         'location',
+        'district',
         'variety',
         'hectares',
         'tree_age',

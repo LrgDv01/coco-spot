@@ -47,10 +47,7 @@
   <script src="{{ URL::asset('theme/assets/js/main.js')}}"></script>
   <script src="{{ URL::asset('js/global.js') }}"></script>
   <script src="{{ URL::asset('js/lightbox.js') }}"></script>
-  <script src="{{ URL::asset('js/admin/settings.js')}}"></script>
-  <script src="{{ URL::asset('js/admin/users.js')}}"></script> 
-  <script src="{{ URL::asset('js/admin/audit.js')}}"></script>
-  <script src="{{ URL::asset('js/admin/app.js')}}"></script>
+  <script src="{{ asset('js/admin/dashboard.js') }}"></script>
   <script type="module" src="{{ URL::asset('js/admin/diseasechart.js')}}"></script>
   <script type="module" src="{{ URL::asset('js/admin/cocovarietychart.js')}}"></script>
 
@@ -60,7 +57,7 @@
     <script src="{{ asset('js/index.js') }}"></script>
     <script src="{{ asset('js/config.js') }}"></script>
   @endif
-  <script src="{{ asset('js/admin/dashboard.js') }}"></script>
+
 </body>
 
 </html>

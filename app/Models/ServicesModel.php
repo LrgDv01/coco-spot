@@ -17,7 +17,7 @@ class ServicesModel extends Model
         'technician_id',
         'farmer_name',
         'request_id',
-        'status',
+        'status', 
     ];
 
     // Define relationships if needed

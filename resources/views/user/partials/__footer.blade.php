@@ -41,8 +41,8 @@
   <script src="{{ URL::asset('theme/assets/js/main.js')}}"></script>
   <script src="{{ URL::asset('js/global.js') }}"></script>
   <script src="{{ URL::asset('js/user/user.js')}}"></script>
+  <script src="{{ URL::asset('js/user/farm.js')}}"></script>
   <script src="{{ URL::asset('js/user/services.js')}}"></script>
-  
   <script src="{{ URL::asset('js/user/settings.js')}}"></script>
 
 </body>

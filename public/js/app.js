@@ -20,7 +20,7 @@ $(document).on('submit', '#registerform', function (e) {
         error: function (xhr) {
             hideLoading();
             let response = JSON.parse(xhr.responseText);
-            let errorMessage = 'An error occurred';
+            let errorMessage = 'An error occurred';  
             if (response.errors) {
                 errorMessage = '';
                 for (let errorKey in response.errors) {
@@ -62,7 +62,6 @@ $(document).on('submit', '#loginform', function (e) {
                 }
             }
             global_showalert(response.errors, 'Failed !', 'red');
-            location.reload(); 
         }
     });
 });

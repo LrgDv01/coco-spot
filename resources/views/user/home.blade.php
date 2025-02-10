@@ -203,7 +203,6 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             const updateFarmConditionModals = document.querySelectorAll('.modal[id^="updateFarmCondition"]');
-
             updateFarmConditionModals.forEach(modal => {
                 modal.addEventListener('shown.bs.modal', function () {
                     const checkbox = modal.querySelector('.custom-checkbox');

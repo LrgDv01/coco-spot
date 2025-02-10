@@ -44,6 +44,7 @@ class FarmController extends Controller
                 'farmer_id' => 'required|exists:users,id',
                 'name' => 'required|string|max:255',
                 'location' => 'required|string|max:255',
+                'district' => 'required|string|max:255',
                 'variety' => 'nullable|string|max:255',
                 'hectares' => 'required|numeric|min:0',
                 'tree_age' => 'nullable|integer|min:0',

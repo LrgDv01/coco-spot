@@ -17,12 +17,11 @@
                         <input type="text" class="form-control" id="location" name="location" required>
                     </div>
                     <div class="mb-3">
-                        <label for="variety" class="form-label">Variety</label>
-                        <select class="form-select" id="variety" name="variety" required>
-                            <option value="" disabled selected hidden>Select Type</option>
-                            <option value="Laguna Tall">Laguna Tall</option>
-                            <option value="Dwarf Coconut">Dwarf Coconut</option>
-                            <option value="Hybrid">Hybrid</option>
+                        <label for="district" class="form-label">District</label>
+                        <select class="form-select" id="district" name="district" required>
+                            <option value="" disabled selected hidden>Select District</option>
+                            <option value="III">III</option>
+                            <option value="IV">IV</option>
                         </select>
                     </div>
                     <div class="mb-3">
@@ -45,6 +44,15 @@
                             <option value="Sandy">Sandy</option>
                             <option value="Clay">Clay</option>
                             <option value="Silty">Silty</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="variety" class="form-label">Variety</label>
+                        <select class="form-select" id="variety" name="variety" required>
+                            <option value="" disabled selected hidden>Select Variety</option>
+                            <option value="Laguna Tall">Laguna Tall</option>
+                            <option value="Dwarf Coconut">Dwarf Coconut</option>
+                            <option value="Hybrid">Hybrid</option>
                         </select>
                     </div>
                 </div>

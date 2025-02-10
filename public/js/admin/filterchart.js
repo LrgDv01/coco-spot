@@ -1,5 +1,4 @@
 export function filter(sendYear, reqYear) {
-
     sendYear.addEventListener("change", (e) => {
         const selectedYear = e.target.value;
         if ($("#monthlyFilter").is(":checked")) {
@@ -28,14 +27,12 @@ export function filter(sendYear, reqYear) {
             $("#monthlyFilter").prop("checked", false); 
             reqYear(true, false, $("#diseaseYearSelect").val()); 
             reqYear(true, false, $("#cocoYearSelect").val()); 
-
         } 
         else {
             $("#district3Filter").prop("checked", false);
             $("#district4Filter").prop("checked", false);
             reqYear(true, true, $("#diseaseYearSelect").val()); 
             reqYear(true, true, $("#cocoYearSelect").val()); 
-
         }
     });
 }

@@ -14,19 +14,20 @@ class ReportSeeder extends Seeder
     {
         $reports = [
             [
-                'technician_id' => 1, // Example technician ID
-                'farm_id' => 101, // Example farm ID
-                'farmer_name' => 'John Doe', // Example farmer name
-                'contact_no' => '1234567890', // Example contact number
-                'recipient' => 'Jane Doe', // Example recipient
-                'farm_name' => 'Green Valley Farm', // Example farm name
-                'farm_location' => '123 Farm Road, Countryside', // Example farm location
-                'farm_size' => 10.5, // Example farm size in hectares
-                'coconut_trees' => 500, // Example number of coconut trees
-                'coconut_variety' => 'Tall Variety', // Example coconut variety
-                'soil_type' => 'Loamy Soil', // Example soil type
-                'disease_type' => 'Bud Rot', // Example disease type
-                'note' => 'Initial inspection completed.', // Example note
+                'technician_id' => 1, 
+                'farm_id' => 101, 
+                'farmer_name' => 'John Doe',
+                'contact_no' => '1234567890', 
+                'recipient' => 'Jane Doe', 
+                'farm_name' => 'Green Valley Farm', 
+                'farm_location' => '123 Farm Road, Countryside', 
+                'district' => 'III',
+                'farm_size' => 10.5, 
+                'coconut_trees' => 500, 
+                'coconut_variety' => 'Tall Variety', 
+                'soil_type' => 'Loamy Soil',
+                'disease_type' => 'Bud Rot',
+                'note' => 'Initial inspection completed.',
             ],
             [
                 'technician_id' => 2,
@@ -36,6 +37,7 @@ class ReportSeeder extends Seeder
                 'recipient' => 'Bob Johnson',
                 'farm_name' => 'Sunny Acres Farm',
                 'farm_location' => '456 Orchard Lane, Countryside',
+                'district' => 'IV',
                 'farm_size' => 15.0,
                 'coconut_trees' => 700,
                 'coconut_variety' => 'Dwarf Variety',
@@ -51,6 +53,7 @@ class ReportSeeder extends Seeder
                 'recipient' => 'Bob Johnson',
                 'farm_name' => 'Sunny Acres Farm',
                 'farm_location' => '456 Orchard Lane, Countryside',
+                'district' => 'IV',
                 'farm_size' => 15.0,
                 'coconut_trees' => 700,
                 'coconut_variety' => 'Dwarf Variety',
@@ -58,8 +61,6 @@ class ReportSeeder extends Seeder
                 'disease_type' => 'Leaf Spot',
                 'note' => 'Follow-up required in 2 weeks.',
             ],
-            
-
         ];
 
         foreach ($reports as $report) {

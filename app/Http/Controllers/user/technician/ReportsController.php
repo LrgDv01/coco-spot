@@ -47,7 +47,6 @@ class ReportsController extends Controller
         ));
     }
 
- 
     // public function submitReport(Request $request)
     // {
     //     try {
@@ -117,6 +116,7 @@ class ReportsController extends Controller
                 'recipient' => 'required|string',
                 'farm_name' => 'required|string',
                 'farm_location' => 'required|string',
+                'farm_district' => 'required|string',
                 'farm_size' => 'required|string', // Includes units like "hectares"
                 'coconut_trees' => 'required|numeric', // Flexible for numeric values
                 'coconut_variety' => 'required|string',
@@ -133,15 +133,11 @@ class ReportsController extends Controller
             // }
             // $diseaseTypes = json_encode($diseaseTypes); // Encode as 
 
-            // Flatten the nested disease types and store as a JSON string
-            $diseaseTypes = array_merge(...$validated['disease_types']); // Merge nested arrays directly
-            $diseaseTypes = json_encode($diseaseTypes); // Encode as JSON string
+            $diseaseTypes = array_merge(...$validated['disease_types']); 
+            $diseaseTypes = json_encode($diseaseTypes); 
 
-            
-            $note = implode(' ', array_values($validated['note'])); // Flatten and convert to string
-    
-            // Create a new report detail record
-            $reportDetail = ReportsModel::create([
+            $note = implode(' ', array_values($validated['note'])); 
+                $reportDetail = ReportsModel::create([
                 'technician_id' => auth()->id(),
                 'farm_id' => $validated['farm_id'],
                 'farmer_name' => $validated['farmer_name'],
@@ -149,6 +145,7 @@ class ReportsController extends Controller
                 'recipient' => $validated['recipient'],
                 'farm_name' => $validated['farm_name'],
                 'farm_location' => $validated['farm_location'],
+                'district' => $validated['farm_district'],
                 'farm_size' => $validated['farm_size'],
                 'coconut_trees' => $validated['coconut_trees'],
                 'coconut_variety' => $validated['coconut_variety'],
