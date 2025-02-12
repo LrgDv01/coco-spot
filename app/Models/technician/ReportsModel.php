@@ -3,6 +3,8 @@
 namespace App\Models\technician;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\ServicesModel;
+
 
 class ReportsModel extends Model
 {
@@ -25,5 +27,10 @@ class ReportsModel extends Model
         'disease_type',
         'note',
     ];
+
+    public function services()
+    {
+        return $this->belongsTo(ServicesModel::class, 'technician_id', 'technician_id');
+    }
 }
 

@@ -6,12 +6,13 @@ use App\Models\User;
 use App\Models\Farm\FarmModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\technician\ReportsModel;
 
 class ServicesModel extends Model
 {
     use HasFactory;
     
-    public $table = "services";
+    protected $table = "services";
     protected $fillable = [
         'farmer_id',
         'technician_id',
@@ -52,6 +53,10 @@ class ServicesModel extends Model
 
     public function userFarms() {
         return $this->hasMany(FarmModel::class, 'farmer_id', 'farmer_id');
+    }
+
+    public function reports() {
+        return $this->hasOne(ReportsModel::class, 'technician_id', 'technician_id');
     }
 
 }

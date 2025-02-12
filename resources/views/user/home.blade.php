@@ -111,7 +111,6 @@
                                             ( <strong>{{ $farm->condition }}</strong> 
                                         </span>
                                     </div>
-                            
                                 </h5>
                                 <hr>
                                 <p class="card-text text-truncate">

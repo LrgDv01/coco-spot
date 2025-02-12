@@ -10,17 +10,25 @@
     <section class="section reports">
         <div class="container p-0">
             @if($reports->isEmpty())
-                <p class="text-center">- No Reports available at the moment -</p>
+                <p class="text-center">- You have no new reports to submit -</p>
             @else
                 @foreach ($reports as $report)
+                    @php
+                        $status = $report->status === 'end';
+                        $bg = $status ? 'bg-secondary': 'bg-success';
+                        $txt = $status ? 'Done': 'New';
+                    @endphp
                     <div class="card p-0" style="max-height: 80vh; overflow-y: auto;">
-                        <div class="card-header bg-success text-white sticky-top" style="z-index: 10;">
-                            <h2><strong>New Report</strong></h2><strong><hr></strong>
-                            <h6 class="card-title text-center p-0"><strong>Farmer</strong></h6>
-                            <div class="card-text">
-                                <h6><strong>Name:</strong> <span id="farmer_name">{{ $report->farmer_name }}</span></h6>
-                                <h6><strong>Contact Information:</strong> <span id="contact_info">{{ $report->user->contact }}</span></h6>
-                                <h6><strong>Recipient:</strong> <span id="recipient">{{ $recipient }}</span></h6>
+                        <div class="card-header {{ $bg }} text-white sticky-top" style="z-index: 10;">
+                            <h2 class="text-center"><strong>* {{ $txt }} </strong></h2><strong><hr></strong>
+                            <div class="d-flex justify-content-between">
+                                <h6 class="card-title p-0"><strong>Farmer</strong></h6>
+                                <p>Request ID: {{ $report->request_id }}</p>
+                            </div>
+                            <div class="card-text ps-3">
+                                <h6><strong>_ Name:</strong> <span id="farmer_name"> {{ $report->farmer_name }}</span></h6>
+                                <h6><strong>_ Contact Information:</strong> <span id="contact_info">{{ $report->user->contact }}</span></h6>
+                                <h6><strong>_ Recipient:</strong> <span id="recipient">{{ $recipient }}</span></h6>
                             </div>
                         </div>
                         <ul class="list-group">
@@ -28,8 +36,8 @@
                                 @if ($farm->condition === 'is Infected')
                                     @php
                                         $isSubmitted = in_array($farm->id, $submitted);
-                                        $buttonClass = $isSubmitted ? 'btn-outline-secondary active' : 'btn-success active';
-                                        $buttonText = $isSubmitted ? 'Report Submitted' : 'Submit';
+                                        $buttonClass = $isSubmitted ? 'btn-outline-success active' : 'btn-success active';
+                                        $buttonText = $isSubmitted ? '' : 'Submit';
                                     @endphp
                                     <li class="card list-group p-0 mb-3 rounded rounded-0"> 
                                         <form action="{{ route('reports.submit') }}" method="POST" id="submitForm{{ $farm->id }}">
@@ -146,6 +154,12 @@
 @include('user.partials.__footer')
 
 <script>
+    // function updateStatus(form) {
+    //     if(form.submit()){
+    //         console.log("nag store");
+    //     }
+    // }
+   
     function submitReportForm(farmId) {
         const form = document.getElementById('submitForm' + farmId);
         if (!form) {
@@ -172,7 +186,9 @@
             hiddenInput.value = reportDetails[key];
             form.appendChild(hiddenInput);
         });
+
         form.submit();
+        // updateStatus(form);
     }
   
     function validateAndOpenModal(event, farmId) {

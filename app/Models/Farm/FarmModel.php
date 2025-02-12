@@ -11,7 +11,7 @@ class FarmModel extends Model
 {
     use HasFactory;
 
-    public $table = 'farms';
+    protected $table = 'farms';
     protected $fillable = [
         'farmer_id',
         'name',
