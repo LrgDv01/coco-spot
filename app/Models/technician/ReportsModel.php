@@ -4,6 +4,8 @@ namespace App\Models\technician;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\ServicesModel;
+use App\Models\Farm\FarmModel;
+
 
 
 class ReportsModel extends Model
@@ -31,6 +33,10 @@ class ReportsModel extends Model
     public function services()
     {
         return $this->belongsTo(ServicesModel::class, 'technician_id', 'technician_id');
+    }
+
+    public function farms() {
+        return $this->belongsTo(FarmModel::class, 'farm_id', 'id');
     }
 }
 

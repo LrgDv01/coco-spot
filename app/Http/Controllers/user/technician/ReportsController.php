@@ -16,29 +16,11 @@ class ReportsController extends Controller
     public function index()
     {
         $technicianId = auth()->id();
-       
         $recipient = auth()->user()->full_name;
         $reports = ServicesModel::with(['user', 'userFarms']) 
-            ->where([['technician_id', $technicianId],])
+            ->where('technician_id', $technicianId)
             ->get();
 
-        $farmID = FarmModel::with('services') 
-            ->where([['condition', 'is Infected']])
-            // ->where([['services.technician_id', $technicianId]])
-            ->get()
-            ->pluck('id')
-            ->toArray();
-        
-        // dd($farmID);
-
-        // $reportExists = ReportsModel::where([['technician_id', $technicianId], ['farm_id', $farm->id]])->exists();
-        // if ($reportExists) {
-        //     ServicesModel::where([['technician_id', $technicianId],['status', '!=', 'end']])
-        //         ->update(['status' => 'end']);
-        // }
-   
-    
-     
         $submitted = ReportsModel::where('technician_id', $technicianId)
             ->pluck('farm_id')
             ->toArray();
@@ -63,6 +45,27 @@ class ReportsController extends Controller
                 'submitted',
                 'submittedReports'
         ));
+    }
+
+    private function checkStatus() {
+        $existingReportsCount = FarmModel::whereHas('reports')
+            ->update(['condition' => 'is Healthy']);
+
+        $technicianId = auth()->id();
+        $farmIDs = FarmModel::whereHas('services')
+            ->where('condition', 'is Infected')
+            ->pluck('id')
+            ->toArray();
+
+        $existingReportsCount = ReportsModel::where('technician_id', $technicianId)
+            ->whereIn('farm_id', $farmIDs)
+            ->count();
+
+        if ($existingReportsCount === count($farmIDs)) {
+            ServicesModel::where('technician_id', $technicianId)
+                ->where('status', '!=', 'end')
+                ->update(['status' => 'end']);
+        }
     }
 
     public function submitReport(Request $request, ServicesController $servicesController)
@@ -106,6 +109,8 @@ class ReportsController extends Controller
                 'note' => $note,
             ]);
 
+           $this->checkStatus();
+
             return redirect()->route('user.reports')->with('success', 'Report submitted successfully');
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return redirect()->route('user.reports')->with('error', 'The specified report could not be found.');
@@ -116,6 +121,9 @@ class ReportsController extends Controller
             return redirect()->route('user.reports')->with('error', 'An unexpected error occurred. Please try again.');
         }
     }
+
+
+
 
 }
 

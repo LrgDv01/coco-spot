@@ -10,6 +10,10 @@
             <div style="margin-top: 50px;">
             </div>
             <div id="technician-list">
+                <div class="d-flex justify-content-end mb-2">
+                    <button type="button" class="rounded border-0" onclick="refresh()">
+                        <i class="bi bi-arrow-repeat"></i></button>
+                </div>
                 <ul class="list-unstyled">
                     @foreach($technicians as $technician) 
                         @php
@@ -33,7 +37,8 @@
                                         $buttonEnabled = $status ? 'disabled' : '';
                                         $buttonText = $isHired === 'accepted' ? 'Hired by you' 
                                             : ($isHired === 'pending' ? 'Service Requested' 
-                                            : $isHired);
+                                            : ($isHired === 'end' ? 'Hire me' 
+                                            : $isHired));
                                     }   
                                 }
                             }
@@ -75,3 +80,9 @@
     </section>
 </main>
 @include('user.partials.__footer')
+
+<script>
+    function refresh() {
+        location.reload();
+    }
+</script>

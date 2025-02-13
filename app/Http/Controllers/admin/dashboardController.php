@@ -21,7 +21,8 @@ class dashboardController extends Controller
     public function get_dashboard_info(Request $request)
     { 
 
-        $count_total_cost = PCA::sum('total_cost');
+        // $count_total_cost = PCA::sum('total_cost');
+        $count_techicians = User::where('user_type', '=', '2')->count();
         $count_farmers = User::where('user_type', '=', '1')->count();
         $count_farms = FarmModel::all()->count();
         $count_doa = DOA::all()->count();
@@ -30,7 +31,6 @@ class dashboardController extends Controller
         $yearData = ReportsModel::whereYear('created_at', $year)->get();
 
         $disease_type = [
-            "coconut_wilt" => "Coconut Wilt",
             "bud_rot" => "Bud Rot",
             "leaf_spot" => "Leaf Spot",
             "stem_bleeding" => "Stem Bleeding"
@@ -70,7 +70,8 @@ class dashboardController extends Controller
         }
 
         $res = [
-            'count_total_cost' => $count_total_cost,
+            // 'count_total_cost' => $count_total_cost,
+            'count_techicians' => $count_techicians,
             'count_farmers' => $count_farmers,
             'count_farms' => $count_farms,
             'count_doa' => $count_doa,

@@ -16,11 +16,11 @@
                     @php
                         $status = $report->status === 'end';
                         $bg = $status ? 'bg-secondary': 'bg-success';
-                        $txt = $status ? 'Done': 'New';
+                        $txt = $status ? '* Service Completed': '* New Report';
                     @endphp
                     <div class="card p-0" style="max-height: 80vh; overflow-y: auto;">
                         <div class="card-header {{ $bg }} text-white sticky-top" style="z-index: 10;">
-                            <h2 class="text-center"><strong>* {{ $txt }} </strong></h2><strong><hr></strong>
+                            <h2 class="text-center"><strong>{{ $txt }} </strong></h2><strong><hr></strong>
                             <div class="d-flex justify-content-between">
                                 <h6 class="card-title p-0"><strong>Farmer</strong></h6>
                                 <p>Request ID: {{ $report->request_id }}</p>
@@ -33,16 +33,15 @@
                         </div>
                         <ul class="list-group">
                             @foreach ($report->userFarms as $farm)
-                                @if ($farm->condition === 'is Infected')
-                                    @php
-                                        $isSubmitted = in_array($farm->id, $submitted);
-                                        $buttonClass = $isSubmitted ? 'btn-outline-success active' : 'btn-success active';
-                                        $buttonText = $isSubmitted ? '' : 'Submit';
-                                    @endphp
+                                @php
+                                    $isSubmitted = in_array($farm->id, $submitted);
+                                    $buttonClass = $isSubmitted ? 'btn-outline-success active' : 'btn-success active';
+                                    $buttonText = $isSubmitted ? '' : 'Submit';
+                                @endphp
+                                @if ($farm->condition === 'is Infected' || $isSubmitted)
                                     <li class="card list-group p-0 mb-3 rounded rounded-0"> 
                                         <form action="{{ route('reports.submit') }}" method="POST" id="submitForm{{ $farm->id }}">
                                             @csrf
-                                            <input type="hidden" name="farm_id" value="{{ $farm->id }}">
                                             <input type="hidden" name="farm_id" value="{{ $farm->id }}">
                                             <div class="card-body" id="report-details">
                                                 <div class="card-text d-none">
@@ -109,7 +108,6 @@
                                                                 class="form-select" 
                                                                 onchange="addDiseaseType(event, {{ $farm->id }})">
                                                                 <option value="" selected disabled>Select a disease type</option>
-                                                                <option value="Coconut Wilt">Coconut Wilt</option>
                                                                 <option value="Bud Rot">Bud Rot</option>
                                                                 <option value="Leaf Spot">Leaf Spot</option>
                                                                 <option value="Stem Bleeding">Stem Bleeding</option>
@@ -154,12 +152,7 @@
 @include('user.partials.__footer')
 
 <script>
-    // function updateStatus(form) {
-    //     if(form.submit()){
-    //         console.log("nag store");
-    //     }
-    // }
-   
+
     function submitReportForm(farmId) {
         const form = document.getElementById('submitForm' + farmId);
         if (!form) {
@@ -186,9 +179,7 @@
             hiddenInput.value = reportDetails[key];
             form.appendChild(hiddenInput);
         });
-
         form.submit();
-        // updateStatus(form);
     }
   
     function validateAndOpenModal(event, farmId) {

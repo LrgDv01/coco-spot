@@ -11,7 +11,7 @@
     .card h5 {
         color:white;
     }
-    .card #count_today_total_cost,
+    .card #count_today_technicians,
           #count_today_farmers,
           #count_today_farms,
           #count_doa {
@@ -60,7 +60,7 @@
                 <div class="col-lg-8 mb-3">
                     <div class="card info-card cardiconbg green-card">
                         <div class="card-body">
-                            <h5 class="card-title">Municipality <span>| list</span></h5>
+                            <h5 class="card-title">Municipal <span>| list</span></h5>
                             <div id="checkboxList">
                                 <label> San Pablo</label><br>
                                 <label> Caluan</label><br>
@@ -81,14 +81,13 @@
                             <!-- <h4>Login and Appointment</h4> -->
                             <div class="card info-card cardiconbg green-card">
                                 <div class="card-body">
-                                    <h5 class="card-title">Cost <span>| Today</span></h5>
+                                    <h5 class="card-title"><span>Today's | </span>Technicians</h5>
                                     <div class="d-flex align-items-center">
-                                        <div
-                                            class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                            <i class="fa-solid fa-peso-sign text-success"></i>
+                                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                            <i class="bi bi-people"></i>
                                         </div>
                                         <div class="ps-3 d-flex flex-row">
-                                            <h6 id="count_today_total_cost">0</h6>
+                                            <h6 id="count_today_technicians">0</h6>
                                         </div>
                                     </div>
                                 </div>
@@ -99,10 +98,9 @@
                         <!-- <div class="row">  -->
                             <div class="card info-card cardiconbg green-card">
                                 <div class="card-body">
-                                    <h5 class="card-title">Farmers <span>| Today</span></h5>
+                                    <h5 class="card-title"><span>Today's | </span>Farmers</h5>
                                     <div class="d-flex align-items-center">
-                                        <div
-                                            class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                                             <i class="bi bi-people"></i>
                                         </div>
                                         <div class="ps-3">
@@ -118,11 +116,11 @@
                         <!-- <div class="row">  -->
                             <div class="card info-card cardiconbg green-card">
                                 <div class="card-body">
-                                    <h5 class="card-title">Farms <span>| Today</span></h5>
+                                    <h5 class="card-title"><span>Today's | </span>Farms</h5>
                                     <div class="d-flex align-items-center">
                                         <div
                                             class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                            <i class="bi-tree"></i>
+                                            <i class="bi bi-tree"></i>
                                         </div>
                                         <div class="ps-3">
                                             <h6 id="count_today_farms">0</h6>
@@ -136,7 +134,7 @@
                         <!-- <div class="row">  -->
                             <div class="card info-card cardiconbg green-card">
                                 <div class="card-body">
-                                    <h5 class="card-title">DA <span>| Today</span></h5>
+                                    <h5 class="card-title"><span>Today's | </span>DA</h5>
                                     <div class="d-flex align-items-center">
                                         <div
                                             class="card-icon rounded-circle d-flex align-items-center justify-content-center">

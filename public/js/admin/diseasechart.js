@@ -1,9 +1,8 @@
-import { filter } from "./filterchart.js";
+import { filter } from "./utils/filterchart.js";
 
 let diseases_chart;
 function updateChart(displayYearly, displayMonthly, selectedYear, diseaseData) {
     let labels = [];
-    let coconutWiltData = [];
     let budRotData = []; 
     let leafSpotData = [];
     let stemBleedingData = [];
@@ -16,16 +15,14 @@ function updateChart(displayYearly, displayMonthly, selectedYear, diseaseData) {
         const yearlyData = {};
         filteredData.forEach((item) => {
             if (!yearlyData[item.year]) {
-                yearlyData[item.year] = { coconut_wilt: 0, bud_rot: 0, leaf_spot_disease: 0, stem_bleeding: 0 };
+                yearlyData[item.year] = {bud_rot: 0, leaf_spot_disease: 0, stem_bleeding: 0 };
             }
-            yearlyData[item.year].coconut_wilt += item.coconut_wilt;
             yearlyData[item.year].bud_rot += item.bud_rot;
             yearlyData[item.year].leaf_spot_disease += item.leaf_spot_disease;
             yearlyData[item.year].stem_bleeding += item.stem_bleeding;
         });
         for (const year in yearlyData) {
             labels.push(year.toString());
-            coconutWiltData.push(yearlyData[year].coconut_wilt);
             budRotData.push(yearlyData[year].bud_rot);
             leafSpotData.push(yearlyData[year].leaf_spot_disease);
             stemBleedingData.push(yearlyData[year].stem_bleeding);
@@ -35,7 +32,6 @@ function updateChart(displayYearly, displayMonthly, selectedYear, diseaseData) {
     if (displayMonthly) {
         filteredData.slice(0, 12).forEach((item) => {
             labels.push(`${item.year}-${String(item.month).padStart(2, "0")}`);
-            coconutWiltData.push(item.coconut_wilt);
             budRotData.push(item.bud_rot);
             leafSpotData.push(item.leaf_spot_disease);
             stemBleedingData.push(item.stem_bleeding);
@@ -51,11 +47,6 @@ function updateChart(displayYearly, displayMonthly, selectedYear, diseaseData) {
         data: {
             labels: labels,
             datasets: [
-                {
-                    label: "Coconut Wilt",
-                    data: coconutWiltData,
-                    backgroundColor: "rgba(245, 130, 48, 0.6)",
-                },
                 {
                     label: "Bud Rot",
                     data: budRotData,
@@ -117,7 +108,6 @@ function displayDiseaseChart(year = null) {
                         diseaseData.push({
                             year: parseInt(year),
                             month: parseInt(month),
-                            coconut_wilt: data.count_disease[year][month].coconut_wilt || 0,
                             bud_rot: data.count_disease[year][month].bud_rot || 0,
                             leaf_spot_disease: data.count_disease[year][month].leaf_spot || 0,
                             stem_bleeding: data.count_disease[year][month].stem_bleeding || 0
@@ -133,42 +123,6 @@ function displayDiseaseChart(year = null) {
     }
     reqYear(true, true, currentYear);
     filter(sendYear, reqYear);
-
-    // const district3Checkbox = document.getElementById("district3Filter");
-    // district3Checkbox.addEventListener("change", (event) => {
-    //     $("#district4Filter").prop("checked", false); 
-    //     if (event.target.checked && $("#yearlyFilter").is(":checked")) {  
-    //         updateChart(true, false, 'all'); 
-    //     }
-    //     if (event.target.checked &&  $("#monthlyFilter").is(":checked")) {
-    //         updateChart(false, true, $("#diseaseYearSelect").val()); 
-    //     }else {
-    //         if ($("#yearlyFilter").is(":checked")) {
-    //             updateChart(true, false, 'all'); 
-    //         }
-    //         else if ($("#monthlyFilter").is(":checked")) {
-    //             updateChart(false, true, $("#diseaseYearSelect").val()); 
-    //         } 
-    //     }
-    // });
-
-    // const district4Checkbox = document.getElementById("district4Filter");   
-    // district4Checkbox.addEventListener("change", (event) => {
-    //     $("#district3Filter").prop("checked", false); 
-    //     if (event.target.checked && $("#yearlyFilter").is(":checked")) {  
-    //         updateChart(true, false, 'all'); 
-    //     }
-    //     if (event.target.checked &&  $("#monthlyFilter").is(":checked")) {
-    //         updateChart(false, true, $("#diseaseYearSelect").val()); 
-    //     }else {
-    //         if ($("#yearlyFilter").is(":checked")) {
-    //             updateChart(true, false, 'all'); 
-    //         }
-    //         else if ($("#monthlyFilter").is(":checked")) {
-    //             updateChart(false, true, $("#diseaseYearSelect").val()); 
-    //         }
-    //     }
-    // });
 }
 
 $(document).ready(function () {

@@ -1,4 +1,4 @@
-import { filter } from "./filterchart.js";
+import { filter } from "./utils/filterchart.js";
 
 let coconut_chart;
 function updateChart(displayYearly, displayMonthly, selectedYear, cocoData) {
@@ -122,79 +122,6 @@ function displayCocoChart(year = null) {
     }
     reqYear(true, true, currentYear);
     filter(sendYear, reqYear);
-
-    // document.getElementById("cocoYearSelect").addEventListener("change", (event) => {
-    //     const selectedYear = event.target.value; // Get the selected year from dropdown
-    //     if ($("#monthlyFilter").prop("checked", true)) {
-    //         $("#yearlyFilter").prop("checked", false)
-    //         updateChart(false, true, selectedYear);
-    //     }  
-    // });
-
-
- 
-    // document.getElementById("monthlyFilter").addEventListener("change", (event) => {
-    //     if (event.target.checked) {
-    //         $("#yearlyFilter").prop("checked", false);   
-    //         updateChart(false, true, $("#cocoYearSelect").val());
-    //     } 
-    //     else {
-    //         $("#district3Filter").prop("checked", false);
-    //         $("#district4Filter").prop("checked", false);
-    //         updateChart(true, true, 'all'); 
-    //     }
-    // });
-
-    // document.getElementById("yearlyFilter").addEventListener("change", (event) => {
-    //     if (event.target.checked) {
-    //         $("#monthlyFilter").prop("checked", false); 
-    //         updateChart(true, false, 'all'); 
-    //     } 
-    //     else {
-    //         $("#district3Filter").prop("checked", false);
-    //         $("#district4Filter").prop("checked", false);
-    //         updateChart(true, true, 'all'); 
-    //     }
-    // });
-
-    // district3Checkbox.addEventListener("change", (event) => {
-    //     $("#district4Filter").prop("checked", false); 
-    //     if (event.target.checked && $("#yearlyFilter").is(":checked")) {  
-    //         updateChart(true, false, 'all'); 
-    //     }
-    //     if (event.target.checked &&  $("#monthlyFilter").is(":checked")) {
-    //         updateChart(false, true, $("#cocoYearSelect").val()); 
-    //     }else {
-    //         if ($("#yearlyFilter").is(":checked")) {
-    //             updateChart(true, false, 'all'); 
-    //         }
-    //         else if ($("#monthlyFilter").is(":checked")) {
-    //             updateChart(false, true, $("#cocoYearSelect").val()); 
-    //         }
-        
-    //     }
-
-    // });
-
-    // district4Checkbox.addEventListener("change", (event) => {
-    //     $("#district3Filter").prop("checked", false); 
-    //     if (event.target.checked && $("#yearlyFilter").is(":checked")) {  
-    //         updateChart(true, false, 'all'); 
-    //     }
-    //     if (event.target.checked &&  $("#monthlyFilter").is(":checked")) {
-    //         updateChart(false, true, $("#cocoYearSelect").val()); 
-    //     }else {
-    //         if ($("#yearlyFilter").is(":checked")) {
-    //             updateChart(true, false, 'all'); 
-    //         }
-    //         else if ($("#monthlyFilter").is(":checked")) {
-    //             updateChart(false, true, $("#cocoYearSelect").val()); 
-    //         }
-        
-    //     }
-        
-    // });
-    
 }
 
 $(document).ready(function() {
