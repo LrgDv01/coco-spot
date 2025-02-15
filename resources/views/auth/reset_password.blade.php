@@ -21,7 +21,6 @@
                     <label for="password_confirmation" class="form-label text-white"><strong>Confirm Password</strong></label>
                     <input type="password" id="password_confirmation" name="password_confirmation" class="form-control" required>
                 </div>
-     
                 <div class="d-grid login-btn">
                     <button type="submit" class="btn btn-success">Login</button>
                 </div>
@@ -30,6 +29,7 @@
     </div>
 </main>
 @include('partials.__footer')
+
 <script>
 
     document.querySelector('form').addEventListener('submit', function(event) {

@@ -21,7 +21,6 @@
     </div>
 </div>
 
-<!-- Success Modal -->
 <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content text-center">
@@ -31,8 +30,8 @@
                     <i class="bi bi-check-circle-fill text-success fs-1"></i>
                 </div>
                 <div class="d-flex justify-content-center">
-                    <a href="{{ route('user.notifications') }}" class="btn btn-success mx-2">Go Back to Notifications</a>
-                    <button type="button" class="btn btn-secondary mx-2" data-bs-dismiss="modal">Close Modal</button>
+                    <a href="{{ route('user.reports') }}" class="btn btn-success mx-2">See New Report</a>
+                    <button type="button" class="btn btn-secondary mx-2" data-bs-dismiss="modal">Later</button>
                 </div>
             </div>
         </div>

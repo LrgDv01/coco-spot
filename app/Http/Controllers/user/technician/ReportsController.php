@@ -17,11 +17,17 @@ class ReportsController extends Controller
     {
         $technicianId = auth()->id();
         $recipient = auth()->user()->full_name;
-        $reports = ServicesModel::with(['user', 'userFarms']) 
-            ->where('technician_id', $technicianId)
+        // $reports = ServicesModel::with(['user', 'userFarms']) 
+        //     ->where([['technician_id', $technicianId], ['status','accepted']])
+        //     ->get();
+        $reports = ServicesModel::with(['user', 'userFarms'])
+            ->where(function ($query) use ($technicianId) {
+                $query->where('technician_id', $technicianId)
+                    ->whereIn('status', ['accepted', 'end']);
+            })
             ->get();
-
-        $submitted = ReportsModel::where('technician_id', $technicianId)
+   
+        $submitted = ReportsModel::where([['technician_id', $technicianId]])
             ->pluck('farm_id')
             ->toArray();
 

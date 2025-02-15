@@ -1,14 +1,23 @@
 import { filter } from "./utils/filterchart.js";
 
 let coconut_chart;
-function updateChart(displayYearly, displayMonthly, selectedYear, cocoData) {
+function updateChart(displayYearly, displayMonthly, selectedYear, cocoData, selectedDistrict) {
     let labels = [];
     let lagunaTallData = [];
     let dwarfCoconutData = []; 
     let hybridData = [];
-    const filteredData = selectedYear === "all"
-        ? cocoData
-        : cocoData.filter(item => item.year === parseInt(selectedYear));
+
+    // const filteredData = selectedYear === "all"
+    //     ? cocoData
+    //     : cocoData.filter(item => item.year === parseInt(selectedYear));
+ 
+    const filteredData = cocoData.filter(item => {
+        const yearMatches = selectedYear === "all" || item.year === parseInt(selectedYear);
+        const districtMatches = selectedDistrict === "all" || item.district === selectedDistrict;
+        return yearMatches && districtMatches;
+    });
+
+
     if (displayYearly) {
         const yearlyData = {};
         filteredData.forEach((item) => {
@@ -45,21 +54,30 @@ function updateChart(displayYearly, displayMonthly, selectedYear, cocoData) {
                 {
                     label: "Laguna Tall",
                     data: lagunaTallData,
-                    backgroundColor: "rgba(21, 226, 49, 0.95)",
+                    borderColor: "rgba(21, 226, 49, 1)", 
+                    backgroundColor: "rgba(21, 226, 49, 0.2)", 
+                    borderWidth: 3, 
+                    // fill: "-1", 
                     pointRadius: 5, 
                     pointHoverRadius: 9,
                 },
                 {
                     label: "Dwarf",
                     data: dwarfCoconutData,
-                    backgroundColor: "rgba(226, 195, 17, 0.94)", 
+                    borderColor: "rgba(226, 195, 17, 1)", 
+                    backgroundColor: "rgba(226, 195, 17, 0.2)", 
+                    borderWidth: 3, 
+                    // fill: "-1",
                     pointRadius: 5, 
                     pointHoverRadius: 9,
                 },
                 {
                     label: "Hybrid",
                     data: hybridData,
-                    backgroundColor: "rgba(174, 231, 19, 0.86)", 
+                    borderColor: "rgba(174, 231, 19, 1)", 
+                    backgroundColor: "rgba(174, 231, 19, 0.2)", 
+                    borderWidth: 3, 
+                    // fill: "-1",
                     pointRadius: 5, 
                     pointHoverRadius: 9,
                 }
@@ -69,12 +87,17 @@ function updateChart(displayYearly, displayMonthly, selectedYear, cocoData) {
             responsive: true,
             plugins: {
                 legend: { position: "top" },
-                tooltip: { enabled: true },
+                tooltip: { enabled: true, intersect: false, mode: "nearest"},
                 zoom: {
                     pan: { enabled: true, mode: 'xy' },
                     zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' },
                 },
             },
+            interaction: {
+                mode: "nearest", 
+                axis: "xy",
+                intersect: false,
+            },  
             scales: {
                 x: { title: { display: true, text: 'Dates', font: { style: 'italic', size: 16 } } },
                 y: { title: { display: true, text: 'Counts', font: { style: 'italic', size: 16 } }, beginAtZero: true }
@@ -87,12 +110,16 @@ function updateChart(displayYearly, displayMonthly, selectedYear, cocoData) {
 
 function displayCocoChart(year = null) { 
     const currentYear = new Date().getFullYear();
-    let sendYear = year == null ? currentYear : year ;
-    function reqYear(yearly, monthly,  yearSelected) {
+    let sendYear = year || currentYear;
+    // let sendYear = year === null ? currentYear : year ;
+    function reqYear(yearly, monthly, yearSelected, selectedDistrict) {
         $.ajax({
             url: "/admin/get_dashboard_info",
             method: "GET",
-            data: { year: yearSelected },
+            data: { 
+                year: yearSelected,
+                district: selectedDistrict 
+            },
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
@@ -107,21 +134,23 @@ function displayCocoChart(year = null) {
                         cocoData.push({
                             year: parseInt(year),
                             month: parseInt(month),
+                            district: data.varietyDistrict[year][month] || "all", 
                             laguna_tall: data.count_variety[year][month].laguna_tall || 0,
                             dwarf_coconut: data.count_variety[year][month].dwarf_coconut || 0,
                             hybrid: data.count_variety[year][month].hybrid || 0
                         });
                     }
                 }
-                updateChart(yearly, monthly, yearSelected, cocoData);
+                updateChart(yearly, monthly, yearSelected, cocoData, selectedDistrict);
             },
             error: function (err) {
                 console.error("Error fetching disease data:", err);
             }
         });
     }
-    reqYear(true, true, currentYear);
+    reqYear(true, true, currentYear, 'all');
     filter(sendYear, reqYear);
+  
 }
 
 $(document).ready(function() {

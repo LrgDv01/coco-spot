@@ -1,15 +1,21 @@
 import { filter } from "./utils/filterchart.js";
 
 let diseases_chart;
-function updateChart(displayYearly, displayMonthly, selectedYear, diseaseData) {
+function updateChart(displayYearly, displayMonthly, selectedYear, diseaseData, selectedDistrict) {
     let labels = [];
     let budRotData = []; 
     let leafSpotData = [];
     let stemBleedingData = [];
 
-    const filteredData = selectedYear === "all"
-        ? diseaseData
-        : diseaseData.filter(item => item.year === parseInt(selectedYear));
+    // const filteredData = selectedYear === "all"
+    //     ? diseaseData
+    //     : diseaseData.filter(item => item.year === parseInt(selectedYear));
+
+    const filteredData = diseaseData.filter(item => {
+        const yearMatches = selectedYear === "all" || item.year === parseInt(selectedYear);
+        const districtMatches = selectedDistrict === "all" || item.district === selectedDistrict;
+        return yearMatches && districtMatches;
+    });
 
     if (displayYearly) {
         const yearlyData = {};
@@ -88,12 +94,15 @@ function updateChart(displayYearly, displayMonthly, selectedYear, diseaseData) {
 function displayDiseaseChart(year = null) {
     const currentYear = new Date().getFullYear();
     let sendYear = year || currentYear;
-
-    function reqYear(yearly, monthly,  yearSelected) {
+    // let sendYear = year === null ? currentYear : year ;
+    function reqYear(yearly, monthly, yearSelected, selectedDistrict) {
         $.ajax({ 
             url: "/admin/get_dashboard_info",
             method: "GET",
-            data: { year: yearSelected },
+            data: { 
+                year: yearSelected,
+                district: selectedDistrict 
+             },
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
               }, 
@@ -108,20 +117,21 @@ function displayDiseaseChart(year = null) {
                         diseaseData.push({
                             year: parseInt(year),
                             month: parseInt(month),
+                            district: data.diseaseDistrict[year][month] || "all",
                             bud_rot: data.count_disease[year][month].bud_rot || 0,
                             leaf_spot_disease: data.count_disease[year][month].leaf_spot || 0,
                             stem_bleeding: data.count_disease[year][month].stem_bleeding || 0
                         });
                     }
                 }
-                updateChart(yearly, monthly, yearSelected, diseaseData);
+                updateChart(yearly, monthly, yearSelected, diseaseData, selectedDistrict);
             },
             error: function (err) {
                 console.error("Error fetching disease data:", err);
             }
         }); 
     }
-    reqYear(true, true, currentYear);
+    reqYear(true, true, currentYear, 'all');
     filter(sendYear, reqYear);
 }
 

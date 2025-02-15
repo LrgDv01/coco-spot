@@ -12,7 +12,7 @@
                     <hr>
                     <p><strong>Address :</strong> <span id="address"></span></p>
                     <p><strong>Contact:</strong> <span id="contact"></span></p>    
-                    <p><strong>Years in Sevice:</strong> <span id="years-in-sevice"></span></p>    
+                    <p><strong>Years in Sevice:</strong> <span id="years-in-sevice"></span> years</p>    
                     <p><strong>Services:</strong> <span id="services"></span></p>    
                 </div>
             </div>

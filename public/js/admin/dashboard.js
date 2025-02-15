@@ -11,7 +11,6 @@ $(document).ready(function () {
         $('#count_today_farmers').text(response.count_farmers);
         $('#count_today_farms').text(response.count_farms);
         $('#count_doa').text(response.count_doa);
-      
       }
     });
 });
