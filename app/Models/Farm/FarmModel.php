@@ -17,13 +17,14 @@ class FarmModel extends Model
     protected $fillable = [
         'farmer_id',
         'name',
-        'location',
+        'latitude',
+        'longitude',
+        'address',
         'district',
         'variety',
         'hectares',
         'tree_age',
         'planted_coconut',
-        'condition',
     ];
 
     public function user()

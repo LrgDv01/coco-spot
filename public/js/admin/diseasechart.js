@@ -56,17 +56,17 @@ function updateChart(displayYearly, displayMonthly, selectedYear, diseaseData, s
                 {
                     label: "Bud Rot",
                     data: budRotData,
-                    backgroundColor: "rgba(145, 30, 180, 0.6)",
+                    backgroundColor: "#964B00",
                 },
                 {
                     label: "Leaf Spot",
                     data: leafSpotData,
-                    backgroundColor: "rgba(255, 225, 25, 0.6)",
+                    backgroundColor: "#556B2F",
                 },
                 {
                     label: "Stem Bleeding",
                     data: stemBleedingData,
-                    backgroundColor: "rgba(230, 25, 75, 0.6)",
+                    backgroundColor: "#8B0A1A",
                 },
             ],
         },
@@ -89,6 +89,7 @@ function updateChart(displayYearly, displayMonthly, selectedYear, diseaseData, s
     };
     const ctx = $("#diseases_chart")[0].getContext("2d");
     diseases_chart = new Chart(ctx, config);
+    
 }
 
 function displayDiseaseChart(year = null) {

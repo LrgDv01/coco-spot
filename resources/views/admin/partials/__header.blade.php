@@ -49,8 +49,11 @@
   <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" 
     rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" 
     crossorigin="anonymous">  -->
-  <link href="https://api.mapbox.com/mapbox-gl-js/v2.14.0/mapbox-gl.css" 
-    rel="stylesheet">
+
+
+  <!-- Mapbox Latest-->
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
+
 @endif
 
   <!-- =======================================================

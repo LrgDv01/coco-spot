@@ -4,7 +4,7 @@
         <div class="modal-content">
             <form id="add-farm-form" method="POST" action="{{ route('farm.store') }}"> 
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addFarmModalLabel">New Farm</h5>
+                    <h5 class="modal-title" id="addFarmModalLabel"><strong>New Farm</strong></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -13,8 +13,18 @@
                         <input type="text" class="form-control" id="name" name="name" required>
                     </div>
                     <div class="mb-3">
-                        <label for="location" class="form-label">Address</label>
-                        <input type="text" class="form-control" id="location" name="location" required>
+                       {{-- <label for="location" class="form-label">Location</label>
+                        <input type="text" class="form-control" id="location" name="location" required>--}}
+                        <label for="location" class="form-label my-0">Location</label><br>
+                        <small class="form-text text-muted">Tap "Find my farm", click the
+                            area where your farm is located to get Coordinates. </small>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="location" name="location" readonly required>
+                            <input type="hidden" id="address_input" name="address">
+                            <button type="button" class="btn btn-primary" onclick="getUserLocation()">Find my farm</button>
+                        </div>
+                        <div id="map" class="map-container"></div>
+                        <div id="address" class="mt-2 text-muted" style="font-size: 14px;"></div>
                     </div>
                     <div class="mb-3">
                         <label for="district" class="form-label">District</label>
@@ -55,4 +65,5 @@
     </div>
 </div>
 
+<!-- Include Mapbox GL JS -->
 

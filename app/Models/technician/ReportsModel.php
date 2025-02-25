@@ -38,5 +38,10 @@ class ReportsModel extends Model
     public function farms() {
         return $this->belongsTo(FarmModel::class, 'farm_id', 'id');
     }
+    public function technician()
+{
+    return $this->belongsTo(TechnicianModel::class, 'technician_id', 'id');
+}
+
 }
 

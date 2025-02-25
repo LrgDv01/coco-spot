@@ -14,16 +14,18 @@ return new class extends Migration
         Schema::create('farms', function (Blueprint $table) {
             $table->id();
             $table->foreignId('farmer_id')->constrained('users')->onDelete('cascade');
-            $table->string('name');
-            $table->string('location');
-            $table->string('district');
-            $table->string('variety'); 
-            $table->decimal('hectares', 8, 2); 
-            $table->integer('tree_age'); 
-            $table->integer('planted_coconut'); 
-            $table->string('condition');
-            $table->timestamps();
-        });
+            $table->string('name', 255);
+            $table->decimal('latitude', 10, 7); 
+            $table->decimal('longitude', 10, 7);
+            $table->string('address')->nullable();
+            $table->string('district', 255);
+            $table->string('variety', 255)->nullable();
+            $table->decimal('hectares', 8, 2);  
+            $table->integer('tree_age')->nullable();
+            $table->integer('planted_coconut')->nullable();
+            $table->string('condition', 255)->nullable();
+            $table->timestamps();     
+        }); 
     }
 
     /**
@@ -31,7 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        
         Schema::dropIfExists('farms');
     }
 };

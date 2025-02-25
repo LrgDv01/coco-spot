@@ -17,7 +17,6 @@ function updateChart(displayYearly, displayMonthly, selectedYear, cocoData, sele
         return yearMatches && districtMatches;
     });
 
-
     if (displayYearly) {
         const yearlyData = {};
         filteredData.forEach((item) => {
@@ -54,8 +53,7 @@ function updateChart(displayYearly, displayMonthly, selectedYear, cocoData, sele
                 {
                     label: "Laguna Tall",
                     data: lagunaTallData,
-                    borderColor: "rgba(21, 226, 49, 1)", 
-                    backgroundColor: "rgba(21, 226, 49, 0.2)", 
+                    backgroundColor: "#65735C", 
                     borderWidth: 3, 
                     // fill: "-1", 
                     pointRadius: 5, 
@@ -64,8 +62,7 @@ function updateChart(displayYearly, displayMonthly, selectedYear, cocoData, sele
                 {
                     label: "Dwarf",
                     data: dwarfCoconutData,
-                    borderColor: "rgba(226, 195, 17, 1)", 
-                    backgroundColor: "rgba(226, 195, 17, 0.2)", 
+                    backgroundColor: "#2F6F3D", 
                     borderWidth: 3, 
                     // fill: "-1",
                     pointRadius: 5, 
@@ -74,8 +71,7 @@ function updateChart(displayYearly, displayMonthly, selectedYear, cocoData, sele
                 {
                     label: "Hybrid",
                     data: hybridData,
-                    borderColor: "rgba(174, 231, 19, 1)", 
-                    backgroundColor: "rgba(174, 231, 19, 0.2)", 
+                    backgroundColor: "#228B22", 
                     borderWidth: 3, 
                     // fill: "-1",
                     pointRadius: 5, 

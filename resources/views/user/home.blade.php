@@ -61,6 +61,37 @@
     }
 </style>
 
+
+<style>
+    .input-group {
+        flex-wrap: nowrap;
+    }
+    .btn-primary {
+        white-space: nowrap;
+    }
+    .map-container {
+        width: 100%;
+        height: 0;
+        opacity: 0;
+        margin-top: 0px;
+        transition: all 0.5s ease-in-out;
+        overflow: hidden;
+    }
+    .map-container.visible {
+        height: 300px;
+        opacity: 1;
+        margin-top: 10px;
+    }
+    @media (max-width: 576px) {
+        .form-control, .btn {
+            font-size: 14px;
+        }
+        .map-container.visible {
+            height: 200px;
+        }
+    }
+</style>
+
 <main id="main" class="main">
     <!-- Flash Messages -->
     @if (session('accepted'))
@@ -85,64 +116,43 @@
     @endif
 
     @if (auth()->user()->isFarmer())
-        <section class="section farm">
-            <div class="container p-0 m-0">
-                <div class="position-fixed bg-white text-center" 
-                    style="top:7%; right:0; left:0; z-index: 995; width: 100%;">
-                    <h2 class="py-2 mt-2">My Farm</h2>
-                    <div class="d-flex flex-start px-4 mb-3">
-                        <button type="button" class="btn btn-success rounded rounded-3" data-bs-toggle="modal" data-bs-target="#addFarmModal">
-                            <strong>Add Farm</strong>
-                        </button>
-                    </div>
-                </div>
-                <div style="margin-top: 100px;">
-                </div>
-                <div id="farm-list">
-                    @foreach($farms as $farm)
-                        <div class="card mb-2 p-0">
-                            <div class="card-body">
-                                <h5 class="card-title p-0 d-flex flex-row justify-content-between">
-                                    <strong>{{ $farm->name }}</strong> 
-                                    <div class="d-flex justify-content-end" style="width:50%;">
-                                        <div class="{{ $farm->condition === 'is Healthy' ? 'bg-success' : 'bg-danger' }} 
-                                            align-self-center" style="height:0.5px; width:50%;"> </div> 
-                                        <span class="{{ $farm->condition === 'is Healthy' ? 'text-success' : 'text-danger' }}" style="font-size: 70%;">
-                                            ( <strong>{{ $farm->condition }}</strong> 
-                                        </span>
-                                    </div>
-                                </h5>
-                                <hr>
-                                <p class="card-text text-truncate">
-                                    <strong>Address :</strong> {{ $farm->location }}<br>
-                                    <strong>Variety :</strong> {{ $farm->variety }}<br>
-                                    <strong>Hectares :</strong> {{ $farm->hectares }}<br>
-                                    <strong>Tree Age :</strong> {{ $farm->tree_age }}<br>
-                                    <strong>Planted Coconut :</strong> {{ $farm->planted_coconut }}<br>
-                                </p>
-                            </div>
-                            <div class="card-footer d-flex flex-wrap {{ $farm->condition === 'is Healthy' ? 'justify-content-end' : 'justify-content-between' }}">
-                                <a href="{{ route('user.services') }}" class="btn btn-success {{ $farm->condition === 'is Healthy' ? 'd-none' : '' }}">
-                                   <strong>Hire a Technician</strong> 
-                                </a>
-                                <button 
-                                    type="button" 
-                                    data-bs-toggle="modal" 
-                                    class="btn btn-primary"
-                                    data-bs-target="#updateFarmCondition{{ $farm->id }}">
-                                    <strong>Update Condition</strong>
-                                </button>
-                            </div>  
-                        </div>
-                        @include('user.others.update_condition', [
-                            'farmId' => $farm->id, 
-                            'farmCondition' => $farm->condition])
-                    @endforeach
-                </div>
+    <div class="pagetitle mb-3 position-fixed bg-white text-center" 
+                style="top:7%; right:0; left:0; z-index: 995; width: 100%;">
+        <h1 class="fs-3 mt-3"><strong>My Farm</strong></h1>
+        <div class="d-flex flex-start px-4 mb-3">
+            <button type="button" class="btn btn-success rounded rounded-3" data-bs-toggle="modal" data-bs-target="#addFarmModal">
+                <strong>Add Farm</strong>
+            </button>
+        </div>
+    </div>
+    <section class="section farm">
+        <div class="container p-0 m-0">
+            <div style="margin-top: 100px;">
             </div>
-            @include('user.others.add_farm') 
-        </section>
+            <div id="farm-list">
+                @foreach($farms as $farm)
+                    <div class="card mb-2 p-0">
+                        <div class="card-body">
+                            <h5 class="card-title p-0 d-flex flex-row justify-content-between">
+                                <strong>{{ $farm->name }}</strong> 
+                            </h5>
+                            <hr>
+                            <p class="card-text text-truncate">
+                                <strong>Address :</strong> {{ $farm->location }}<br>
+                                <strong>Variety :</strong> {{ $farm->variety }}<br>
+                                <strong>Hectares :</strong> {{ $farm->hectares }}<br>
+                                <strong>Tree Age :</strong> {{ $farm->tree_age }}<br>
+                                <strong>Planted Coconut :</strong> {{ $farm->planted_coconut }}<br>
+                            </p>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+        @include('user.others.add_farm') 
+    </section>
     @endif
+
     @if (auth()->user()->isTechnician())
         <section class="section notifications">
             <div class="container">
@@ -181,78 +191,6 @@
 </main>
 @include('user.partials.__footer')
 
-@if (auth()->user()->isFarmer())
-    <script>
-
-        function updateCondition(event, farmId) {
-            try {
-                const modalButton = event.target;
-                const modalId = modalButton.getAttribute('data-bs-target');
-                const modal = document.querySelector(modalId);
-                if (!modal) {
-                    console.error(`Modal with ID ${modalId} not found.`);
-                    return;
-                }
-                const modalInstance = new bootstrap.Modal(modal);
-                modalInstance.show();
-            } catch (error) {
-                console.error("An error occurred while showing the modal:", error);
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const updateFarmConditionModals = document.querySelectorAll('.modal[id^="updateFarmCondition"]');
-            updateFarmConditionModals.forEach(modal => {
-                modal.addEventListener('shown.bs.modal', function () {
-                    const checkbox = modal.querySelector('.custom-checkbox');
-                    const label = modal.querySelector(`[id^="conditionLabel_"]`);
-                    if (checkbox) {
-                        checkbox.focus(); 
-                    }
-                    function updateCheckboxShadow() {
-                        if (checkbox.value === 'is Infected') {
-                            checkbox.classList.add('shadow-red');
-                            checkbox.classList.remove('shadow-green');
-                        } else if (checkbox.value === 'is Healthy') {
-                            checkbox.classList.add('shadow-green');
-                            checkbox.classList.remove('shadow-red');
-                        }
-                    }
-                    updateCheckboxShadow();
-                });
-            });
-
-            $('.update-btn').prop('disabled', true);
-            $('.custom-checkbox').on('change', function() {
-                if ($(this).is(':checked')) {
-                    $(this).addClass('shadow-none');
-                    if ($(this).val() === 'is Healthy') {
-                        $(this).addClass('background-green');
-                        $(this).removeClass('shadow-green');
-                    } 
-                    else if ($(this).val() === 'is Infected'){
-                        $(this).addClass('background-red');
-                        $(this).removeClass('shadow-red');
-                    }
-                    $('.update-btn').prop('disabled', false);
-                }
-                else {
-                    $(this).removeClass('shadow-none'); 
-                    if ($(this).val() === 'is Healthy') {
-                        $(this).addClass('shadow-green');
-                        $(this).removeClass('background-green');
-                    }
-                    else if ($(this).val() === 'is Infected') {
-                        $(this).addClass('shadow-red');
-                        $(this).removeClass('background-red');
-                    }
-                    $('.update-btn').prop('disabled', true);
-                }
-            });
-        });
-    </script>
-@endif
-
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const flashMessage = document.getElementById('flashMessage');
@@ -262,5 +200,106 @@
                 flashMessage.style.animation = 'slideOutToRight 0.5s ease-in-out forwards';  
             }, 3000); 
         }
+    });
+</script>
+
+
+<script>
+    mapboxgl.accessToken = 'pk.eyJ1Ijoicm9uNTcxNDM1IiwiYSI6ImNtM2g3dmcxbzBjajIycnB5NWtwaG1xazMifQ.mhRMxfZ2WfgoAECkTXAXug';
+    let map = null;
+    let marker = null;
+
+    async function getAddressFromCoordinates(lng, lat) {
+        const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${mapboxgl.accessToken}`;
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            if (data.features && data.features.length > 0) {
+                const address = data.features[0].place_name;
+                document.getElementById('address').textContent = `Address: ${address}`;
+                document.getElementById('address_input').value = address; 
+            } else {
+                document.getElementById('address').textContent = 'Address: Not found';
+                document.getElementById('address_input').value = '';
+            }
+        } catch (error) {
+            console.error('Error fetching address:', error);
+            document.getElementById('address').textContent = 'Address: Unable to retrieve';
+            document.getElementById('address_input').value = '';
+        }
+    }
+
+    function initializeMap(lng, lat) {
+        if (!map) {
+            map = new mapboxgl.Map({
+                container: 'map',
+                style: 'mapbox://styles/mapbox/satellite-streets-v12',
+                center: [lng, lat],
+                zoom: 7,
+                interactive: true
+            });
+            map.addControl(new mapboxgl.NavigationControl());
+            map.on('click', (e) => {
+                const coordinates = e.lngLat;
+                const longitude = coordinates.lng.toFixed(6);
+                const latitude = coordinates.lat.toFixed(6);
+                document.getElementById('location').value = `${latitude}, ${longitude}`;
+                if (marker) {
+                    marker.setLngLat([longitude, latitude]);
+                } else {
+                    marker = new mapboxgl.Marker()
+                        .setLngLat([longitude, latitude])
+                        .addTo(map);
+                }
+                getAddressFromCoordinates(longitude, latitude);
+            });
+
+            setTimeout(() => {
+                document.getElementById('map').classList.add('visible');
+            }, 100);
+        } else {
+            map.setCenter([lng, lat]);
+        }
+    }
+
+    function getUserLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+                    // document.getElementById('location').value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+                    initializeMap(longitude, latitude);
+                    // if (!marker) {
+                    //     marker = new mapboxgl.Marker()
+                    //         .setLngLat([longitude, latitude])
+                    //         .addTo(map);
+                    // } else {
+                    //     marker.setLngLat([longitude, latitude]);
+                    // }
+                    // Get initial address
+                    // getAddressFromCoordinates(longitude, latitude);
+                },
+                (error) => {
+                    console.error('Error:', error);
+                    if (error.code === error.PERMISSION_DENIED) {
+                        alert('Please allow location access in your browser or device settings.');
+                    } else {
+                        alert('Unable to retrieve location.');
+                    }
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        } else {
+            alert('Geolocation not supported by your browser.');
+        }
+    }
+    
+    window.addEventListener('resize', () => {
+        if (map) map.resize();
     });
 </script>

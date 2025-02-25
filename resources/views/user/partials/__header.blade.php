@@ -24,6 +24,9 @@
   <link href="{{ URL::asset('theme/assets/vendor/quill/quill.bubble.css')}}" rel="stylesheet">
   <link href="{{ URL::asset('theme/assets/vendor/remixicon/remixicon.css')}}" rel="stylesheet">
 
+  <!-- Mapbox Latest-->
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
+
   <!-- Template Main CSS File -->
   <link href="{{ URL::asset('theme/assets/css/style.css')}}" rel="stylesheet">
   <!-- Summernote -->

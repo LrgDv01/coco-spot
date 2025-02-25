@@ -41,26 +41,56 @@
       </ul>
     </nav><!-- End Icons Navigation -->
 
-  </header>
-  
+
+</header>
+
+  <style>
+    .nav-item .nav-link.active {
+      background-color: #f8f3f2;
+      color: black;
+      font-weight: bold;
+      border-radius:20px;
+    }
+    .nav-item .nav-link.active .bi,
+    .nav-item .nav-link.active:hover,
+    .nav-item .nav-link.active:hover .bi {
+      color: black;
+    }
+    .nav-item .nav-link.inactive {
+      background-color: transparent;
+      border-radius:20px;
+      color: #f8f3f2;
+    }
+    .nav-item .nav-link.inactive .bi,
+    .nav-item .nav-link.inactive:hover .bi {
+      color: #f8f3f2;
+    }
+    .nav-item .nav-link.inactive:hover {
+      background-color: #84a090;
+      border-radius:20px;
+      color: #f8f3f2;
+    }
+  </style>
+
+
   <aside id="sidebar" class="sidebar d-flex flex-column justify-content-between" style="background-color:#134125">
     <ul class="sidebar-nav" id="sidebar-nav">
       @if (auth()->user()->isFarmer())
         <li class="nav-item">
-          <a class="nav-link bg-transparent border border-0 text-white " href="{{ url('/user/farm') }}">
-            <i class="bi bi-house text-white"></i>  
+          <a class="nav-link border border-0 {{ Request::is('user/farm') ? 'active' : 'inactive' }}" href="{{ url('/user/farm') }}">
+            <i class="bi bi-house"></i>  
             <span>My Farm</span>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link bg-transparent border border-0 text-white " href="{{ url('/user/services') }}">
-            <i class="bi bi-briefcase text-white"></i>  
-            <span>Services</span>
+          <a class="nav-link border border-0 {{ Request::is('user/services') ? 'active' : 'inactive' }}" href="{{ url('/user/services') }}">
+          <i class="bi bi-clipboard-data"></i>  
+            <span>Reports</span>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link bg-transparent border border-0 text-white " href="{{ url('/user/farmer/settings') }}">
-            <i class="bi bi-gear text-white"></i>  
+          <a class="nav-link border border-0 {{ Request::is('user/farmer/settings') ? 'active' : 'inactive' }}" href="{{ url('/user/farmer/settings') }}">
+            <i class="bi bi-gear"></i>  
             <span>Settings</span>
           </a>
         </li>
@@ -68,44 +98,85 @@
       @if (auth()->user()->isTechnician())
         <li class="nav-item">
           <a class="nav-link bg-transparent border border-0 text-white " href="{{ url('/user/notifications') }}">
-            <i class="bi bi-bell text-white"></i>  
+            <i class="bi bi-bell"></i>  
             <span>Notifications</span>
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link bg-transparent border border-0 text-white " href="{{ url('/user/reports') }}">
-            <i class="bi bi-clipboard-data text-white"></i>  
+            <i class="bi bi-clipboard-data"></i>  
             <span>Reports</span>
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link bg-transparent border border-0 text-white " href="{{ url('/user/technician/settings') }}">
-            <i class="bi bi-gear text-white"></i>  
+            <i class="bi bi-gear"></i>  
             <span>Settings</span>
           </a>
         </li>
       @endif
     </ul>
-    <div class="sidebar-nav">
-   {{--   <form action="{{ route('logout') }}" id="logoutform" method="POST">
-        @csrf
-      </form>
-      <button form="logoutform" type="submit" class="nav-link bg-transparent border border-0 text-white collapsed">
+  <div class="sidebar-nav">
+    
+
+ {{--       <button 
+      type="button" 
+      class="nav-link bg-transparent border border-0 text-white collapsed" 
+      data-bs-toggle="modal" 
+      data-bs-target="#logoutModal">
         <i class="text-white bi bi-arrow-bar-left"></i>
         <span>Logout</span>
-      </button>--}}
-        {{-- <form action="{{ route('logout') }}" id="logoutform" method="POST">  --}}
-       
-        <form action="{{ route('logout') }}" id="logoutform" method="POST">
-          @csrf
-          <button type="submit" class="nav-link bg-transparent border border-0 text-white collapsed">
+    </button> --}}
+      <li class="nav-item">
+        
+          
+        <button 
+          type="button" 
+          class="nav-link border border-0 {{ Request::is('logout') ? 'active' : 'inactive' }}" href="{{ url('/logout') }}"
+          data-bs-toggle="modal" 
+          data-bs-target="#logoutModal">
             <i class="text-white bi bi-arrow-bar-left"></i>
             <span>Logout</span>
-          </button>
-        </form>
-    </div>
+        </button>
+        
+      </li>
+    </div> 
   </aside>
 
-  <form action="{{ route('logout') }}" id="logoutform" method="POST">
-    @csrf
-  </form>
+<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+
+<div class="modal-dialog modal-dialog-centered">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title" id="logoutModalLabel"><strong>Logout</strong></h5>
+    </div>
+    <div class="modal-body">
+      Are you sure you want to log out ?
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+        Cancel
+      </button>
+      <form action="{{ route('logout') }}" method="POST" onsubmit="disableSubmitButton(this)">
+        @csrf
+        <button type="submit" class="btn btn-primary" id="logoutSubmitButton">
+          Yes
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- JavaScript for Mobile Touch Interaction -->
+<
+
+
+
+<script>
+function disableSubmitButton(form) {
+  const submitButton = form.querySelector('button[type="submit"]');
+  submitButton.disabled = true; 
+  submitButton.innerHTML = 'Loading . .'; 
+}
+</script> 

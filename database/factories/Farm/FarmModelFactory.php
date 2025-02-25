@@ -16,19 +16,22 @@ class FarmModelFactory extends Factory
      *
      * @return array<string, mixed>
      */
+
+
     public function definition(): array
     {
         return [
             'farmer_id' => User::factory(),
             'name' => fake()->company(),
-            'location' => fake()->address(),
+            'latitude' => fake()->latitude(-90, 90), 
+            'longitude' => fake()->longitude(-180, 180), 
+            'address' => fake()->address(),
             'district' => fake()->randomElement(['III', 'IV']),
             'variety' => fake()->randomElement(['Laguna Tall', 'Dwarf Coconut', 'Hybrid']),
-            'hectares' => fake()->numberBetween(1, 100), 
-            'tree_age' => fake()->numberBetween(1, 50), 
-            'planted_coconut' => fake()->numberBetween(10, 1000), 
+            'hectares' => fake()->numberBetween(1, 100),
+            'tree_age' => fake()->numberBetween(1, 50),
+            'planted_coconut' => fake()->numberBetween(10, 1000),
             'condition' => fake()->randomElement(['is Healthy', 'is Infected']),
         ];
     }
-
 }

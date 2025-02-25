@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\ServicesModel;
+use App\Models\Farm\FarmModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Auth;
 
 
 
@@ -12,24 +14,13 @@ class ServicesController extends Controller
 {
     public function index()
     {   
-        $technicians = User::where('user_type', 2)
-            ->select('id', 'full_name', 'address', 'contact')
-            ->get();
-
-        $user = auth()->id();
-        $hiredTechnicians = ServicesModel::where( 'farmer_id', $user)
-            ->select('technician_id','status')
-            ->get();
+        $userId = Auth::id(); 
+        $farms = FarmModel::where('farmer_id', $userId)
+        // ->orderBy('created_at', 'desc')->limit(4) // Order by created_at, newest first
+        ->orderBy('created_at', 'desc') // Order by created_at, newest first
+        ->get();
       
-        $hirebySomeone = ServicesModel::where([['farmer_id','!=', $user], ['status', 'accepted']])
-            ->pluck('technician_id')
-            ->toArray();
-            
-        return view('user.pages.services', [
-            'technicians' => $technicians,
-            'hiredTechnicians' => $hiredTechnicians,
-            'hirebySomeone' => $hirebySomeone
-        ]);
+        return view('user.pages.reports', compact('farms'));
     }
 
 
