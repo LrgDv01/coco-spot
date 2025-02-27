@@ -58,7 +58,7 @@
 }
 
 .modal-body h1 {
-    color: #dc3545; /* Red text for disease name, like "STEM BLEEDING DETECTED" */
+    color: #dc3545; 
     font-size: 24px;
     margin-bottom: 15px;
 }
@@ -69,7 +69,7 @@
 }
 
 .progress-bar {
-    background-color: #dc3545; /* Red bar for probabilities */
+    background-color: #dc3545; 
 }
 
 </style>
@@ -138,7 +138,7 @@
                     </div>
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input custom-checkbox" id="circular_spots_{{ $farm->id }}" name="symptoms[]" value="circular_spots">
-                        <label class="form-check-label" for="circular_spots_{{ $farm->id }}">Small Circular spots with yellow edges appear on the leaves. - (Paglitaw ng maliliit na bilog na mantsa na may dilaw ng gilid sa mga dahon.)</label>
+                        <label class="form-check-label" for="circular_spots_{{ $farm->id }}">Small circular spots with yellow edges appear on the leaves. - (Paglitaw ng maliliit na bilog na mantsa na may dilaw ng gilid sa mga dahon.)</label>
                     </div>
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input custom-checkbox" id="black_or_brown_spots_{{ $farm->id }}" name="symptoms[]" value="black_or_brown_spots">
@@ -193,87 +193,6 @@
 </main>
 
 @include('user.partials.__footer')
-
-{{--
-<script>
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const identifyButtons = document.querySelectorAll('.identify-btn');
-        identifyButtons.forEach(button => {
-            const farmId = button.getAttribute('data-farm-id');
-            const modalElement = document.getElementById(`diagnosis-modal-${farmId}`);
-            const diagnosisModal = new bootstrap.Modal(modalElement, {
-                backdrop: true,
-                keyboard: true
-            });
-            const diagnosisText = document.getElementById(`diagnosis-text-${farmId}`);
-
-            button.addEventListener('click', function() {
-                const card = button.closest('.card');
-                const checkedSymptoms = Array.from(card.querySelectorAll('.custom-checkbox:checked'))
-                    .map(checkbox => checkbox.value);
-
-                // Define symptom-to-disease mappings without fixed base probabilities
-                const diseaseSymptoms = {
-                    'Stem Bleeding Disease': ['reddish_brown', 'cracks_or_wounds', 'stem_decay'],
-                    'Coconut Leaf Spot': ['circular_spots', 'black_or_brown_spots', 'lost_leaves', 'reduced_yield'],
-                    'Lethal Yellowing': ['yellowing_leaves', 'dying_leaves', 'dropping_fruits', 'dying_tree']
-                };
-
-                const diseaseProbabilities = {};
-                for (const [disease, symptoms] of Object.entries(diseaseSymptoms)) {
-                    const matchedSymptoms = symptoms.filter(symptom => checkedSymptoms.includes(symptom));
-                    const totalSymptoms = symptoms.length;
-                    let probability = 0;
-
-                    if (matchedSymptoms.length > 0) {
-                        // Calculate probability based solely on the proportion of matched symptoms (scaled to 100%)
-                        const matchRatio = matchedSymptoms.length / totalSymptoms;
-                        probability = matchRatio * 100; // Probability as a percentage based on matches
-                    }
-                    diseaseProbabilities[disease] = probability;
-                }
-                const sortedDiseases = Object.entries(diseaseProbabilities)
-                    .sort((a, b) => b[1] - a[1])
-                    .map(([disease]) => disease);
-
-                let diagnosisHtml = '';
-
-                if (checkedSymptoms.length === 0) {
-                    diagnosisHtml = '<p>No symptoms selected. Please check at least one symptom.</p>';
-                } else if (sortedDiseases.length === 0 || diseaseProbabilities[sortedDiseases[0]] === 0) {
-                    diagnosisHtml = '<p>No disease identified. Please check more symptoms or consult an expert.</p>';
-                } else {
-                    const topDisease = sortedDiseases[0];
-                    const topProbability = Math.round(diseaseProbabilities[topDisease]);
-                    diagnosisHtml = `<h1><strong>${topDisease} DETECTED</strong> (${topProbability}%)</h1>`;
-                    diagnosisHtml += `<p>Based on the symptoms you provided, there is an <strong>${topProbability}%</strong> chance this matches <strong>${topDisease}</strong> disease.</p>`;
-                    // diagnosisHtml += '<p>Below the highest are other possible matches:</p>';
-                    for (const disease of sortedDiseases) {
-                        const probability = Math.round(diseaseProbabilities[disease]);
-                        if (probability > 0) {
-                            if (disease !== sortedDiseases[0]) {
-                                if (!diagnosisHtml.includes('Other possible matches:')) {
-                                    diagnosisHtml += '<br><p>Other possible matches:</p>';
-                                }
-                            } 
-                            diagnosisHtml += `
-                                <div class="d-flex align-items-center">
-                                    <span class="me-2">${disease}</span>
-                                    <div class="progress w-100">
-                                        <div class="progress-bar" role="progressbar" style="width: ${probability}%;" aria-valuenow="${probability}" aria-valuemin="0" aria-valuemax="100">${probability}%</div>
-                                    </div>
-                                </div>`;
-                        } 
-                    }
-                }
-                diagnosisText.innerHTML = diagnosisHtml;
-                diagnosisModal.show();
-            });
-        });
-    });
-
-</script>--}}
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

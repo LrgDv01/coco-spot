@@ -212,6 +212,7 @@
                           <div class="rounded rounded-4 mb-3">
                             <a href="{{route('admin.notifications.read', $n->id)}}"
                                class="list-group-item list-group-item-action flex-column align-items-start"
+                               style= "background-color: #f9ecdb;"
                                data-id="{{ $n->id }}">
                                     <span class="badge bg-danger mb-3">New Disease Alert</span>
                                 <div class="d-flex w-100 justify-content-between">
@@ -224,7 +225,7 @@
                               <div class="rounded rounded-4 mb-3">
                               <a href="{{route('admin.notifications.read', $n->id)}}"
                                 class="list-group-item list-group-item-action flex-column align-items-start"
-                                style="background-color: lightgrey;"
+                                style="background-color: white;"
                                 data-id="{{ $n->id }}">
                                   <div class="d-flex w-100 justify-content-between">
                                       <h5 class="mb-1 text-secondary"><strong>{{ $n->disease }}</strong></h5>
@@ -237,7 +238,6 @@
                     @else
                         <div class="text-center">No Notifications</div>
                     @endif
-             
                 </div>
             </div>
         </div>
