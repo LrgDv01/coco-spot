@@ -116,10 +116,10 @@
     @endif
 
     @if (auth()->user()->isFarmer())
-    <div class="pagetitle mb-3 position-fixed bg-white text-center" 
-                style="top:7%; right:0; left:0; z-index: 995; width: 100%;">
+    <div class="position-fixed bg-white d-flex flex-column align-items-center justify-content-end" 
+            style="top:6%; right:0; left:0; z-index: 995; height: 120px; width: 100%;">
         <h1 class="fs-3 mt-3"><strong>My Farm</strong></h1>
-        <div class="d-flex flex-start px-4 mb-3">
+        <div class="d-flex flex-start px-4 mb-3 align-self-start">
             <button type="button" class="btn btn-success rounded rounded-3" data-bs-toggle="modal" data-bs-target="#addFarmModal">
                 <strong>Add Farm</strong>
             </button>
@@ -127,27 +127,24 @@
     </div>
     <section class="section farm">
         <div class="container p-0 m-0">
-            <div style="margin-top: 100px;">
-            </div>
-            <div id="farm-list">
-                @foreach($farms as $farm)
-                    <div class="card mb-2 p-0">
-                        <div class="card-body">
-                            <h5 class="card-title p-0 d-flex flex-row justify-content-between">
-                                <strong>{{ $farm->name }}</strong> 
-                            </h5>
-                            <hr>
-                            <p class="card-text text-truncate">
-                                <strong>Address :</strong> {{ $farm->location }}<br>
-                                <strong>Variety :</strong> {{ $farm->variety }}<br>
-                                <strong>Hectares :</strong> {{ $farm->hectares }}<br>
-                                <strong>Tree Age :</strong> {{ $farm->tree_age }}<br>
-                                <strong>Planted Coconut :</strong> {{ $farm->planted_coconut }}<br>
-                            </p>
-                        </div>
+            <div style="margin-top: 150px;"></div>
+            @foreach($farms as $farm)
+                <div class="card mb-2 p-0">
+                    <div class="card-body">
+                        <h5 class="card-title p-0 d-flex flex-row justify-content-between">
+                            <strong>{{ $farm->name }}</strong> 
+                        </h5>
+                        <hr>
+                        <p class="card-text text-truncate">
+                            <strong>Address :</strong> {{ $farm->address }}<br>
+                            <strong>Variety :</strong> {{ $farm->variety }}<br>
+                            <strong>Hectares :</strong> {{ $farm->hectares }}<br>
+                            <strong>Tree Age :</strong> {{ $farm->tree_age }}<br>
+                            <strong>Planted Coconut :</strong> {{ $farm->planted_coconut }}<br>
+                        </p>
                     </div>
-                @endforeach
-            </div>
+                </div>
+            @endforeach
         </div>
         @include('user.others.add_farm') 
     </section>
@@ -201,6 +198,9 @@
             }, 3000); 
         }
     });
+
+
+    
 </script>
 
 
@@ -262,41 +262,113 @@
         }
     }
 
+
+
+// function openMapApp() {
+//     // Basic geo URI that should work on most mobile devices
+//     window.location.href = 'geo:0,0';
+    
+//     // Optional fallback to web maps
+//     setTimeout(() => {
+//         window.open('https://maps.google.com', '_blank');
+//     }, 1000);
+// }
+
+
+// function openMap(lat, lng, options = {}) {
+//     const { 
+//         zoom = 15, 
+//         label = 'Location',
+//         fallback = true 
+//     } = options;
+
+//     const isAndroid = /android/i.test(navigator.userAgent);
+//     const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+//     let url;
+//     if (isIOS) {
+//         url = `maps://?q=${label}&ll=${lat},${lng}&z=${zoom}`;
+//     } else if (isAndroid) {
+//         url = `geo:${lat},${lng}?q=${lat},${lng}(${label})&z=${zoom}`;
+//     }
+
+//     window.location.href = url;
+
+//     if (fallback) {
+//         setTimeout(() => {
+//             window.open(`https://maps.google.com/?q=${lat},${lng}`, '_blank');
+//         }, 1000);
+//     }
+// }
+
+    function openMapApp() {
+    const isAndroid = /android/i.test(navigator.userAgent);
+    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    if (isIOS) {
+        // Opens Apple Maps on iOS
+        window.location.href = 'maps://';
+    } 
+    else if (isAndroid) {
+        // Opens Google Maps on Android
+        window.location.href = 'geo:0,0'; // Opens at user's current location
+    } 
+    else {
+        // Fallback for other devices
+        window.open('https://maps.google.com', '_blank');
+    }
+}
+
+
     function getUserLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const latitude = position.coords.latitude;
-                    const longitude = position.coords.longitude;
-                    // document.getElementById('location').value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
-                    initializeMap(longitude, latitude);
-                    // if (!marker) {
-                    //     marker = new mapboxgl.Marker()
-                    //         .setLngLat([longitude, latitude])
-                    //         .addTo(map);
-                    // } else {
-                    //     marker.setLngLat([longitude, latitude]);
-                    // }
-                    // Get initial address
-                    // getAddressFromCoordinates(longitude, latitude);
-                },
-                (error) => {
-                    console.error('Error:', error);
-                    if (error.code === error.PERMISSION_DENIED) {
-                        alert('Please allow location access in your browser or device settings.');
-                    } else {
-                        alert('Unable to retrieve location.');
-                    }
-                },
-                {
-                    enableHighAccuracy: true,
-                    timeout: 10000,
-                    maximumAge: 0
-                }
-            );
-        } else {
-            alert('Geolocation not supported by your browser.');
-        }
+
+        openMapApp();
+
+
+    // Usage with options
+    // openMap(14.273097059992205, 121.4106319904825,  { 
+    //     zoom: 12,
+    //     label: 'Location',
+    //     fallback: true 
+    // });
+
+
+        // initializeMap(longitude, latitude);
+        // openMapApp();
+        // if (navigator.geolocation) {
+        //     navigator.geolocation.getCurrentPosition(
+        //         (position) => {
+        //             const latitude = position.coords.latitude;
+        //             const longitude = position.coords.longitude;
+        //             // document.getElementById('location').value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+        //             initializeMap(longitude, latitude);
+        //             // if (!marker) {
+        //             //     marker = new mapboxgl.Marker()
+        //             //         .setLngLat([longitude, latitude])
+        //             //         .addTo(map);
+        //             // } else {
+        //             //     marker.setLngLat([longitude, latitude]);
+        //             // }
+        //             // Get initial address
+        //             // getAddressFromCoordinates(longitude, latitude);
+        //         },
+        //         (error) => {
+        //             console.error('Error:', error);
+        //             if (error.code === error.PERMISSION_DENIED) {
+        //                 alert('Please allow location access in your browser or device settings.');
+        //             } else {
+        //                 alert('Unable to retrieve location.');
+        //             }
+        //         },
+        //         {
+        //             enableHighAccuracy: true,
+        //             timeout: 10000,
+        //             maximumAge: 0
+        //         }
+        //     );
+        // } else {
+        //     alert('Geolocation not supported by your browser.');
+        // }
     }
     
     window.addEventListener('resize', () => {

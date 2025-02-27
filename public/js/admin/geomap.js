@@ -189,90 +189,268 @@ async function displayMap(locate, mapboxgl) {
     });
 }
 
+// async function mapSimulation(simulate, mapboxgl) {
+//     const map_simulation = new mapboxgl.Map({
+//         container: 'map_simulation', 
+//         style: 'mapbox://styles/mapbox/satellite-streets-v11', 
+//         center: [121.423, 14.281], 
+//         zoom: 3, 
+//         minZoom: 3, 
+//         maxZoom: 16, 
+//         maxBounds: [ 
+//             [120.99, 13.8],  // Southwest corner (lower latitude for Laguna)
+//             [122.10, 14.7]   // Northeast corner (higher latitude for Laguna)
+//         ]
+//     });
+
+   
+//     map_simulation.on('load', async function () {
+//         // Load geoJSON data
+//         const data = await geoJsonData();
+//         // Define a geofence (example polygon)
+//         const geofence = {
+//             type: 'Feature',
+//             geometry: {
+//                 type: 'Polygon',
+//                 coordinates: [[
+//                     [-123.145, 49.300], // Northwest
+//                     [-123.100, 49.300], // Northeast
+//                     [-123.100, 49.275], // Southeast
+//                     [-123.145, 49.275], // Southwest
+//                     [-123.145, 49.300]  // Close the loop
+//                 ]]
+//             }
+//         };
+
+//         // Add geofence to the map
+//         map_simulation.addSource('geofence', {
+//             type: 'geojson',
+//             data: data
+//         });
+//         map_simulation.addLayer({
+//             id: 'geofence-layer',
+//             type: 'fill',
+//             source: 'geofence',
+//             paint: {
+//                 'fill-color': '#cb5e65',
+//                 'fill-opacity': 0.4
+//             }
+//         });
+//         map_simulation.addLayer({
+//             id: 'geofence-outline',
+//             type: 'line',
+//             source: 'geofence',
+//             paint: {
+//                 'line-color': '#cb5e65',
+//                 'line-width': 2
+//             }
+//         });
+
+//         // Add a draggable marker
+//         const marker = new mapboxgl.Marker({ draggable: true })
+//             .setLngLat([-123.1207, 49.2827]) // Inside geofence
+//             .addTo(map_simulation);
+
+//         // Convert geofence to line for snapping
+//         const geofenceLine = turf.polygonToLine(geofence);
+
+//         // Geofencing logic on drag end
+//         marker.on('dragend', () => {
+//             const lngLat = marker.getLngLat();
+//             const point = turf.point([lngLat.lng, lngLat.lat]);
+//             const isInside = turf.booleanPointInPolygon(point, geofence);
+
+//             if (!isInside) {
+//                 const nearest = turf.nearestPointOnLine(geofenceLine, point);
+//                 marker.setLngLat(nearest.geometry.coordinates);
+//                 console.log('Marker snapped back to boundary');
+//             } else {
+//                 console.log('Marker is within geofence');
+//             }
+//         });
+//     });
+// }
+
 async function mapSimulation(simulate, mapboxgl) {
     const map_simulation = new mapboxgl.Map({
-        container: 'map_simulation', 
-        style: 'mapbox://styles/mapbox/satellite-streets-v11', 
-        center: [121.423, 14.281], 
-        zoom: 3, 
-        minZoom: 3, 
-        maxZoom: 16, 
-        maxBounds: [ 
-            [120.99, 13.8],  // Southwest corner (lower latitude for Laguna)
-            [122.10, 14.7]   // Northeast corner (higher latitude for Laguna)
+        container: 'map_simulation',
+        style: 'mapbox://styles/mapbox/satellite-streets-v11',
+        center: [121.423, 14.281],
+        zoom: 10, // Adjusted for better visibility of Laguna
+        minZoom: 3,
+        maxZoom: 16,
+        maxBounds: [
+            [120.99, 13.8],
+            [122.10, 14.7]
         ]
     });
 
     map_simulation.on('load', async function () {
-        // Load geoJSON data
-        const data = await geoJsonData();
+        // Load point data from geoJsonData
+        const pointData = await geoJsonData();
+        console.log('geoJsonData output:', pointData);
 
-        // Add the geoJSON data as a source
-        map_simulation.addSource('municipal', {
+        // Add points as markers
+        map_simulation.addSource('towns', {
             type: 'geojson',
-            data: data
+            data: pointData
         });
-
-       // Add a layer for red dots
         map_simulation.addLayer({
-            id: 'glowing-points',
+            id: 'towns-layer',
             type: 'circle',
-            source: 'municipal',
+            source: 'towns',
             paint: {
-                'circle-radius': 1, // Initial radius
-                'circle-color': 'red',
-                'circle-opacity': 0.9,
-                'circle-blur': 0.5
-            },
-            filter: ['==', ['geometry-type'], 'Point']
+                'circle-radius': 5,
+                'circle-color': '#007cbf'
+            }
         });
 
-        // Add layer for municipal boundaries (polygons)
-        map_simulation.addLayer({
-            id: 'boundary',
-            type: 'fill',
-            source: 'municipal',
-            paint: {
-                'fill-color': 'darkblue',
-                'fill-opacity': 0.2
-            },
-            filter: ['==', ['geometry-type'], 'Polygon']
-        });
-
-        let time = 0;
-        // Animation loop for wave effect
-        function animateWave() {
-            time += 0.03; // Smaller value slows down the animation
-            // Use a sine wave for smoother animation
-            radius = 10 + Math.sin(time) * 3; // Oscillates between 5 and 15
-            map_simulation.setPaintProperty('glowing-points', 'circle-radius', radius);
-            // Request next frame
-            requestAnimationFrame(animateWave);
+        // Generate random polygons around each point
+        function generateRandomPolygon(center, numPoints = 6, radius = 0.01) {
+            const points = [];
+            for (let i = 0; i < numPoints; i++) {
+                const angle = (i / numPoints) * 2 * Math.PI;
+                const randomRadius = radius * (0.5 + Math.random() * 0.5); 
+                const randomAngle = angle + (Math.random() - 0.5) * 0.5; 
+                const lon = center[0] + randomRadius * Math.cos(randomAngle);
+                const lat = center[1] + randomRadius * Math.sin(randomAngle);
+                points.push([lon, lat]);
+            }
+            points.push(points[0]); // Close the polygon
+            return {
+                type: 'Feature',
+                geometry: {
+                    type: 'Polygon',
+                    coordinates: [points]
+                },
+                properties: { center: center }
+            };
         }
 
+        // Create initial geofences for each point
+        const initialGeofences = pointData.features.map(feature => {
+            const center = feature.geometry.coordinates;
+            return generateRandomPolygon(center);
+        });
+        let currentGeofences = initialGeofences.map(g => ({ ...g })); // Deep copy for animation
+
+        // Function to calculate the center of a polygon
+        function calculateCenter(polygon) {
+            let points = polygon.geometry.coordinates[0];
+            let sumLon = 0, sumLat = 0;
+            for (let i = 0; i < points.length - 1; i++) {
+                sumLon += points[i][0];
+                sumLat += points[i][1];
+            }
+            let numPoints = points.length - 1;
+            return [sumLon / numPoints, sumLat / numPoints];
+        }
+
+        // Function to scale a polygon by factor k
+        function scalePolygon(originalPolygon, k) {
+            const center = originalPolygon.properties.center; // Use original point as center
+            let points = originalPolygon.geometry.coordinates[0];
+            let scaledPoints = points.map(point => {
+                let newLon = center[0] + k * (point[0] - center[0]);
+                let newLat = center[1] + k * (point[1] - center[1]);
+                return [newLon, newLat];
+            });
+            if (scaledPoints[0][0] !== scaledPoints[scaledPoints.length - 1][0] ||
+                scaledPoints[0][1] !== scaledPoints[scaledPoints.length - 1][1]) {
+                scaledPoints.push(scaledPoints[0]);
+            }
+            return {
+                type: 'Feature',
+                geometry: {
+                    type: 'Polygon',
+                    coordinates: [scaledPoints]
+                },
+                properties: originalPolygon.properties
+            };
+        }
+
+
+        let startTime = Date.now();
+        let duration = 5000; 
+        let max_k = 2;
+
+ 
+        function animate() {
+            let currentTime = Date.now();
+            let elapsedTime = currentTime - startTime;
+            let k = 1 + (elapsedTime / duration) * (max_k - 1);
+            if (k >= max_k) {
+                k = max_k;
+                return; 
+            }
+            currentGeofences = initialGeofences.map(g => scalePolygon(g, k));
+            map_simulation.getSource('geofences').setData({
+                type: 'FeatureCollection',
+                features: currentGeofences
+            });
+            requestAnimationFrame(animate);
+        }
+
+        map_simulation.addSource('geofences', {
+            type: 'geojson',
+            data: {
+                type: 'FeatureCollection',
+                features: initialGeofences
+            }
+        });
+        map_simulation.addLayer({
+            id: 'geofence-layer',
+            type: 'fill',
+            source: 'geofences',
+            paint: {
+                'fill-color': '#cb5e65',
+                'fill-opacity': 0.4
+            }
+        });
+        map_simulation.addLayer({
+            id: 'geofence-outline',
+            type: 'line',
+            source: 'geofences',
+            paint: {
+                'line-color': '#cb5e65',
+                'line-width': 2
+            }
+        });
+
+        const marker = new mapboxgl.Marker({ draggable: true })
+            .setLngLat([121.423, 14.281])
+            .addTo(map_simulation);
+
+        marker.on('dragend', () => {
+            const lngLat = marker.getLngLat();
+            const point = turf.point([lngLat.lng, lngLat.lat]);
+            let isInsideAny = false;
+            let nearestBoundary = null;
+            let minDistance = Infinity;
+
+            currentGeofences.forEach(geofence => {
+                if (turf.booleanPointInPolygon(point, geofence)) {
+                    isInsideAny = true;
+                } else {
+                    const geofenceLine = turf.polygonToLine(geofence);
+                    const nearest = turf.nearestPointOnLine(geofenceLine, point);
+                    const distance = turf.distance(point, nearest);
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        nearestBoundary = nearest.geometry.coordinates;
+                    }
+                }
+            });
+
+            if (!isInsideAny && nearestBoundary) {
+                marker.setLngLat(nearestBoundary);
+                console.log('Marker snapped back to nearest geofence boundary');
+            } else if (isInsideAny) {
+                console.log('Marker is within a geofence');
+            }
+        });
+
         // Start the animation
-        animateWave();
-        // Add interactivity: Popup on click
-        map_simulation.on('click', 'glowing-points', (e) => {
-            const name = e.features[0].properties.name || 'Unknown';
-            const coordinates = e.features[0].geometry.coordinates.slice();
-
-            new mapboxgl.Popup()
-                .setLngLat(coordinates)
-                .setHTML(`<strong>${name}</strong>`)
-                .addTo(map_simulation);
-        });
-
-        // Change cursor on hover
-        map_simulation.on('mouseenter', 'glowing-points', () => {
-            map_simulation.getCanvas().style.cursor = 'pointer';
-        });
-        map_simulation.on('mouseleave', 'glowing-points', () => {
-            map_simulation.getCanvas().style.cursor = '';
-        });
+        animate();
     });
 }
-
-
-
-

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Farm;
+namespace App\Models\farmer;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

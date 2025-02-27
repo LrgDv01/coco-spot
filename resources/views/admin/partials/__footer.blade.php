@@ -30,6 +30,9 @@
   <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+  
 
   @if(Request::routeIs('admin.map') || Request::routeIs('admin.map_simulation'))
   <!-- Map Scripts -->
@@ -38,7 +41,6 @@
     crossorigin="anonymous"></script>
 
  <!-- Mapbox Latest-->
- <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
 
   <script src="{{ URL::asset('js/admin/geomap.js')}}"></script> 
   @endif
@@ -47,9 +49,11 @@
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script> <!-- Chart Zoom -->
 
   <!-- Template Main JS File -->
+  <script src="{{ URL::asset('js/app.js') }}"></script>
   <script src="{{ URL::asset('theme/assets/js/main.js')}}"></script>
   <script src="{{ URL::asset('js/global.js') }}"></script>
-  <script src="{{ URL::asset('js/lightbox.js') }}"></script>
+  <script src="{{ URL::asset('js/lightbox.js') }}"></script> 
+  
   <script src="{{ asset('js/admin/dashboard.js') }}"></script>
   <script type="module" src="{{ URL::asset('js/admin/diseasechart.js')}}"></script>
   <script type="module" src="{{ URL::asset('js/admin/cocovarietychart.js')}}"></script>

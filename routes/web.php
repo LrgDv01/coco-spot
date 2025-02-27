@@ -52,21 +52,25 @@ Route::middleware(['redirect.nonlogin', 'guest'])->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     
-    // Admin routes
     Route::middleware(['admin'])->group(function () {
-        // View Route
+       // Admin dashboard view with notifications
+        Route::get('/admin', [NotificationController::class, 'adminNotif'])->name('admin.dashboard'); 
+        Route::get('/admin/api/notifications', [NotificationController::class, 'getNotifications'])->name('admin.notifications.get');
+        // Route::get('/admin/api/notifications', [NotificationController::class, 'showNotif'])->name('admin.notifications.get');
+        Route::get('/admin/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('admin.notifications.read');
+
+
+
+        
+        
         Route::get('/admin', [dashboardController::class, 'display_dashboard'])->name('admin.dashboard');
         // Route::get('/admin/map', [MapController::class, 'view_map'])->name('admin.map'); 
         Route::view('/admin/map', 'admin.pages.map_locations')->name('admin.map'); 
         Route::view('/admin/map_simulation', 'admin.pages.map_simulation')->name('admin.map_simulation'); 
         Route::get('/admin/get_map_locations', [MapController::class, 'get_map_locations'])->name('admin.map_locations');
         // Route::get('/admin/get_map_simulation', [MapController::class, 'get_map_simulation'])->name('admin.map_simulation');
-
-        // Get Data For Datatable
         Route::get('/admin/get_dashboard_info', [dashboardController::class, 'get_dashboard_info'])->name('get_dashboard_info');
         // Route::get('/admin/get_dashboard_info', [dashboardController::class, 'get_dashboard_info'])->name('get_dashboard_info');
-
-   
         Route::middleware(['web'])->group(function () {
 
         });
@@ -80,6 +84,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/technician/{id}', [ServicesController::class, 'show'])->name('technician.info');
         Route::get('/user/services', [ServicesController::class, 'index'])->name('user.services');
         Route::get('/user/farmer/settings', [ProfileController::class, 'index'])->name('user.settings');
+        Route::get('/user/submit-report/{id}/diagnosis', [ServicesController::class, 'viewReport'])->name('user.submit-report');
         
         Route::middleware(['web'])->group(function () {
             Route::post('/user/add_farm', [FarmController::class, 'store'])->name('farm.store');
@@ -87,6 +92,7 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/user/hire-technician', [ServicesController::class, 'hireTechnician'])->name('user.hire');
             Route::post('/user/update-field', [ProfileController::class, 'updateField'])->name('user.update-profile');
             Route::post('/user/update-profile', [ProfileController::class, 'updateProfile'])->name('user.update-profile');
+            Route::post('/user/farmer-report', [ServicesController::class, 'farmerReport'])->name('user.farmer-report');
         });
     });
 

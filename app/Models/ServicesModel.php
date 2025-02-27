@@ -3,10 +3,10 @@
 namespace App\Models;
 
 use App\Models\User;
-use App\Models\Farm\FarmModel;
+use App\Models\farmer\FarmModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\technician\ReportsModel;
+use App\Models\technician\TechiniciansReportsModel;
 
 class ServicesModel extends Model
 {
@@ -29,7 +29,9 @@ class ServicesModel extends Model
 
     public function farms()
     {
-        return $this->belongsTo(FarmModel::class, 'farmer_id', 'farmer_id');
+        // return $this->belongsTo(FarmModel::class, 'farmer_id', 'farmer_id');
+        return $this->belongsTo(FarmModel::class, 'id');
+
     }
 
     const STATUS_PENDING = 'pending';
@@ -56,7 +58,7 @@ class ServicesModel extends Model
     }
 
     public function reports() {
-        return $this->hasOne(ReportsModel::class, 'technician_id', 'technician_id');
+        return $this->hasOne(TechiniciansReportsModel::class, 'technician_id', 'technician_id');
     }
 
 }

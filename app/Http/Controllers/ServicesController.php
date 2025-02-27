@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\ServicesModel;
-use App\Models\Farm\FarmModel;
+use App\Events\NewFarmerReport;
+use App\Models\farmer\FarmerReportsModel;
+use App\Models\farmer\FarmModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
@@ -24,43 +26,61 @@ class ServicesController extends Controller
     }
 
 
-    public function hireTechnician(Request $request)
+    public function viewReport($id)
     {
-        $request->validate([
-            'technician_id' => 'required|integer',
-        ]);
-        $user_id = auth()->id();
-        $farmer_name = auth()->user()->full_name;
-        $request_id = rand(10000, 99999);
-        $confirmation = new ServicesModel();
-        $confirmation->farmer_id = $user_id;
-        $confirmation->technician_id = $request->technician_id; 
-        $confirmation->farmer_name = $farmer_name;
-        $confirmation->request_id = $request_id;
-        $confirmation->status = 'pending';
-        $confirmation->save();
+        // $requestDetails = ServicesModel::with('farms')->findOrFail($id);
+        // $farm = FarmModel::where('id', $id)->get(); 
+        $farm = FarmModel::findOrFail($id);
+     
 
-        Session::flash('success', 'Technician hired successfully.');
-        return response()->json(['success' => true,  'message' => 'Technician hired successfully!']);
+        // foreach ($farm as $f) {
+            // dd($farm->name);
+        // }
+        
+        return view('user.others.submit_report', compact('farm'));
     }
 
-    public function hired() {
-        $user = auth()->id();
-        $hired = ServicesModel::select('technician_id')
-            ->where('farmer_id', $user)
-            ->get();
-        if ($hired) {
-            return response()->json([
-                'success' => true,
-                'hired' => $hired,
+    public function farmerReport(Request $request) {
+        try {
+            $validated = $request->validate([
+                'farm_id' => 'required|exists:farms,id',
+                'farmer_name' => 'required|string|max:255',
+                'contact_no' => 'required|string|max:255',
+                'farm_location' => 'required|string|max:255',
+                'farm_size' => 'required|numeric',
+                'coconut_trees' => 'required|integer',
+                'coconut_variety' => 'required|string|max:255',
+                'symptoms' => 'nullable|array',
+                'disease' => 'required|string|max:255',
             ]);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Hired not found'
-            ], 404);
+
+            $report = FarmerReportsModel::create([
+                'farmer_id' => auth()->id() ?? null, // Nullable if not logged in
+                'farmer_name' => $validated['farmer_name'],
+                'contact_no' => $validated['contact_no'],
+                'farm_location' => $validated['farm_location'],
+                'farm_size' => $validated['farm_size'],
+                'coconut_trees' => $validated['coconut_trees'],
+                'coconut_variety' => $validated['coconut_variety'],
+                'symptoms' => json_encode($validated['symptoms'] ?? []),
+                'disease' => $validated['disease'],
+            ]);
+
+            // Broadcast the event
+            broadcast(new NewFarmerReport($report))->toOthers();
+                
+            // Broadcast the event
+            // event(new NewFarmerReport($report));
+
+            return response()->json(['success' => true, 'message' => 'Report saved successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
+
+        // Fallback for non-AJAX (traditional form submission)
+        return redirect()->back()->with('success', 'Report saved successfully');
     }
+
     
     public function updateStatus(Request $request, $id, $status)
     {

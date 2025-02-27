@@ -11,23 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('reports', function (Blueprint $table) {
+        Schema::create('farmer_reports', function (Blueprint $table) {
             $table->id();
-            // $table->foreignId('technician_id')->constrained('users')->onDelete('cascade')->nullable();
-            $table->foreignId('technician_id')->constrained('technicians_info')->onDelete('cascade')->nullable();
-            $table->foreignId('farm_id')->constrained('farms')->onDelete('cascade')->nullable();
+            $table->foreignId('farmer_id')->constrained('users')->onDelete('cascade')->nullable();
+            // $table->foreignId('farm_id')->constrained('farms')->onDelete('cascade')->nullable();
             $table->string('farmer_name'); 
             $table->string('contact_no'); 
-            $table->string('recipient'); 
-            $table->string('farm_name');
             $table->string('farm_location'); 
-            $table->string('district');
             $table->decimal('farm_size', 10, 2); 
             $table->bigInteger('coconut_trees'); 
             $table->string('coconut_variety');
-            $table->string('soil_type'); 
-            $table->json('disease_type'); 
-            $table->text('note'); 
+            $table->json('symptoms'); 
+            $table->string('disease'); 
+            $table->string('status')->default('unread');
             $table->timestamps();
         });
     }
@@ -37,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('reports');
+        Schema::dropIfExists('farmer_reports');
     }
 };

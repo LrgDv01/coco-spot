@@ -4,9 +4,9 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\Farm\FarmModel;
+use App\Models\farmer\FarmModel;
 use App\Models\admin\PCA;
-use App\Models\technician\ReportsModel;
+use App\Models\technician\TechiniciansReportsModel;
 use App\Models\admin\DOA;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -53,7 +53,7 @@ class dashboardController extends Controller
 
         // Filter for Disease
         // $diseaseYearData = ReportsModel::whereYear('created_at', $year)->get();
-        $reportQuery = ReportsModel::whereYear('created_at', $year);
+        $reportQuery = TechiniciansReportsModel::whereYear('created_at', $year);
         if ($districtFilter !== 'all') {
             $reportQuery->where('district', $districtFilter);
         }
@@ -101,7 +101,7 @@ class dashboardController extends Controller
 
             if (!isset($count_variety[$year][$month])) {
                 $count_variety[$year][$month] = array_fill_keys(array_keys($coconut_variety), 0);
-                $varietyDistrict[$year][$month] = $item->district; // ✅ Add district info
+                $varietyDistrict[$year][$month] = $item->district; 
             }
             $reported_coco = $item->variety ?? [];
             foreach ($coconut_variety as $key => $coco) {
@@ -112,7 +112,6 @@ class dashboardController extends Controller
         }
 
         $res = [
-            // 'count_total_cost' => $count_total_cost,
             'count_techicians' => $count_techicians,
             'count_farmers' => $count_farmers,
             'count_farms' => $count_farms,

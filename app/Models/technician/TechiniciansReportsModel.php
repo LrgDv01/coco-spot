@@ -4,15 +4,15 @@ namespace App\Models\technician;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\ServicesModel;
-use App\Models\Farm\FarmModel;
+use App\Models\farmer\FarmModel;
 
 
 
-class ReportsModel extends Model
+class TechiniciansReportsModel extends Model
 {
     use HasFactory;
 
-    protected $table = 'reports';
+    protected $table = 'technician_reports';
     protected $fillable = [
         'technician_id',
         'farm_id',

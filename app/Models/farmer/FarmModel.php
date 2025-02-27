@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Models\Farm;
+namespace App\Models\farmer;
 
 use App\Models\User;
 use App\Models\ServicesModel;
+use App\Models\technician\TechiniciansReportsModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\technician\ReportsModel;
-
 
 class FarmModel extends Model
 {
@@ -37,7 +36,7 @@ class FarmModel extends Model
     }
 
     public function reports() {
-        return $this->hasMany(ReportsModel::class, 'farm_id', 'id');
+        return $this->hasMany(TechiniciansReportsModel::class, 'farm_id', 'id');
     }
 
 }

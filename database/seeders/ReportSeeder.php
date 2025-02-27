@@ -1,8 +1,11 @@
 <?php
 
 namespace Database\Seeders;
-use App\Models\technician\ReportsModel;
-use App\Models\Farm\FarmModel;
+
+use App\Models\farmer\FarmerReportsModel;
+use App\Models\technician\TechiniciansReportsModel;
+use App\Models\User;
+use App\Models\farmer\FarmModel;
 use App\Models\TechnicianModel;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -15,7 +18,7 @@ class ReportSeeder extends Seeder
 
     public function run(): void
     {
-        $reports = [
+        $technician_reports = [
             [
                 'technician_id' => 1, 
                 'farm_id' => 1, 
@@ -34,7 +37,7 @@ class ReportSeeder extends Seeder
             ],
         ];
 
-        foreach ($reports as $report) {
+        foreach ($technician_reports as $report) {
             $technician = TechnicianModel::find($report['technician_id']);
             if (!$technician) {
                 $technician = TechnicianModel::create([
@@ -60,7 +63,7 @@ class ReportSeeder extends Seeder
                 ]);
             }
 
-            ReportsModel::create([
+            TechiniciansReportsModel::create([
                 'technician_id' => $technician->id,
                 'farm_id' => $farm->id,
                 'farmer_name' => $report['farmer_name'],
@@ -75,6 +78,41 @@ class ReportSeeder extends Seeder
                 'soil_type' => $report['soil_type'],
                 'disease_type' => json_encode($report['disease_type']),
                 'note' => $report['note'],
+            ]);
+        }
+
+        
+        $farmer_reports = [
+            [
+                'farmer_id' => 1, 
+                // 'farm_id' => 1, 
+                'farmer_name' => 'John Doe',
+                'contact_no' => '1234567890',
+                'farm_location' => '123 Farm Road, Countryside',
+                'farm_size' => 10.5,
+                'coconut_trees' => 500,
+                'coconut_variety' => 'Tall Variety',
+                'symptoms' => ['Leaves turning yellow', 'Leaves are drying up',
+                     'Small brown, black or yellow spots on leaves'],
+                'disease' => 'Lethal Yellowing',
+                'status' => 'unread'
+            ]
+        ];
+
+        foreach ($farmer_reports as $report) {
+            // $farmer_id = User::find($report['farmer_id']);
+            FarmerReportsModel::create([
+                'farmer_id' => $report['farmer_id'],
+                // 'farm_id' => $report['farm_id'],
+                'farmer_name' => $report['farmer_name'],
+                'contact_no' => $report['contact_no'],
+                'farm_location' => $report['farm_location'],
+                'farm_size' => $report['farm_size'],
+                'coconut_trees' => $report['coconut_trees'],
+                'coconut_variety' => $report['coconut_variety'],
+                'symptoms' => json_encode($report['symptoms']),
+                'disease' =>  $report['disease'],
+                'status' => $report['status']
             ]);
         }
     }

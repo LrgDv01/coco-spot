@@ -3,13 +3,13 @@ namespace App\Http\Controllers\user\technician;
 
 use App\Models\User;
 use App\Models\ServicesModel;
-use App\Models\technician\ReportsModel;
+use App\Models\technician\TechiniciansReportsModel;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log; 
 use App\Http\Controllers\ServicesController;
-use App\Models\Farm\FarmModel;
+use App\Models\farmer\FarmModel;
 
 class ReportsController extends Controller
 {
@@ -27,11 +27,11 @@ class ReportsController extends Controller
             })
             ->get();
    
-        $submitted = ReportsModel::where([['technician_id', $technicianId]])
+        $submitted = TechiniciansReportsModel::where([['technician_id', $technicianId]])
             ->pluck('farm_id')
             ->toArray();
 
-        $submittedReports = ReportsModel::select('farm_id', 'soil_type', 'disease_type', 'note')
+        $submittedReports = TechiniciansReportsModel::select('farm_id', 'soil_type', 'disease_type', 'note')
             ->where('technician_id', $technicianId)
             ->get()
             ->mapWithKeys(function ($report) {
@@ -63,7 +63,7 @@ class ReportsController extends Controller
             ->pluck('id')
             ->toArray();
 
-        $existingReportsCount = ReportsModel::where('technician_id', $technicianId)
+        $existingReportsCount = TechiniciansReportsModel::where('technician_id', $technicianId)
             ->whereIn('farm_id', $farmIDs)
             ->count();
 
@@ -98,7 +98,7 @@ class ReportsController extends Controller
             $diseaseTypes = json_encode($diseaseTypes); 
 
             $note = implode(' ', array_values($validated['note'])); 
-            $reportDetail = ReportsModel::create([
+            $reportDetail = TechiniciansReportsModel::create([
                 'technician_id' => auth()->id(),
                 'farm_id' => $validated['farm_id'],
                 'farmer_name' => $validated['farmer_name'],

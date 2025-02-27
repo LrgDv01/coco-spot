@@ -19,7 +19,7 @@
                         <small class="form-text text-muted">Tap "Find my farm", click the
                             area where your farm is located to get Coordinates. </small>
                         <div class="input-group">
-                            <input type="text" class="form-control" id="location" name="location" readonly required>
+                            <input type="text" class="form-control" id="location" name="location" required>
                             <input type="hidden" id="address_input" name="address">
                             <button type="button" class="btn btn-primary" onclick="getUserLocation()">Find my farm</button>
                         </div>

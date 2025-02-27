@@ -1,23 +1,22 @@
 <?php
 
-namespace Database\Factories\Farm;
-use App\Models\Farm\FarmModel;
+namespace Database\Factories\farmer;
 use App\Models\User;
+use App\Models\farmer\FarmModel;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\FarmModel>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\farmer\FarmModel>
  */
-class FarmModelFactory extends Factory
+class FarmFactory extends Factory
 {
     protected $model = FarmModel::class;
+
     /**
      * Define the model's default state.
      *
      * @return array<string, mixed>
      */
-
-
     public function definition(): array
     {
         return [

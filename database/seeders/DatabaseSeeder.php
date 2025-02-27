@@ -1,7 +1,6 @@
 <?php
 
 namespace Database\Seeders;
-use App\Models\Farm\FarmModel;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
@@ -20,7 +19,7 @@ class DatabaseSeeder extends Seeder
             AdminSeeder::class,
             UserSeeder::class,
             MapModelSeeder::class,
-            FarmSeeder::class,
+            // FarmSeeder::class,
             ReportSeeder::class
         ]);
     }
