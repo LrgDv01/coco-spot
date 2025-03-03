@@ -260,7 +260,7 @@
         </button>
         <form action="{{ route('logout') }}" method="POST" onsubmit="disableSubmitButton(this)">
           @csrf
-          <button type="submit" class="btn btn-primary" id="logoutSubmitButton">
+          <button type="submit" class="btn btn-success" id="logoutSubmitButton">
             Yes
           </button>
         </form>
@@ -269,15 +269,10 @@
   </div>
 </div>
 
-
-
-
-
 <script>
   function disableSubmitButton(form) {
     const submitButton = form.querySelector('button[type="submit"]');
     submitButton.disabled = true; 
     submitButton.innerHTML = 'Loading . .'; 
   }
-
 </script> 

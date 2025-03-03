@@ -52,10 +52,16 @@ class ServicesController extends Controller
                 'coconut_variety' => 'required|string|max:255',
                 'symptoms' => 'nullable|array',
                 'disease' => 'required|string|max:255',
+                'image_proof' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             ]);
 
+            $imagePath = null;
+            if ($request->hasFile('image_proof')) {
+                $imagePath = $request->file('image_proof')->store('images', 'public');
+            }
+
             $report = FarmerReportsModel::create([
-                'farmer_id' => auth()->id() ?? null, // Nullable if not logged in
+                'farmer_id' => auth()->id() ?? null,
                 'farmer_name' => $validated['farmer_name'],
                 'contact_no' => $validated['contact_no'],
                 'farm_location' => $validated['farm_location'],
@@ -64,6 +70,7 @@ class ServicesController extends Controller
                 'coconut_variety' => $validated['coconut_variety'],
                 'symptoms' => json_encode($validated['symptoms'] ?? []),
                 'disease' => $validated['disease'],
+                'image_path' => $imagePath, 
             ]);
 
             // Broadcast the event
@@ -77,7 +84,6 @@ class ServicesController extends Controller
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
 
-        // Fallback for non-AJAX (traditional form submission)
         return redirect()->back()->with('success', 'Report saved successfully');
     }
 

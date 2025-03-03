@@ -21,6 +21,7 @@ class FarmerReportsModel extends Model
         'coconut_variety',
         'symptoms',
         'disease',
+        'image_path',
         'status'
     ];
 

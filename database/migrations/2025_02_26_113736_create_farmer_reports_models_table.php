@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('coconut_variety');
             $table->json('symptoms'); 
             $table->string('disease'); 
+            $table->string('image_path')->nullable(); 
             $table->string('status')->default('unread');
             $table->timestamps();
         });
