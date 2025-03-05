@@ -2,6 +2,7 @@
 
 namespace App\Models\farmer;
 
+use App\Models\farmer\FarmModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -12,7 +13,7 @@ class FarmerReportsModel extends Model
     protected $table = 'farmer_reports';
     protected $fillable = [
         'farmer_id',
-        // 'farm_id',
+        'farm_id',
         'farmer_name',
         'contact_no',
         'farm_location',
@@ -25,4 +26,7 @@ class FarmerReportsModel extends Model
         'status'
     ];
 
+    public function farm() {
+        return $this->belongsTo(FarmModel::class, 'farm_id', 'id'); 
+    }
 }

@@ -42,62 +42,62 @@
     }
 
     .modal-content {
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
 
-.modal-header {
-    background-color: #f0f8f0;
-    border-bottom: 2px solid #28a745;
-}
+    .modal-header {
+        background-color: #f0f8f0;
+        border-bottom: 2px solid #28a745;
+    }
 
-.modal-body {
-    padding: 20px;
-    font-size: 16px;
-    color: #333;
-}
+    .modal-body {
+        padding: 20px;
+        font-size: 16px;
+        color: #333;
+    }
 
-.modal-body h1 {
-    color: #dc3545; 
-    font-size: 24px;
-    margin-bottom: 15px;
-}
+    .modal-body h1 {
+        color: #dc3545; 
+        font-size: 24px;
+        margin-bottom: 15px;
+    }
 
-.progress {
-    height: 20px;
-    margin-bottom: 10px;
-}
+    .progress {
+        height: 20px;
+        margin-bottom: 10px;
+    }
 
-.progress-bar {
-    background-color: #dc3545; 
-}
+    .progress-bar {
+        background-color: #dc3545; 
+    }
 
-/* for solution content */
-.solution-content {
-    line-height: 1.6;
-}
+    /* for solution content */
+    .solution-content {
+        line-height: 1.6;
+    }
 
-.solution-content h2 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-    color: #fff;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
-    padding-bottom: 0.5rem;
-}
+    .solution-content h2 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        color: #fff;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+        padding-bottom: 0.5rem;
+    }
 
-.solution-content ul {
-    padding-left: 1.5rem;
-    margin-bottom: 0;
-}
+    .solution-content ul {
+        padding-left: 1.5rem;
+        margin-bottom: 0;
+    }
 
-.solution-content li {
-    margin-bottom: 0.75rem;
-    font-size: 0.95rem;
-}
+    .solution-content li {
+        margin-bottom: 0.75rem;
+        font-size: 0.95rem;
+    }
 
-.solution-content li strong {
-    color: #e9ecef;
-}
+    .solution-content li strong {
+        color: #e9ecef;
+    }
 
 </style>
 
@@ -192,7 +192,7 @@
                 </div>
                 <div class="form-group mt-3 px-2">
                     <label for="image_proof_{{ $farm->id }}"><strong>Upload Image as Proof:</strong></label>
-                    <input type="file" class="form-control" id="image_proof_{{ $farm->id }}" name="image_proof" accept="image/*" required>
+                    <input type="file" class="form-control" id="image_proof_{{ $farm->id }}" name="image_proof" accept="image/*">
                 </div>
                 <button type="submit" id="identify-btn-{{ $farm->id }}" 
                         class="btn btn-success m-3 identify-btn" 
@@ -201,10 +201,7 @@
                 </button>
                 {{--  <button type="submit" id="identify-btn-{{ $farm->id }}" class="btn btn-success m-3 identify-btn" 
                     data-farm-id="{{ $farm->id }}" disabled><i></i> Identify</button></div>  --}}
-        
         </form>
-      
-       
     </div>
 </div>
         
@@ -221,17 +218,23 @@
                 <h5 class="modal-title text-success" id="diagnosisModalLabel-{{ $farm->id }}"><strong>Diagnosis Result</strong></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body text-center" id="diagnosis-text-{{ $farm->id }}"></div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" 
-                        onclick="viewSolution(event, {{ $farm->id }})">View Solution</button>
-                <button type="submit" class="btn btn-outline-success"
-                        onclick="submitDiagnosis(event, {{ $farm->id }})">Report</button>
+            <div class="modal-body text-center" id="diagnosis-text-{{ $farm->id }}">
+            </div>
+            <div class="modal-footer d-flex flex-column">
+                <div class="d-flex flex-row justify-content-end">
+                    <button type="button" class="btn btn-outline-secondary me-2" 
+                            onclick="viewSolution(event, {{ $farm->id }})">View Solution</button>
+                    <button type="submit" class="btn btn-outline-success"
+                            onclick="submitDiagnosis(event, {{ $farm->id }})">Report</button>
+                </div>
+                <div class="d-flex flex-row justify-content-center">
+                    <a class="farm-status d-none btn btn-secondary border-0 bg-transparent text-secondary" href="{{route('user.services')}}">
+                        <i class="fas fa-arrow-left"></i> See farm status</a>
+                </div>
             </div>
         </div>
     </div>
 </div>
-
 
 </section>
 </main>
@@ -245,8 +248,9 @@
             const farmId = form.id.replace('report-form-', '');
             const modalElement = document.getElementById(`diagnosis-modal-${farmId}`);
             const diagnosisModal = new bootstrap.Modal(modalElement, {
-                backdrop: true,
-                keyboard: true
+                backdrop: 'static', 
+                keyboard: false,
+                role: 'dialog'
             });
             const diagnosisText = document.getElementById(`diagnosis-text-${farmId}`);
             const identifyBtn = form.querySelector(`#identify-btn-${farmId}`);
@@ -300,28 +304,115 @@
                 if (topDisease && diseaseSolutions[topDisease]) {
                     solutionContent = diseaseSolutions[topDisease];
                 }
-
                 diagnosisText.innerHTML += `
-                    <div id="hide" class="position-fixed d-flex flex-column rounded rounded-3 text-white px-2 overflow-auto shadow-lg" 
-                        style="background-color:rgb(26, 59, 31); top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; height: 70vh; max-width: 400px;">
-                         <button class="btn btn-secondary bg-transparent border-0 btn-lg close-solution-btn align-self-end px-3 fs-1" data-farm-id="${farmId}">
+                    <div id="hide" class="position-fixed d-flex flex-column rounded rounded-3 text-white px-2 pe-2 overflow-auto shadow-lg" 
+                        style="background-color:rgb(26, 59, 31); top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; height: 70vh; max-width: 400px; z-index: 1050;">
+                        <button class="btn btn-secondary bg-transparent border-0 btn-lg close-solution-btn align-self-end px-3 fs-1" data-farm-id="${farmId}">
                                 <i class="fas fa-times"></i>
                         </button>
-                        <div class="d-flex justify-content-center align-items-center my-3">
-                            <h3 class="m-0 text-danger"><strong>${topDisease ? topDisease + ' Solutions' : 'Solutions'}</strong></h3>
+                        <div style="height: 100%; overflow-y: auto;">
+                            <div class="d-flex justify-content-center align-items-center my-3">
+                                <h3 class="m-0 text-danger"><strong>${topDisease ? topDisease + ' <span class="text-success">(Solutions)</span>' : 'Solutions'}</strong></h3>
+                            </div>
+                            <div class="solution-content text-start">
+                                ${solutionContent}
+                            </div>
                         </div>
-                        <div class="solution-content text-start">
-                            ${solutionContent}
-                        </div>
+                        <button class="btn btn-secondary border-1 btn-sm align-self-center px-3 my-2 download-pdf-btn rounded rounded-3" 
+                                data-farm-id="${farmId}">
+                            <i class="fas fa-file"></i> Download Solutions (PDF)
+                        </button>
                     </div>
                 `;
-
                 const closeButton = diagnosisText.querySelector('.close-solution-btn');
                 closeButton.addEventListener('click', function(e) {
                     closeSolution(e, farmId);
                 });
+                const downloadButton = diagnosisText.querySelector('.download-pdf-btn');
+                downloadButton.addEventListener('click', function() {
+                    const confirmModalHtml = `
+                        <div class="modal fade" id="confirmDownloadModal" tabindex="-1" aria-labelledby="confirmDownloadModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content" style="background-color: #f0f8f0; border: 2px solid green;">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title text-success" id="confirmDownloadModalLabel"><strong>Solution is Ready to Download</strong></h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body text-center">
+                                        Your PDF solution file has been generated successfully. Click the button below to download.
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <button type="button" class="btn btn-success download-confirm-btn" data-farm-id="${farmId}">Download PDF</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    document.body.insertAdjacentHTML('beforeend', confirmModalHtml);
+                    const confirmModal = new bootstrap.Modal(document.getElementById('confirmDownloadModal'));
+                    confirmModal.show();
+                    const confirmDownloadBtn = document.querySelector('.download-confirm-btn');
+                    confirmDownloadBtn.addEventListener('click', function() {
+                        confirmModal.hide();
+                        const { jsPDF } = window.jspdf;
+                        const doc = new jsPDF({
+                            orientation: 'portrait',
+                            unit: 'mm',
+                            format: 'a4'
+                        });
+                        doc.setFontSize(20);
+                        doc.setFont('helvetica', 'bold');
+                        doc.text(`${topDisease || 'Unknown'} - Solutions`, 105, 15, { align: 'center' });
+                        doc.setFontSize(12);
+                        doc.setFont('helvetica', 'normal');
+                        doc.text('Recommended Actions', 105, 25, { align: 'center' });
+                        const plainTextSolutions = solutionContent
+                            .replace(/<ul>|<\/ul>/g, '')
+                            .replace(/<li>/g, '')
+                            .replace(/<\/li>/g, '\n\n') 
+                            .replace(/<br>/g, '\n')   
+                            .replace(/<[^>]+>/g, '');
+                        const solutionGroups = plainTextSolutions.split('\n\n').filter(group => group.trim().length > 0);
+                        let yPosition = 35;
+                        doc.setFontSize(11);
+                        solutionGroups.forEach((group, index) => {
+                            const lines = group.split('\n').filter(line => line.trim().length > 0);
+                            if (lines.length > 0) {
+                                if (index > 0) {
+                                    yPosition += 4; 
+                                }
+                                const mainSolutionLines = doc.splitTextToSize(lines[0].trim(), 180);
+                                mainSolutionLines.forEach((line, i) => {
+                                    if (i === 0) {
+                                        doc.text('•', 15, yPosition); 
+                                    }
+                                    doc.text(line, 20, yPosition);
+                                    yPosition += 6;
+                                });
+                                if (lines[1] && lines[1].trim().startsWith('(')) {
+                                    const translationLines = doc.splitTextToSize(lines[1].trim(), 180);
+                                    translationLines.forEach(line => {
+                                        doc.text(line, 20, yPosition);
+                                        yPosition += 6;
+                                    });
+                                }
+                                if (yPosition > 270) { 
+                                    doc.addPage();
+                                    yPosition = 20;
+                                }
+                            }
+                        });
+                        doc.setFontSize(10);
+                        doc.setTextColor(100);
+                        doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 10, 285);
+                        doc.text('Page 1', 190, 285, { align: 'right' });
+                        doc.save(`${topDisease || 'Unknown'}_Solutions.pdf`);
+                        confirmModal.hide();
+                        document.getElementById('confirmDownloadModal').remove();
+                    });
+                });
             }
-
             function closeSolution(event, farmId) {
                 event.stopPropagation(); 
                 event.preventDefault();  
@@ -331,12 +422,10 @@
                     solutionDiv.remove();
                 }
             }
-
             const viewButton = modalElement.querySelector('.btn-outline-secondary');
             viewButton.addEventListener('click', function(event) {
                 viewSolution(event, farmId);
             });
-
             form.addEventListener('submit', function(e) {
                 e.preventDefault(); 
                 const formData = new FormData(this);
@@ -367,7 +456,8 @@
                     topDisease = sortedDiseases[0];
                     topProbability = Math.round(diseaseProbabilities[topDisease]);
                     diagnosisHtml = `<h1><strong>${topDisease} DETECTED</strong> (${topProbability}%)</h1>`;
-                    diagnosisHtml += `<p>Based on the symptoms you provided, there is an <strong>${topProbability}%</strong> chance this matches <strong>${topDisease}</strong> disease.</p>`;
+                    diagnosisHtml += `<p>Based on the symptoms you provided, there is an 
+                                    <strong>${topProbability}%</strong> chance this matches <strong>${topDisease}</strong> disease.</p>`;
                     for (const disease of sortedDiseases) {
                         const probability = Math.round(diseaseProbabilities[disease]);
                         if (probability > 0) {
@@ -377,11 +467,11 @@
                                 }
                             } 
                             diagnosisHtml += `
-                                <div class="d-flex flex-column align-items-center">
-                                    <span class="me-2"><strong>${disease}</strong></span>
-                                    <div class="progress w-100">
-                                        <div class="progress-bar" role="progressbar" style="width: ${probability}%;" aria-valuenow="${probability}" aria-valuemin="0" aria-valuemax="100">${probability}%</div>
+                                <div class="d-flex flex-column align-items-center mb-3">
+                                    <div class="progress w-100 p-0 m-0">
+                                        <div class="progress-bar p-0 m-0" role="progressbar" style="width: ${probability}%;" aria-valuenow="${probability}" aria-valuemin="0" aria-valuemax="100">${probability}%</div>
                                     </div>
+                                    <span class="me-2 p-0"><strong>${disease}</strong></span>
                                 </div>`;
                         } 
                     }
@@ -404,9 +494,10 @@
                         if (data.success) {
                             console.log('Report saved successfully');
                             diagnosisText.innerHTML += '<p class="mt-5 text-success">Disease identified, Report submitted successfully!</p>';
-                            reportButton.textContent = 'Submitted';
                             reportButton.classList.remove('btn-outline-success');
                             reportButton.classList.add('btn-success');
+                            reportButton.textContent = 'Reported';
+                            farmStatusButton.classList.remove('d-none');
                             // add icon for button (optional)
                             reportButton.disabled = true;
                         } else {
@@ -425,6 +516,7 @@
                 }
                 const reportButton = modalElement.querySelector('.btn-outline-success'); 
                 reportButton.addEventListener('click', submitDiagnosis);
+                const farmStatusButton = modalElement.querySelector('.farm-status');
             });
         });
     });

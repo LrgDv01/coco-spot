@@ -79,12 +79,11 @@ Route::middleware(['auth'])->group(function () {
 
     Route::middleware(['farmer'])->group(function () {
         Route::get('/user/farm', [FarmController::class, 'index'])->name('user.farm');
-        Route::get('/user/services', [ServicesController::class, 'index'])->name('user.services');
         Route::get('/user/services/hired', [ServicesController::class, 'hired'])->name('user.services.hired');
         Route::get('/technician/{id}', [ServicesController::class, 'show'])->name('technician.info');
         Route::get('/user/services', [ServicesController::class, 'index'])->name('user.services');
-        Route::get('/user/farmer/settings', [ProfileController::class, 'index'])->name('user.settings');
         Route::get('/user/submit-report/{id}/diagnosis', [ServicesController::class, 'viewReport'])->name('user.submit-report');
+        Route::get('/user/farmer/settings', [ProfileController::class, 'index'])->name('user.settings');
         
         Route::middleware(['web'])->group(function () {
             Route::post('/user/add_farm', [FarmController::class, 'store'])->name('farm.store');

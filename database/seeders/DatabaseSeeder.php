@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
             AdminSeeder::class,
             UserSeeder::class,
             MapModelSeeder::class,
-            // FarmSeeder::class,
+            FarmSeeder::class,
             ReportSeeder::class
         ]);
     }

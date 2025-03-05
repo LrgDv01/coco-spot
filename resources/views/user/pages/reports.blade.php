@@ -11,9 +11,15 @@
         @foreach($farms as $farm)
             <div class="card mb-2 p-0" style="background-color: #f0f8f0; border: 1px solid #28a745;">
                 <a href="{{ route('user.submit-report', $farm->id) }}" class="btn btn-outline-success" >
-                    <div class="card-body text-start">
-                        <h5 class="card-title p-0 d-flex flex-row justify-content-between">
-                            <strong>{{ $farm->name }}</strong> </h5><hr>
+                    <div class="card-body text-start p-0">
+                        <div class="d-flex flex-row justify-content-between align-items-center p-0">
+                            <h5 class="card-title p-0 mt-2">
+                                <strong>{{ $farm->name }}</strong> </h5>
+                            <span class="text-dark p-1 px-2 rounded {{ in_array($farm->id, $farmReports) ? '' : 'd-none' }}"
+                                style="background-color:rgb(235, 187, 179);">
+                                <i class="fas fa-disease"></i><i class="fas fa-search"></i> Disease Initially Identified</span>
+                        </div>
+                        <hr>
                         <p class="card-text text-truncate">
                             <strong>Address :</strong> {{ $farm->address }}<br>
                             <strong>Variety :</strong> {{ $farm->variety }}<br>
