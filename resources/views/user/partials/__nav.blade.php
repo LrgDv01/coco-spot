@@ -94,19 +94,19 @@
     @endif
     @if (auth()->user()->isTechnician())
       <li class="nav-item">
-        <a class="nav-link bg-transparent border border-0 text-white " href="{{ url('/user/notifications') }}">
+        <a class="nav-link border border-0 {{ Request::is('user/notifications') ? 'active' : 'inactive' }}" href="{{ url('/user/notifications') }}">
           <i class="bi bi-bell"></i>  
           <span>Notifications</span>
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link bg-transparent border border-0 text-white " href="{{ url('/user/reports') }}">
+        <a class="nav-link border border-0 {{ Request::is('user/reports') ? 'active' : 'inactive' }}" href="{{ url('/user/reports') }}">
           <i class="bi bi-clipboard-data"></i>  
           <span>Reports</span>
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link bg-transparent border border-0 text-white " href="{{ url('/user/technician/settings') }}">
+        <a class="nav-link border border-0 {{ Request::is('user/technician/settings') ? 'active' : 'inactive' }}" href="{{ url('/user/technician/settings') }}">
           <i class="bi bi-gear"></i>  
           <span>Settings</span>
         </a>

@@ -28,7 +28,7 @@ class NotificationController extends Controller
     }
 
     public function adminNotif()
-    {
+    { 
         $notif = FarmerReportsModel::latest()->get(); 
         $unreadCount = $notif->where('status', 'unread')->count();
         return view('admin.dashboard', compact('notif', 'unreadCount'));

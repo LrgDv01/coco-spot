@@ -58,10 +58,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/admin/api/notifications', [NotificationController::class, 'getNotifications'])->name('admin.notifications.get');
         // Route::get('/admin/api/notifications', [NotificationController::class, 'showNotif'])->name('admin.notifications.get');
         Route::get('/admin/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('admin.notifications.read');
-
-
-
-        
         
         Route::get('/admin', [dashboardController::class, 'display_dashboard'])->name('admin.dashboard');
         // Route::get('/admin/map', [MapController::class, 'view_map'])->name('admin.map'); 
@@ -82,7 +78,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/user/services/hired', [ServicesController::class, 'hired'])->name('user.services.hired');
         Route::get('/technician/{id}', [ServicesController::class, 'show'])->name('technician.info');
         Route::get('/user/services', [ServicesController::class, 'index'])->name('user.services');
-        Route::get('/user/submit-report/{id}/diagnosis', [ServicesController::class, 'viewReport'])->name('user.submit-report');
+        Route::get('/user/submit-report/{id}/diagnosis', [ServicesController::class, 'viewReport'])->name('user.submit-report'); 
+        Route::get('/user/submitted-report/{id}/diagnosis', [ServicesController::class, 'viewSubmmittedReport'])->name('user.submitted-report');
         Route::get('/user/farmer/settings', [ProfileController::class, 'index'])->name('user.settings');
         
         Route::middleware(['web'])->group(function () {

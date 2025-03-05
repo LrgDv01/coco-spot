@@ -31,7 +31,6 @@ class ServicesModel extends Model
     {
         // return $this->belongsTo(FarmModel::class, 'farmer_id', 'farmer_id');
         return $this->belongsTo(FarmModel::class, 'id');
-
     }
 
     const STATUS_PENDING = 'pending';
