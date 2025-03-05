@@ -192,7 +192,7 @@
                 </div>
                 <div class="form-group mt-3 px-2">
                     <label for="image_proof_{{ $farm->id }}"><strong>Upload Image as Proof:</strong></label>
-                    <input type="file" class="form-control" id="image_proof_{{ $farm->id }}" name="image_proof" accept="image/*">
+                    <input type="file" class="form-control" id="image_proof_{{ $farm->id }}" name="image_proof" accept="image/*" required>
                 </div>
                 <button type="submit" id="identify-btn-{{ $farm->id }}" 
                         class="btn btn-success m-3 identify-btn" 
@@ -242,6 +242,7 @@
 @include('user.partials.__footer')
 
  <script>
+    
     document.addEventListener('DOMContentLoaded', function() {
         const forms = document.querySelectorAll('[id^="report-form-"]');
         forms.forEach(form => {

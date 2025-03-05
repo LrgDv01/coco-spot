@@ -19,17 +19,11 @@ class ServicesController extends Controller
         $userId = Auth::id(); 
         $farms = FarmModel::where('farmer_id', $userId)
         // ->orderBy('created_at', 'desc')->limit(4) // Order by created_at, newest first
-        ->orderBy('created_at', 'desc') // Order by created_at, newest first
-        ->get();
+            ->orderBy('created_at', 'desc') // Order by created_at, newest first
+            ->get();
 
-        $farmReports = FarmerReportsModel::with('farm')
-            ->where('farmer_id', $userId)   
-            ->pluck('farm_id')
-            ->toArray();
-
-
-        // dd($farmReports);
-   
+        $farmReports = FarmerReportsModel::with('farm')->where('farmer_id', $userId)
+            ->pluck('farm_id')->toArray();
         return view('user.pages.reports', compact('farms', 'farmReports'));
     }
 
@@ -46,7 +40,15 @@ class ServicesController extends Controller
         return view('user.others.submit_report', compact('farm'));
     }
 
+    // private function nearestTechnician($id) {
+
+        
+    // }
+
     public function farmerReport(Request $request) {
+
+        $farmer_id = auth()->id();
+        // nearestTechnician($farmer_id);
         try {
             $validated = $request->validate([
                 'farm_id' => 'required|exists:farms,id',
@@ -68,9 +70,9 @@ class ServicesController extends Controller
                 $imagePath = $request->file('image_proof')->store('images', 'public');
             }
 
-            $report = FarmerReportsModel::create([
+            $report = FarmerReportsModel::with('farm')->create([
+                'farmer_id' => $farmer_id,
                 'farm_id' => $validated['farm_id'],
-                'farmer_id' => auth()->id() ?? null,
                 'farmer_name' => $validated['farmer_name'],
                 'contact_no' => $validated['contact_no'],
                 'farm_location' => $validated['farm_location'],
@@ -94,6 +96,13 @@ class ServicesController extends Controller
         }
 
         return redirect()->back()->with('success', 'Report saved successfully');
+    }
+
+    public function viewSubmmittedReport($id)
+    {
+        $reported = FarmerReportsModel::with('farm')
+            ->where('farm_id', $id)->first();
+        return view('user.others.submitted_report', compact('reported'));
     }
 
     
