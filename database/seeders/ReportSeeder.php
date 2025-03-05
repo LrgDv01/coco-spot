@@ -81,11 +81,10 @@ class ReportSeeder extends Seeder
         //     ]);
         // }
 
-        
         $farmer_reports = [
             [
                 'farmer_id' => 1, 
-                // 'farm_id' => 1, 
+                'farm_id' => 1, 
                 'farmer_name' => 'John Doe',
                 'contact_no' => '1234567890',
                 'farm_location' => '123 Farm Road, Countryside',
@@ -97,7 +96,6 @@ class ReportSeeder extends Seeder
                 'disease' => 'Lethal Yellowing',
                 'image_path' => 'path/to/image.jpg',
                 'status' => 'unread',
-               
             ]
         ];
 
@@ -105,7 +103,7 @@ class ReportSeeder extends Seeder
             // $farmer_id = User::find($report['farmer_id']);
             FarmerReportsModel::create([
                 'farmer_id' => $report['farmer_id'],
-                // 'farm_id' => $report['farm_id'],
+                'farm_id' => $report['farm_id'],
                 'farmer_name' => $report['farmer_name'],
                 'contact_no' => $report['contact_no'],
                 'farm_location' => $report['farm_location'],

@@ -21,8 +21,16 @@ class ServicesController extends Controller
         // ->orderBy('created_at', 'desc')->limit(4) // Order by created_at, newest first
         ->orderBy('created_at', 'desc') // Order by created_at, newest first
         ->get();
-      
-        return view('user.pages.reports', compact('farms'));
+
+        $farmReports = FarmerReportsModel::with('farm')
+            ->where('farmer_id', $userId)   
+            ->pluck('farm_id')
+            ->toArray();
+
+
+        // dd($farmReports);
+   
+        return view('user.pages.reports', compact('farms', 'farmReports'));
     }
 
 
@@ -31,8 +39,6 @@ class ServicesController extends Controller
         // $requestDetails = ServicesModel::with('farms')->findOrFail($id);
         // $farm = FarmModel::where('id', $id)->get(); 
         $farm = FarmModel::findOrFail($id);
-     
-
         // foreach ($farm as $f) {
             // dd($farm->name);
         // }
@@ -55,12 +61,15 @@ class ServicesController extends Controller
                 'image_proof' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             ]);
 
+            // dd($validated);
+
             $imagePath = null;
             if ($request->hasFile('image_proof')) {
                 $imagePath = $request->file('image_proof')->store('images', 'public');
             }
 
             $report = FarmerReportsModel::create([
+                'farm_id' => $validated['farm_id'],
                 'farmer_id' => auth()->id() ?? null,
                 'farmer_name' => $validated['farmer_name'],
                 'contact_no' => $validated['contact_no'],
