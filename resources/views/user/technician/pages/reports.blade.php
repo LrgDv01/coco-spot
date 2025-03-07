@@ -76,6 +76,7 @@
                                     'contact_info' => $report->user->contact,
                                     'recipient' => $recipient,
                                     'farm_location' => $report->userFarms->address,
+                                    'district' => $report->userFarms->district,
                                     'farm_size' => $report->userFarms->hectares,
                                     'coconut_trees' => $report->userFarms->planted_coconut,
                                     'coconut_variety' => $report->userFarms->variety

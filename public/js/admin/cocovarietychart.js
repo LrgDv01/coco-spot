@@ -46,7 +46,7 @@ function updateChart(displayYearly, displayMonthly, selectedYear, cocoData, sele
         coconut_chart.destroy();
     }
     const config = {
-        type: "line",
+        type: "bar",
         data: {
             labels: labels,
             datasets: [
@@ -83,6 +83,12 @@ function updateChart(displayYearly, displayMonthly, selectedYear, cocoData, sele
             responsive: true,
             plugins: {
                 legend: { position: "top" },
+                title: {
+                    display: true,
+                    text: `Coconut Varities (${selectedYear})`,
+                    font: { size: 24 },
+                    color: 'black'
+                },
                 tooltip: { enabled: true, intersect: false, mode: "nearest"},
                 zoom: {
                     pan: { enabled: true, mode: 'xy' },
