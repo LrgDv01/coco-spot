@@ -75,6 +75,12 @@ function updateChart(displayYearly, displayMonthly, selectedYear, diseaseData, s
             responsive: true,
             plugins: {
                 legend: { position: "top" },
+                title: {
+                    display: true,
+                    text: `Coconut Diseases (${selectedYear})`,
+                    font: { size: 24 },
+                    color: 'black'
+                },
                 tooltip: { enabled: true },
                 zoom: {
                     pan: { enabled: true, mode: 'xy' },
@@ -108,6 +114,7 @@ function displayDiseaseChart(year = null) {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
               }, 
             success: function (data) {
+                console.log('response', data);
                 if (!data.count_disease) {
                     console.error("Invalid data format received");
                     return;

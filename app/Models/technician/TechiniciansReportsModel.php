@@ -18,6 +18,7 @@ class TechiniciansReportsModel extends Model
         'contact_no',
         'recipient',
         'farm_location',
+        'district',
         'farm_size',
         'coconut_trees',
         'coconut_variety',

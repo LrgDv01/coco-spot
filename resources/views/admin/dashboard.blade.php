@@ -154,17 +154,12 @@
 
                 <div class="row">
                     <div class="col-lg-8 mb-3">
-                        <div class="row">
-                            <div class="col-lg-8 d-flex align-items-center"><h4>Diseases</h4></div>
-                            <div class="col-lg-3 text-start mb-3">
-                                <!-- Dropdown for selecting a specific year -->
-                                <select id="diseaseYearSelect" class="form-select">
-                                    <option value="all" selected place-holder="">Select Year</option> <!-- Option for all years -->
-                                    <!-- Years will be added dynamically in JS -->
-                                </select>
-
-                            </div>
+                        <div class="col-lg-3 mb-3">
+                            <select id="diseaseYearSelect" class="form-select">
+                                <option value="all" selected place-holder="">Select Year</option> 
+                            </select>
                         </div>
+                   
                         <div class="card disease-chart">
                             <div class="card-body p-3">
                               {{--  <div style="width: 100%; margin: auto;">
@@ -178,12 +173,9 @@
                     </div>
                     <div class="col-lg-8 mb-3">
                         <div class="row">
-                            <div class="col-lg-8 d-flex align-items-center"><h4>Coconut Variety</h4></div>
                             <div class="col-lg-3 text-end mb-3">
-                                <!-- <select id="yearSelect" class="form-select"></select> -->
                                 <select id="cocoYearSelect" class="form-select">
-                                    <option value="all" place-holder="">Select Year</option> <!-- Option for all years -->
-                                    <!-- Years will be added dynamically in JS -->
+                                    <option value="all" place-holder="">Select Year</option> 
                                 </select>
                             </div>
                         </div>

@@ -16,13 +16,14 @@ $(document).ready(function() {
               'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function (res) {
-                const locations = res;
-                const simulation = res;
+                const farm_loc = res.farm_loc;
+                const locations = res.locations;
+                const simulation = res.farm_loc;
                 const locationContainer = document.getElementById('map_locations');
                 const simulationContainer = document.getElementById('map_simulation');
                 if (locationContainer) {
                     // selectLocation();
-                    displayMap(locations, mapboxgl);
+                    displayMap(farm_loc, locations, mapboxgl);
                 } else if (simulationContainer) {
                     mapSimulation(simulation, mapboxgl);
                 }
@@ -77,11 +78,12 @@ function generateRandomPolygon(center, numPoints = 6, radius = 0.01) {
     };
 }
 
-async function displayMap(locate, mapboxgl) {
+async function displayMap(farm_loc, locations, mapboxgl) {
+
     const map_locations = new mapboxgl.Map({
         container: 'map_locations',
         style: 'mapbox://styles/mapbox/satellite-streets-v11',
-        center: [121.37575102352582, 14.27976852821142], // Sta. Cruz, Laguna
+        center: [121.37575102352582, 14.27976852821142], 
         zoom: 9,
         minZoom: 3,
         maxZoom: 16,
@@ -94,13 +96,11 @@ async function displayMap(locate, mapboxgl) {
     map_locations.on('load', async () => {
         const data = await geoJsonData();
 
-        // Add municipal GeoJSON source (polygons and points)
         map_locations.addSource('municipal', {
             type: 'geojson',
             data: data
         });
 
-        // Add municipal polygon layer as dashed lines
         map_locations.addLayer({
             id: 'laguna-boundary',
             type: 'line',
@@ -131,7 +131,7 @@ async function displayMap(locate, mapboxgl) {
         });
 
         // Add farm locations from 'locate' parameter with municipal property
-        const farmFeatures = locate.map(farm => ({
+        const farmFeatures = farm_loc.map(farm => ({
             type: 'Feature',
             geometry: {
                 type: 'Point',
@@ -209,7 +209,7 @@ async function displayMap(locate, mapboxgl) {
             if (selectedName === 'All Municipal') {
                 setTimeout(() => {
                     document.getElementById('details').style.display = 'none';
-                    displayMap(locate, mapboxgl); // Reload map to reset filters
+                    displayMap(farm_loc, locations, mapboxgl); // Reload map to reset filters 
                 }, 500);
             } else if (selectedName) {
                 // Filter municipal points
@@ -222,8 +222,9 @@ async function displayMap(locate, mapboxgl) {
                 map_locations.setFilter('farm-polygons-outline', ['==', ['get', 'municipal'], selectedName]);
 
                 // Update details (if applicable)
-                locate.forEach(loc => {
+                locations.forEach(loc => {
                     if (loc.name === selectedName) { // Assuming 'name' might exist; if not, adjust logic
+                        document.getElementById('name').textContent = loc.name || 'N/A';
                         document.getElementById('lot-area').textContent = loc.lot_area || 'N/A';
                         document.getElementById('number-of-trees').textContent = loc.trees || 'N/A';
                         document.getElementById('meters').textContent = loc.meters || 'N/A';
@@ -238,7 +239,9 @@ async function displayMap(locate, mapboxgl) {
         map_locations.on('mouseenter', 'laguna-points', (e) => {
             const coordinates = e.features[0].geometry.coordinates.slice();
             const properties = e.features[0].properties;
-            locate.forEach(loc => {
+            console.log('farm_loc', locations);
+            locations.forEach(loc => {
+                
                 if (loc.name === properties.name) {
                     const description = `
                         <div style="background-color: #28a745; padding: 15px; border-radius: 5px; color: white;">
