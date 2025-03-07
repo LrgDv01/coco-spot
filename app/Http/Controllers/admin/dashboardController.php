@@ -52,55 +52,38 @@ class dashboardController extends Controller
         $districtFilter = $request->input('district'); 
 
         // Filter for Disease
-        // $diseaseYearData = TechiniciansReportsModel::whereYear('created_at', $year)->get();
-
+        // $diseaseYearData = ReportsModel::whereYear('created_at', $year)->get();
 
         $reportQuery = TechiniciansReportsModel::whereYear('created_at', $year);
         if ($districtFilter !== 'all') {
             $reportQuery->where('district', $districtFilter);
         }
+
         $diseaseYearData = $reportQuery->get();
-
-        // Define the list of diseases to track
-        $disease_types = [
-            "Lethal Yellowing",
-            "Leaf Spot",
-            "Stem Bleeding"
+        $disease_type = [
+            "bud_rot" => "Lethal Yellowing",
+            "leaf_spot" => "Leaf Spot",
+            "stem_bleeding" => "Stem Bleeding"
         ];
-
         $count_disease = [];
-        $diseaseDistrict = [];
-        foreach ($diseaseYearData as $item) {
-            $month = Carbon::parse($item->created_at)->format('n'); // 1-12 (no leading zero)
-            $year = Carbon::parse($item->created_at)->format('Y');   // e.g., 2025
+        $diseaseDistrict = []; 
+        foreach ($diseaseYearData as $key => $item) {
+            $month = Carbon::parse($item->created_at)->format('n'); 
+            $year = Carbon::parse($item->created_at)->format('Y'); 
 
-            // Initialize counts for this year/month if not set
             if (!isset($count_disease[$year][$month])) {
-                $count_disease[$year][$month] = array_fill_keys($disease_types, 0);
-                $diseaseDistrict[$year][$month] = []; // Initialize as array to store districts
+                $count_disease[$year][$month] = array_fill_keys(array_keys($disease_type), 0);
+                $diseaseDistrict[$year][$month] = $item->district; 
             }
-
-            // Use diagnosis_disease (single string) instead of disease_type
-            $reported_disease = $item->diagnosis_disease;
-
-            // Increment the count if the disease matches one we're tracking
-            if (in_array($reported_disease, $disease_types)) {
-                $count_disease[$year][$month][$reported_disease]++;
-            }
-
-            // Store the district (append to array to avoid overwriting)
-            $diseaseDistrict[$year][$month][] = $item->district;
-        }
-
-        // Optional: Remove duplicates from districts if needed
-        foreach ($diseaseDistrict as $year => $months) {
-            foreach ($months as $month => $districts) {
-                $diseaseDistrict[$year][$month] = array_unique($districts);
+            $reported_coco = $item->diagnosis_disease ?? [];
+            foreach ($disease_type as $key => $coco) {
+                if ($coco === $reported_coco) {
+                    $count_disease[$year][$month][$key]++;
+                }
             }
         }
 
-        // dd($count_disease, $diseaseDistrict);
-                
+
         // Filter for Coconut Variety
         $farmQuery = FarmModel::whereYear('created_at', $year);
         if ($districtFilter !== 'all') {
