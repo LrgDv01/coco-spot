@@ -22,6 +22,13 @@ class UserFactory extends Factory
             'user_name' => $this->faker->unique()->userName(), 
             'full_name' => $this->faker->name(), 
             'address' => fake()->address(),
+            'municipal' => $this->faker->randomElement([
+                'Alaminos', 'Calauan', 'Cavinti', 'Famy', 'Kalayaan', 'Liliw', 
+                'Luisiana', 'Lumban', 'Mabitac', 'Magdalena', 'Majayjay', 
+                'Nagcarlan', 'Paete', 'Pagsanjan', 'Pakil', 'Pangil', 'Pila', 
+                'Rizal', 'San Pablo', 'Santa Cruz', 'Santa Maria', 'Siniloan', 
+                'Victoria'
+            ]),
             'contact' => $this->faker->unique()->e164PhoneNumber(), 
             'email' => $this->faker->unique()->safeEmail(), 
             'password' => Hash::make('1234'), 

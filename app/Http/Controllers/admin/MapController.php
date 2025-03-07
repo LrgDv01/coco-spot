@@ -10,7 +10,7 @@ class MapController extends Controller
 {
 
     public function get_map_locations() {
-        $farm_loc = FarmModel::select('latitude', 'longitude')->get();
+        $farm_loc = FarmModel::select('latitude', 'longitude', 'municipal')->get();
         // $locations = [];
         // foreach ($map_loc as $location) {
         //     $coordinates = json_decode($location->coordinates, true);

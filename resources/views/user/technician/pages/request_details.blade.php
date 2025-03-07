@@ -4,42 +4,37 @@
     <section class="section services">
         <div class="d-flex flex-column justify-content-between" style="height:85vh;">
             <div class="card shadow-sm p-3" style="border: 1px solid #188754; border-radius: 8px; background-color: #f9f9f9;">
-                <h5 class="card-title text-center pt-0" style="font-weight: bold;">Request Details</h5>
+                <h5 class="card-title text-center pt-0" style="font-weight: bold;">Assigned Farm Details</h5>
                 
                 <div class="mb-2">
-                    <strong>Farmer Name : </strong> {{ $requestDetails->farmer_name }}
+                    <strong>Request ID : </strong> {{ $requestDetails->request_id }}
                 </div>
                 <div class="mb-2">
                     <strong>Date/Time : </strong> {{ \Carbon\Carbon::parse($requestDetails->created_at)->format('F d, Y | h:i A') }}
                 </div>
                 <div class="mb-2">
-                    <strong>Farm Location : </strong><i class="bi bi-geo-alt-fill" style="color: red;"></i> {{ $requestDetails->farms->location }} 
+                    <strong>Farmer Name : </strong> {{ $requestDetails->farmer_name }} 
                 </div>
                 <div class="mb-2">
-                    <strong>Farm Size : </strong> {{ $requestDetails->farms->hectares }} hectares
+                    <strong>Contact No. : </strong> {{ $requestDetails->user->contact }} 
                 </div>
                 <div class="mb-2">
-                    <strong>No. of Coconut Trees : </strong> {{ $requestDetails->farms->planted_coconut }} trees
+                    <strong>Farm Location : </strong><i class="bi bi-geo-alt-fill" style="color: red;"></i> {{ $requestDetails->farmerReports->farm_location }} 
+                </div>
+                <div class="mb-2">
+                    <strong>Detected Disease : </strong> {{ $requestDetails->farmerReports->disease }}
                 </div>
                 <div class="mb-3">
-                    <strong>NOTE : </strong>
-                    <textarea name="note" class="form-control" rows="2" placeholder="Add a note here..."></textarea>
+                    <strong>Admin's Instructions : </strong>
+                    <textarea name="note" class="form-control" rows="2" placeholder="Visit the farmer farm for actual confirmation of this reported disease" disabled></textarea>
                 </div>
-            
                 <div class="d-flex justify-content-center gap-5">
-                    <button type="button" class="btn btn-danger px-3 w-35 btn-block rounded-pill" 
-                            data-status="declined"
-                            data-message="decline"
-                            data-bs-toggle="modal" 
-                            data-bs-target="#actionModal">
-                        <i class="bi bi-x-circle"></i> Decline
-                    </button>
                     <button type="button" class="btn btn-success px-3 w-35 btn-block rounded-pill" 
-                            data-status="accepted"
-                            data-message="accept"
+                            data-status="acknowledge"
+                            data-message="acknowledge"
                             data-bs-toggle="modal" 
                             data-bs-target="#actionModal">
-                        <i class="bi bi-check-circle"></i> Accept
+                        <i class="bi bi-check-circle"></i> Acknowledge & Proceed
                     </button>
                 </div>
             </div>
@@ -61,16 +56,16 @@
         var status = button.data('status');   
         var message = button.data('message'); 
         var modal = $(this);
-        modal.find('.modal-title').text('Confirm ' + message.charAt(0).toUpperCase() + message.slice(1));
+        modal.find('.modal-title').html('<strong>Confirm</strong>');
         modal.find('#actionModalBody').html(
-            `Are you sure you want to <strong>${message}</strong> this request from 
-            <strong>{{ $requestDetails->farmer_name }}</strong>?`
+            `Yes i <strong>${message}</strong> this report and visit
+            <strong>{{ $requestDetails->farmer_name }}</strong> farm.`
         );
         var requestId = "{{ $requestDetails->id }}"; 
         var formAction = `/user/notifications/${requestId}/${status}/request-details`;
         modal.find('#actionForm').attr('action', formAction);
-        var buttonClass = status === 'accepted' ? 'btn-success' : 'btn-danger';
-        var buttonIcon = status === 'accepted' ? 'bi-check-circle' : 'bi-x-circle';
+        var buttonClass = 'btn-success';
+        var buttonIcon = 'bi-check-circle';
         modal.find('#actionSubmitBtn')
             .removeClass('btn-success btn-danger')
             .addClass(buttonClass);

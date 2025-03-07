@@ -15,7 +15,7 @@
                             <div class="form-group mb-1">
                                 <label for="user_type" class="form-label fw-bold">USER TYPE</label>
                                 <select name="user_type" class="form-select py-3" required>
-                                    <option value="" hidden>Select user type</option>
+                                    <option value="" disabled selected hidden>Select user type</option>
                                     <option value="1" {{ old('user_type') == 1 ? 'selected' : '' }}>Farmer</option>
                                     <option value="2" {{ old('user_type') == 2 ? 'selected' : '' }}>Technician</option>
                                 </select>
@@ -46,7 +46,36 @@
                                 <input type="text" name="address" class="form-control py-3" id="address"
                                     placeholder="Enter your address" required>
                             </div>
-                        </div> 
+                        </div>
+                        <div class="col-lg-4 mb-1">
+                            <label for="municipal" class="form-label fw-bold">MUNICIPAL</label>
+                            <select class="form-select py-3" id="municipal" name="municipal" required>
+                                <option value="" disabled selected hidden>Select Municipal</option>
+                                <option value="Alaminos">Alaminos</option>
+                                <option value="Calauan">Calauan</option>
+                                <option value="Cavinti">Cavinti</option>
+                                <option value="Famy">Famy</option>
+                                <option value="Kalayaan">Kalayaan</option>
+                                <option value="Liliw">Liliw</option>
+                                <option value="Luisiana">Luisiana</option>
+                                <option value="Lumban">Lumban</option>
+                                <option value="Mabitac">Mabitac</option>
+                                <option value="Magdalena">Magdalena</option>
+                                <option value="Majayjay">Majayjay</option>
+                                <option value="Nagcarlan">Nagcarlan</option>
+                                <option value="Paete">Paete</option>
+                                <option value="Pagsanjan">Pagsanjan</option>
+                                <option value="Pakil">Pakil</option>
+                                <option value="Pangil">Pangil</option>
+                                <option value="Pila">Pila</option>
+                                <option value="Rizal">Rizal</option>
+                                <option value="San Pablo">San Pablo</option>
+                                <option value="Santa Cruz">Santa Cruz</option>
+                                <option value="Santa Maria">Santa Maria</option>
+                                <option value="Siniloan">Siniloan</option>
+                                <option value="Victoria">Victoria</option>
+                            </select>
+                        </div>
                         <div class="col-lg-4 mb-1">
                             <div class="form-group mb-1">
                                 <label class="form-label fw-bold" for="contact">PHONE NUMBER</label>

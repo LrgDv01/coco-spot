@@ -158,14 +158,14 @@
                 @else
                     <div class="card shadow-sm">
                         <div class="card-header bg-success text-white sticky-top" style="z-index: 1;">
-                            <h4>Notifications</h4>
+                            <h4>Notification</h4>
                         </div>
                         <div class="card-body text-truncate p-0" style="max-height: 80vh; overflow-y: auto;">
                             <ul class="list-group">
                                 @foreach ($notifications as $notifs)
                                     <li class="list-group-item d-flex flex-column align-items-start shadow-sm p-3">
                                         <div class="mb-2">
-                                            <h5 class="mb-1">New Service Request from Farmer</h5>
+                                            <h5 class="mb-1">New Farm Assigned you to Visit</h5>
                                             <p class="mb-1">
                                                 <strong>Request ID:</strong> {{ $notifs->request_id }}<br>
                                                 <strong>Date/Time:</strong> {{ $notifs->created_at->format('F d, Y | h:i A') }}
@@ -262,113 +262,26 @@
         }
     }
 
-
-
-// function openMapApp() {
-//     // Basic geo URI that should work on most mobile devices
-//     window.location.href = 'geo:0,0';
-    
-//     // Optional fallback to web maps
-//     setTimeout(() => {
-//         window.open('https://maps.google.com', '_blank');
-//     }, 1000);
-// }
-
-
-// function openMap(lat, lng, options = {}) {
-//     const { 
-//         zoom = 15, 
-//         label = 'Location',
-//         fallback = true 
-//     } = options;
-
-//     const isAndroid = /android/i.test(navigator.userAgent);
-//     const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-
-//     let url;
-//     if (isIOS) {
-//         url = `maps://?q=${label}&ll=${lat},${lng}&z=${zoom}`;
-//     } else if (isAndroid) {
-//         url = `geo:${lat},${lng}?q=${lat},${lng}(${label})&z=${zoom}`;
-//     }
-
-//     window.location.href = url;
-
-//     if (fallback) {
-//         setTimeout(() => {
-//             window.open(`https://maps.google.com/?q=${lat},${lng}`, '_blank');
-//         }, 1000);
-//     }
-// }
-
     function openMapApp() {
-    const isAndroid = /android/i.test(navigator.userAgent);
-    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+        const isAndroid = /android/i.test(navigator.userAgent);
+        const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-    if (isIOS) {
-        // Opens Apple Maps on iOS
-        window.location.href = 'maps://';
-    } 
-    else if (isAndroid) {
-        // Opens Google Maps on Android
-        window.location.href = 'geo:0,0'; // Opens at user's current location
-    } 
-    else {
-        // Fallback for other devices
-        window.open('https://maps.google.com', '_blank');
+        if (isIOS) {
+            // Opens Apple Maps on iOS
+            window.location.href = 'maps://';
+        } 
+        else if (isAndroid) {
+            // Opens Google Maps on Android
+            window.location.href = 'geo:0,0'; // Opens at user's current location
+        } 
+        else {
+            // Fallback for other devices
+            window.open('https://maps.google.com', '_blank');
+        }
     }
-}
-
 
     function getUserLocation() {
-
         openMapApp();
-
-
-    // Usage with options
-    // openMap(14.273097059992205, 121.4106319904825,  { 
-    //     zoom: 12,
-    //     label: 'Location',
-    //     fallback: true 
-    // });
-
-
-        // initializeMap(longitude, latitude);
-        // openMapApp();
-        // if (navigator.geolocation) {
-        //     navigator.geolocation.getCurrentPosition(
-        //         (position) => {
-        //             const latitude = position.coords.latitude;
-        //             const longitude = position.coords.longitude;
-        //             // document.getElementById('location').value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
-        //             initializeMap(longitude, latitude);
-        //             // if (!marker) {
-        //             //     marker = new mapboxgl.Marker()
-        //             //         .setLngLat([longitude, latitude])
-        //             //         .addTo(map);
-        //             // } else {
-        //             //     marker.setLngLat([longitude, latitude]);
-        //             // }
-        //             // Get initial address
-        //             // getAddressFromCoordinates(longitude, latitude);
-        //         },
-        //         (error) => {
-        //             console.error('Error:', error);
-        //             if (error.code === error.PERMISSION_DENIED) {
-        //                 alert('Please allow location access in your browser or device settings.');
-        //             } else {
-        //                 alert('Unable to retrieve location.');
-        //             }
-        //         },
-        //         {
-        //             enableHighAccuracy: true,
-        //             timeout: 10000,
-        //             maximumAge: 0
-        //         }
-        //     );
-        // } else {
-        //     alert('Geolocation not supported by your browser.');
-        // }
     }
     
     window.addEventListener('resize', () => {

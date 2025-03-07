@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\farmer\FarmModel;
 use App\Models\ServicesModel;
+use App\Models\farmer\FarmerReportsModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -26,6 +27,7 @@ class User extends Authenticatable
         'user_name',
         'full_name',
         'address',
+        'municipal',
         'contact',
         'email',
         'password',
@@ -69,5 +71,9 @@ class User extends Authenticatable
     public function farms()
     {
         return $this->hasMany(FarmModel::class, 'farmer_id', 'id');
+    }
+    public function farmerReport() 
+    {
+        return $this->hasOne(FarmerReportsModel::class, 'technician_id', 'id');
     }
 }

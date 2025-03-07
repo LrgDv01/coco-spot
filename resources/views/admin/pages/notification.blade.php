@@ -3,34 +3,30 @@
 
 <main id="main" class="main">
     <div class="pagetitle mb-5">
-        <h1><strong>Notification</strong></h1>
+        <h1><strong>{{ $notification->farmer_name}}'s Report</strong></h1>
     </div>
     <section class="section notications">
         <div class="row p-0 m-0">
-            <div class="col-lg-6 mb-3">
-                <div class="card mb-3" style="background-color:rgb(218, 180, 182);">
-                    <div class="card-body">
-                        <h5 class="card-title text-center pb-0">
-                        <strong>System Status</strong> </h5><hr>
-                        <p class="text-muted">Initial disease indenfication complete. A technician has been automatically assigned for verification.</p>
-                        <p class="card-text text-truncate fs-5 mb-0">
-                        <strong>Detected Disease:</strong><span class="text-danger ms-3"><strong>{{$notification->disease}}</strong></span></p>
-                        <div class="d-flex flex-row mt-3">
-                            <p class="card-text text-truncate fs-6 mb-1 align-self-start"><strong>Proof Image Taken:</strong></p>
-                            <img class="ms-3 align-self-center" src="{{ URL::asset('storage/'. $notification->image_path) }}" width="100px" height="auto" alt="report-disease">
+            <div class="col-lg-6">
+                <div class="row p-0 m-0">
+                    <div class="card h-100" style="background-color:rgb(178, 214, 178);">
+                        <div class="card-body">
+                            <h5 class="card-title text-center"><strong>Assigned Technician</strong></h5>
+                            <p class="card-text text-truncate">
+                                <strong>Name :</strong> {{ $notification->technician->full_name}}<br>
+                                <strong>Address :</strong> {{ $notification->technician->address }}<br>
+                                <strong>Contact No. :</strong> {{ $notification->technician-> contact }}<br>
+                            </p>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-6">
                 <div class="row p-0 m-0">
-                    <div class="card" style="background-color:rgb(178, 214, 178);">
+                    <div class="card h-100" style="background-color:rgb(178, 214, 178);">
                         <div class="card-body">
-                            <h5 class="card-title pb-0">
-                                <strong>Farmer Details</strong> </h5><hr>
-                                <p class="card-text text-truncate">
-                                <strong>Farmer Name :</strong> {{ $notification->farmer_name ?? 'John' }}<br>
-                                <strong>Contact Information :</strong> {{ $notification->contact_no }}<br>
+                            <h5 class="card-title text-center"><strong>Reporting Farmer</strong></h5>
+                            <p class="card-text text-truncate">
+                                <strong>Name :</strong> {{ $notification->farmer_name}}<br>
+                                <strong>Contact No. :</strong> {{ $notification->contact_no }}<br>
                                 <strong>Farm Location :</strong> {{ $notification->farm_location }}<br>
                                 <strong>Farm Size :</strong> {{ $notification->farm_size }}<br>
                                 <strong>No. of Coconut Trees :</strong> {{ $notification->coconut_trees }}<br>
@@ -57,7 +53,7 @@
                                     'stem_decay' => 'Decay of the internal stem. - (Pagkabulok ng panloob na tangkay.)'
                                 ];
                             @endphp 
-                            <h5 class="card-title pb-0"><strong>Observed Symptoms</strong></h5><hr>
+                            <h5 class="card-title pb-0"><strong>Observed Symptoms</strong></h5>
                             @if ($notification->symptoms)
                                 <ul>
                                     @foreach (is_array($notification->symptoms) ? $notification->symptoms : json_decode($notification->symptoms, true) as $symptom)
@@ -71,7 +67,128 @@
                     </div>
                 </div>
             </div>
+            <div class="col-lg-6">
+                <div class="row p-0 m-0">
+                    <div class="card mb-3" style="background-color:rgb(218, 180, 182);">
+                        <div class="card-body">
+                            <h5 class="card-title text-start pb-0">
+                            <strong>System Status</strong> </h5>
+                            <p class="text-muted">Initial disease indenfication complete. A technician has been automatically assigned for verification.</p>
+                            <p class="card-text text-truncate fs-5 mb-0">
+                            <strong>Detected Disease:</strong><span class="text-danger ms-3"><strong>{{$notification->disease}}</strong></span></p>
+                            <div class="d-flex flex-row mt-3">
+                                <p class="card-text text-truncate fs-6 mb-1 align-self-start"><strong>Proof Image Taken:</strong></p>
+                                <img class="ms-3 align-self-center p-1 rounded rounded-3 border border-1 border-danger" 
+                                    src="{{ URL::asset('storage/'. $notification->image_path) }}" width="50%" height="auto" alt="report-disease">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row p-0 m-0">
+            <form id="verified" action="/admin/verified-report" method="POST">
+                @csrf
+                <input type="hidden" name="farmer_id" value="{{ $notification->farmer_id }}">
+                <input type="hidden" name="technician_id" value="{{ $notification->technician_id }}">
+                <input type="hidden" name="farmer_name" value="{{ $notification->farmer_name }}">
+
+                <div class="d-flex flex-row justify-content-end align-items-center mt-3">
+                    <a href="{{ url()->previous() }}" class="btn btn-outline-secondary mx-3">Close</a>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> | Confirm Assign</button>
+                </div>
+            </form>
+        </div>
+        <div class="modal fade" id="confirmVerificationModal" tabindex="-1" aria-labelledby="confirmVerificationModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmVerificationModalLabel"><strong>Confirm assigned</strong></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Confirm the system assigned technician on this report ?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                        <button type="button" class="btn btn-success" id="confirmVerifyBtn">Yes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Success Modal -->
+        <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="successModalLabel"><strong>Success</strong></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Report assigned successfully!
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 </main>
 @include('admin.partials.__footer')
+
+<script>
+    $(document).ready(function () {
+        let $form;
+        $(document).on('submit', '#verified', function (event) {
+            event.preventDefault();
+            $form = $(this);
+            const $submitButton = $form.find('.btn-success');
+            $('#confirmVerificationModal').modal('show');
+        });
+
+        $('#confirmVerifyBtn').on('click', function () {
+            const $submitButton = $form.find('.btn-success');
+            $.ajax({
+                url: '/admin/verified-report',
+                method: 'POST',
+                data: $form.serialize(),
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                beforeSend: function () {
+                    $submitButton.prop('disabled', true);
+                },
+                success: function (response) {
+                    if (response.success) {
+                        $submitButton.prop('disabled', true);
+                        $('#confirmVerificationModal').modal('hide');
+                        $('#successModal').modal('show');
+                        $('#successModal').on('hidden.bs.modal', function () {
+                            window.location.href = "{{ url()->previous() }}";
+                        });
+                    } else {
+                        throw new Error(response.message || 'Verification failed');
+                    }
+                },
+                error: function (xhr) {
+                    let errorMessage = 'Failed to verify report. Please try again.';
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        errorMessage = response.message || errorMessage;
+                    } catch (e) {
+                        console.error('Error parsing response:', e);
+                    }
+                    console.error('AJAX Error:', xhr.status);
+                    alert(errorMessage); 
+                },
+                complete: function () {
+                    if (!this.success) { 
+                        $submitButton.prop('disabled', false);
+                    }
+                    $('#confirmVerificationModal').modal('hide');
+                }
+            });
+        });
+    });
+</script>

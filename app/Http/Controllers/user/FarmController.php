@@ -60,27 +60,77 @@ class FarmController extends Controller
     //     }
     // }
 
+    // public function store(Request $request)
+    // {
+    //     $request->merge(['farmer_id' => auth()->id()]);
+    //     try {
+    //         $validated = $request->validate([
+    //             'farmer_id' => 'required|exists:users,id',
+    //             'name' => 'required|string|max:255',
+    //             'location' => 'required|string|regex:/^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/',
+    //             'address' => 'nullable|string|max:255',
+    //             'municipal' => 'nullable|string|max:255',
+    //             'district' => 'required|string|max:255',
+    //             'variety' => 'nullable|string|max:255',
+    //             'hectares' => 'required|numeric|min:0',
+    //             'tree_age' => 'nullable|integer|min:0',
+    //             'planted_coconut' => 'nullable|integer|min:0',
+    //         ]);
+    //         [$latitude, $longitude] = array_map('floatval', explode(',', $validated['location']));
+    //         unset($validated['location']);
+    //         $validated['latitude'] = $latitude;
+    //         $validated['longitude'] = $longitude;
+    //         $validated['address'] = $request->input('address');
+    //         $farm = FarmModel::create($validated);
+    //         return response()->json(['success' => true, 'farm' => $farm]);
+    //     } catch (\Illuminate\Validation\ValidationException $e) {
+    //         return response()->json([
+    //             'errors' => $e->errors()
+    //         ], 422);
+    //     }
+    // }
+
     public function store(Request $request)
     {
         $request->merge(['farmer_id' => auth()->id()]);
+        
+        $location = $request->input('location');
+        if ($location) {
+            // Clean the input
+            $cleaned = preg_replace('/[°NEWS]/i', '', $location); 
+            $cleaned = preg_replace('/\s*,\s*/', ',', $cleaned);  
+            $cleaned = trim($cleaned);
+            $request->merge(['location' => $cleaned]);
+        }
         try {
             $validated = $request->validate([
                 'farmer_id' => 'required|exists:users,id',
                 'name' => 'required|string|max:255',
-                'location' => 'required|string|regex:/^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/',
+                'location' => 'required|string|regex:/^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/', 
                 'address' => 'nullable|string|max:255',
+                'municipal' => 'nullable|string|max:255',
                 'district' => 'required|string|max:255',
                 'variety' => 'nullable|string|max:255',
                 'hectares' => 'required|numeric|min:0',
                 'tree_age' => 'nullable|integer|min:0',
                 'planted_coconut' => 'nullable|integer|min:0',
             ]);
-            [$latitude, $longitude] = array_map('floatval', explode(',', $validated['location']));
+            // Split coordinates (works with or without space)
+            [$latitude, $longitude] = array_map('floatval', explode(',', str_replace(' ', '', $validated['location'])));
+            
+            // Optional: Coordinate range validation
+            if ($latitude < -90 || $latitude > 90 || $longitude < -180 || $longitude > 180) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'location' => ['The coordinates are out of valid range.']
+                ]);
+            }
             unset($validated['location']);
             $validated['latitude'] = $latitude;
             $validated['longitude'] = $longitude;
             $validated['address'] = $request->input('address');
+
             $farm = FarmModel::create($validated);
+            
             return response()->json(['success' => true, 'farm' => $farm]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
@@ -88,4 +138,6 @@ class FarmController extends Controller
             ], 422);
         }
     }
+
+   
 }
