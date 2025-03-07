@@ -1,6 +1,7 @@
 <?php
 
 namespace Database\Factories;
+
 use App\Models\User;
 use App\Models\TechnicianModel;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 class TechnicianModelFactory extends Factory
 {
     protected $model = TechnicianModel::class;
+
     /**
      * Define the model's default state.
      *

@@ -18,12 +18,13 @@ return new class extends Migration
             $table->decimal('latitude', 10, 7); 
             $table->decimal('longitude', 10, 7);
             $table->string('address')->nullable();
+            $table->string('municipal', 255)->nullable();
             $table->string('district', 255);
             $table->string('variety', 255)->nullable();
             $table->decimal('hectares', 8, 2);  
             $table->integer('tree_age')->nullable();
             $table->integer('planted_coconut')->nullable();
-            $table->string('condition', 255)->nullable();
+            // $table->string('condition', 255)->nullable();
             $table->timestamps();     
         }); 
     }

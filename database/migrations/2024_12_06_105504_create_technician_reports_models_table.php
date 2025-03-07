@@ -13,21 +13,19 @@ return new class extends Migration
     {
         Schema::create('technician_reports', function (Blueprint $table) {
             $table->id();
-            // $table->foreignId('technician_id')->constrained('users')->onDelete('cascade')->nullable();
-            $table->foreignId('technician_id')->constrained('technicians_info')->onDelete('cascade')->nullable();
-            $table->foreignId('farm_id')->constrained('farms')->onDelete('cascade')->nullable();
+            $table->foreignId('technician_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('farm_id')->constrained('farms')->onDelete('cascade');
             $table->string('farmer_name'); 
             $table->string('contact_no'); 
             $table->string('recipient'); 
-            $table->string('farm_name');
             $table->string('farm_location'); 
-            $table->string('district');
             $table->decimal('farm_size', 10, 2); 
             $table->bigInteger('coconut_trees'); 
             $table->string('coconut_variety');
-            $table->string('soil_type'); 
-            $table->json('disease_type'); 
-            $table->text('note'); 
+            $table->string('diagnosis_disease'); 
+            $table->text('treatment_recommendation'); 
+            $table->string('image_proof'); 
+            $table->string('status'); 
             $table->timestamps();
         });
     }

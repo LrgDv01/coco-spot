@@ -25,6 +25,7 @@ class FarmModel extends Model
         'latitude',
         'longitude',
         'address',
+        'municipal',
         'district',
         'variety',
         'hectares',

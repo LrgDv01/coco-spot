@@ -17,43 +17,21 @@ class ReportsController extends Controller
     {
         $technicianId = auth()->id();
         $recipient = auth()->user()->full_name;
-        // $reports = ServicesModel::with(['user', 'userFarms']) 
-        //     ->where([['technician_id', $technicianId], ['status','accepted']])
-        //     ->get();
-        $reports = ServicesModel::with(['user', 'userFarms'])
+        $report = ServicesModel::with(['user', 'userFarms', 'farmerReports'])
             ->where(function ($query) use ($technicianId) {
                 $query->where('technician_id', $technicianId)
-                    ->whereIn('status', ['accepted', 'end']);
-            })
-            ->get();
-   
-        $submitted = TechiniciansReportsModel::where([['technician_id', $technicianId]])
-            ->pluck('farm_id')
-            ->toArray();
-
-        $submittedReports = TechiniciansReportsModel::select('farm_id', 'soil_type', 'disease_type', 'note')
-            ->where('technician_id', $technicianId)
-            ->get()
-            ->mapWithKeys(function ($report) {
-                return [
-                    $report->farm_id => [
-                        'soil_type' => $report->soil_type,
-                        'disease_types' => explode(',', $report->disease_type), 
-                        'note' => $report->note,
-                    ],
-                ];
-            });
+                    ->whereIn('status', ['acknowledge', 'end']);
+            })->first();
         
         return view('user.technician.pages.reports',
             compact(
-                'reports',
+                'report',
                 'recipient',
-                'submitted',
-                'submittedReports'
         ));
     }
 
-    private function checkStatus() {
+    // important > called on "technicianReport" function here
+    private function checkStatus() { 
         $existingReportsCount = FarmModel::whereHas('reports')
             ->update(['condition' => 'is Healthy']);
 
@@ -74,7 +52,7 @@ class ReportsController extends Controller
         }
     }
 
-    public function submitReport(Request $request, ServicesController $servicesController)
+    public function technicianReport(Request $request)
     {
         try {
             $validated = $request->validate([
@@ -82,42 +60,36 @@ class ReportsController extends Controller
                 'farmer_name' => 'required|string',
                 'contact_info' => 'required|string',
                 'recipient' => 'required|string',
-                'farm_name' => 'required|string',
                 'farm_location' => 'required|string',
-                'farm_district' => 'required|string',
                 'farm_size' => 'required|string', 
                 'coconut_trees' => 'required|numeric', 
                 'coconut_variety' => 'required|string',
-                'soil_type' => 'required|array',
-                'disease_types' => 'required|array',
-                'note' => 'required|array',
+                'diagnosis_disease' => 'required|string',
+                'treatment_recommendation' => 'required|string',
+                'image_proof' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'status' => 'required|string',
             ]);
-    
-            $soilType = implode(', ', array_values($validated['soil_type'])); 
-            $diseaseTypes = array_merge(...$validated['disease_types']); 
-            $diseaseTypes = json_encode($diseaseTypes); 
-
-            $note = implode(' ', array_values($validated['note'])); 
+            $imagePath = null;
+            if ($request->hasFile('image_proof')) {
+                $imagePath = $request->file('image_proof')->store('images', 'public');
+            }
             $reportDetail = TechiniciansReportsModel::create([
                 'technician_id' => auth()->id(),
                 'farm_id' => $validated['farm_id'],
                 'farmer_name' => $validated['farmer_name'],
                 'contact_no' => $validated['contact_info'],
                 'recipient' => $validated['recipient'],
-                'farm_name' => $validated['farm_name'],
                 'farm_location' => $validated['farm_location'],
-                'district' => $validated['farm_district'],
                 'farm_size' => $validated['farm_size'],
                 'coconut_trees' => $validated['coconut_trees'],
                 'coconut_variety' => $validated['coconut_variety'],
-                'soil_type' => $soilType,
-                'disease_type' => $diseaseTypes,
-                'note' => $note,
+                'diagnosis_disease' => $validated['diagnosis_disease'],
+                'treatment_recommendation' => $validated['treatment_recommendation'],
+                'image_proof' => $imagePath,
+                'status' => $validated['status'],
             ]);
-
-           $this->checkStatus();
-
-            return redirect()->route('user.reports')->with('success', 'Report submitted successfully');
+            // $this->checkStatus();
+            return response()->json(['success' => true, 'message' => 'Report submitted successfully']);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return redirect()->route('user.reports')->with('error', 'The specified report could not be found.');
         } catch (\Exception $e) {
@@ -126,11 +98,8 @@ class ReportsController extends Controller
             ]);
             return redirect()->route('user.reports')->with('error', 'An unexpected error occurred. Please try again.');
         }
+        return redirect()->route('user.reports')->with('success', 'Report submitted successfully');
     }
-
-
-
-
 }
 
 

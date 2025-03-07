@@ -80,7 +80,6 @@ class dashboardController extends Controller
                 }
             }
         }
-
         // Filter for Coconut Variety
         $farmQuery = FarmModel::whereYear('created_at', $year);
         if ($districtFilter !== 'all') {

@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\farmer\FarmModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\farmer\FarmerReportsModel;
 use App\Models\technician\TechiniciansReportsModel;
 
 class ServicesModel extends Model
@@ -53,11 +54,15 @@ class ServicesModel extends Model
     }
 
     public function userFarms() {
-        return $this->hasMany(FarmModel::class, 'farmer_id', 'farmer_id');
+        return $this->hasOne(FarmModel::class, 'farmer_id', 'farmer_id');
     }
 
     public function reports() {
         return $this->hasOne(TechiniciansReportsModel::class, 'technician_id', 'technician_id');
+    }
+
+    public function farmerReports() {
+        return $this->hasOne(FarmerReportsModel::class, 'farmer_id', 'farmer_id'); 
     }
 
 }

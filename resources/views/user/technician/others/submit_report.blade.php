@@ -1,9 +1,9 @@
 <!-- Modal (confirm submit) -->
-<div class="modal fade" id="actionModal{{ $farmId }}" tabindex="-1" aria-labelledby="actionModalLabel{{ $farmId }}" aria-hidden="true">
+<div class="modal fade" id="actionModal" tabindex="-1" aria-labelledby="actionModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="actionModalLabel{{ $farmId }}">Confirm Report Submission</h5>
+                <h5 class="modal-title" id="actionModalLabel">Confirm Report Submission</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -11,12 +11,11 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Later</button>
-                <button type="button" class="btn btn-success" onclick="submitReportForm({{ $farmId }})">Yes, Submit now</button>
+                <button type="button" class="btn btn-success" onclick="submitReportForm()">Yes, Submit now</button>
             </div>
         </div>
     </div>
 </div>
-
 
 <!-- Success Modal -->
 <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">

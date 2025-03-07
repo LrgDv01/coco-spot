@@ -58,6 +58,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/admin/api/notifications', [NotificationController::class, 'getNotifications'])->name('admin.notifications.get');
         // Route::get('/admin/api/notifications', [NotificationController::class, 'showNotif'])->name('admin.notifications.get');
         Route::get('/admin/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('admin.notifications.read');
+   
+        
         
         Route::get('/admin', [dashboardController::class, 'display_dashboard'])->name('admin.dashboard');
         // Route::get('/admin/map', [MapController::class, 'view_map'])->name('admin.map'); 
@@ -68,7 +70,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/admin/get_dashboard_info', [dashboardController::class, 'get_dashboard_info'])->name('get_dashboard_info');
         // Route::get('/admin/get_dashboard_info', [dashboardController::class, 'get_dashboard_info'])->name('get_dashboard_info');
         Route::middleware(['web'])->group(function () {
-
+            Route::post('/admin/verified-report', [ServicesController::class, 'adminVerified'])->name('admin.verified-report');
         });
     })->middleware('redirect.nonadmin');
     
@@ -93,16 +95,13 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::middleware(['technician'])->group(function () {
-
-        Route::get('/user/notifications', [NotificationController::class, 'index'])->name('user.notifications');
+        Route::get('/user/notifications', [NotificationController::class, 'technicianNotif'])->name('user.notifications');
         Route::get('/user/notifications/{id}/request-details', [NotificationController::class, 'viewDetails'])->name('user.viewDetails');
         Route::get('/user/reports', [ReportsController::class, 'index'])->name('user.reports');
         Route::get('/user/technician/settings', [ProfileController::class, 'index'])->name('user.settings');
-
         Route::middleware(['web'])->group(function () {
-         
             Route::post('/user/notifications/{id}/{status}/request-details', [ServicesController::class, 'updateStatus'])->name('update.status');
-            Route::post('/reports/submit', [ReportsController::class, 'submitReport'])->name('reports.submit');
+            Route::post('/user/technician-report', [ReportsController::class, 'technicianReport'])->name('user.technician-report');
             Route::post('/user/update-field', [ProfileController::class, 'updateField'])->name('user.update-profile');
             Route::post('/user/update-profile', [ProfileController::class, 'updateProfile'])->name('user.update-profile');
         });
