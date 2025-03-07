@@ -26,7 +26,7 @@
                     </div>
                 </div>
                 <div class="card-footer text-end">
-                    <button class="btn btn-outline-success">Simulate</button>
+                    <button id="silumate-button" class="btn btn-outline-success">Simulate</button>
                 </div>
             </div>
             <div id="map_simulation" style="width: 100%; height: 700px;"></div>
