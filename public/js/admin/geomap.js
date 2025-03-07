@@ -45,6 +45,7 @@ function zoomOut(map) {
     });
 
 } 
+
 async function geoJsonData() {
     try {
         const response = await fetch('/geojson/laguna_map.geojson');
@@ -55,6 +56,7 @@ async function geoJsonData() {
         throw error;
     }
 }
+
 
 // Function to generate a random polygon around a center point
 function generateRandomPolygon(center, numPoints = 6, radius = 0.01) {
@@ -264,186 +266,260 @@ async function displayMap(farm_loc, locations, mapboxgl) {
     });
 }
 
+
+// Function to generate a random polygon around a center point
+
+function simulateGenerateRandomPolygon(center, numPoints = 6, radius = 0.01) {
+    const points = [];
+    for (let i = 0; i < numPoints; i++) {
+        const angle = (i / numPoints) * 2 * Math.PI;
+        const randomRadius = radius * (0.5 + Math.random() * 0.5);
+        const randomAngle = angle + (Math.random() - 0.5) * 0.5;
+        const lon = center[0] + randomRadius * Math.cos(randomAngle);
+        const lat = center[1] + randomRadius * Math.sin(randomAngle);
+        points.push([lon, lat]);
+    }
+    points.push(points[0]); // Close the polygon
+    return {
+        type: 'Feature',
+        geometry: {
+            type: 'Polygon',
+            coordinates: [points]
+        },
+        properties: { center } // Store center for scaling
+    };
+}
+
+// Function to scale a polygon by factor k
+function scalePolygon(originalPolygon, k) {
+    const center = originalPolygon.properties.center;
+    const points = originalPolygon.geometry.coordinates[0];
+    const scaledPoints = points.map(point => {
+        const newLon = center[0] + k * (point[0] - center[0]);
+        const newLat = center[1] + k * (point[1] - center[1]);
+        return [newLon, newLat];
+    });
+    return {
+        type: 'Feature',
+        geometry: {
+            type: 'Polygon',
+            coordinates: [scaledPoints]
+        },
+        properties: originalPolygon.properties
+    };
+}
 async function mapSimulation(simulate, mapboxgl) {
     const map_simulation = new mapboxgl.Map({
         container: 'map_simulation',
         style: 'mapbox://styles/mapbox/satellite-streets-v11',
-        center: [121.423, 14.281],
-        zoom: 10, // Adjusted for better visibility of Laguna
+        center: [121.37575102352582, 14.27976852821142],
+        zoom: 9,
         minZoom: 3,
         maxZoom: 16,
         maxBounds: [
-            [120.99, 13.8],
-            [122.10, 14.7]
+            [121.0, 13.8], // Southwest
+            [122.0, 14.8]  // Northeast
         ]
     });
 
-    map_simulation.on('load', async function () {
-        // Load point data from geoJsonData
-        const pointData = await geoJsonData();
-        console.log('geoJsonData output:', pointData);
+    map_simulation.on('load', async () => {
+        const data = await geoJsonData();
 
-        // Add points as markers
-        map_simulation.addSource('towns', {
+        map_simulation.addSource('municipal', {
             type: 'geojson',
-            data: pointData
+            data: data
         });
+
         map_simulation.addLayer({
-            id: 'towns-layer',
-            type: 'circle',
-            source: 'towns',
+            id: 'laguna-boundary',
+            type: 'line',
+            source: 'municipal',
+            filter: ['==', '$type', 'Polygon'],
             paint: {
-                'circle-radius': 5,
-                'circle-color': '#007cbf'
+                'line-color': '#FFD700',
+                'line-width': 3,
+                'line-dasharray': [2, 2]
             }
         });
 
-        // Generate random polygons around each point
-        function generateRandomPolygon(center, numPoints = 6, radius = 0.01) {
-            const points = [];
-            for (let i = 0; i < numPoints; i++) {
-                const angle = (i / numPoints) * 2 * Math.PI;
-                const randomRadius = radius * (0.5 + Math.random() * 0.5); 
-                const randomAngle = angle + (Math.random() - 0.5) * 0.5; 
-                const lon = center[0] + randomRadius * Math.cos(randomAngle);
-                const lat = center[1] + randomRadius * Math.sin(randomAngle);
-                points.push([lon, lat]);
-            }
-            points.push(points[0]); // Close the polygon
-            return {
-                type: 'Feature',
-                geometry: {
-                    type: 'Polygon',
-                    coordinates: [points]
-                },
-                properties: { center: center }
-            };
-        }
-
-        // Create initial geofences for each point
-        const initialGeofences = pointData.features.map(feature => {
-            const center = feature.geometry.coordinates;
-            return generateRandomPolygon(center);
+        // Add municipal points layer
+        map_simulation.loadImage('/img/municipal_loc.png', (error, image) => {
+            if (error) throw error;
+            map_simulation.addImage('custom-location-icon', image);
+            map_simulation.addLayer({
+                id: 'laguna-points',
+                type: 'symbol',
+                source: 'municipal',
+                filter: ['==', '$type', 'Point'],
+                // layout: {
+                //     'icon-image': 'custom-location-icon',
+                //     'icon-size': 0.1,
+                //     'icon-allow-overlap': true
+                // }
+            });
         });
-        let currentGeofences = initialGeofences.map(g => ({ ...g })); // Deep copy for animation
 
-        // Function to calculate the center of a polygon
-        function calculateCenter(polygon) {
-            let points = polygon.geometry.coordinates[0];
-            let sumLon = 0, sumLat = 0;
-            for (let i = 0; i < points.length - 1; i++) {
-                sumLon += points[i][0];
-                sumLat += points[i][1];
+        // Add farm locations from 'simulate' parameter with municipal property
+        const farmFeatures = simulate.map(farm => ({
+            type: 'Feature',
+            geometry: {
+                type: 'Point',
+                coordinates: [parseFloat(farm.longitude), parseFloat(farm.latitude)]
+            },
+            properties: {
+                municipal: farm.municipal
             }
-            let numPoints = points.length - 1;
-            return [sumLon / numPoints, sumLat / numPoints];
-        }
+        }));
 
-        // Function to scale a polygon by factor k
-        function scalePolygon(originalPolygon, k) {
-            const center = originalPolygon.properties.center; // Use original point as center
-            let points = originalPolygon.geometry.coordinates[0];
-            let scaledPoints = points.map(point => {
-                let newLon = center[0] + k * (point[0] - center[0]);
-                let newLat = center[1] + k * (point[1] - center[1]);
-                return [newLon, newLat];
-            });
-            if (scaledPoints[0][0] !== scaledPoints[scaledPoints.length - 1][0] ||
-                scaledPoints[0][1] !== scaledPoints[scaledPoints.length - 1][1]) {
-                scaledPoints.push(scaledPoints[0]);
-            }
+        // Generate initial farm polygons
+        const initialFarmPolygons = farmFeatures.map(farm => {
+            const center = farm.geometry.coordinates;
             return {
-                type: 'Feature',
-                geometry: {
-                    type: 'Polygon',
-                    coordinates: [scaledPoints]
-                },
-                properties: originalPolygon.properties
+                ...simulateGenerateRandomPolygon(center),
+                properties: {
+                    municipal: farm.properties.municipal,
+                    center // Store center in properties for animation
+                }
             };
-        }
+        });
 
-
-        let startTime = Date.now();
-        let duration = 5000; 
-        let max_k = 2;
-
- 
-        function animate() {
-            let currentTime = Date.now();
-            let elapsedTime = currentTime - startTime;
-            let k = 1 + (elapsedTime / duration) * (max_k - 1);
-            if (k >= max_k) {
-                k = max_k;
-                return; 
-            }
-            currentGeofences = initialGeofences.map(g => scalePolygon(g, k));
-            map_simulation.getSource('geofences').setData({
-                type: 'FeatureCollection',
-                features: currentGeofences
-            });
-            requestAnimationFrame(animate);
-        }
-
-        map_simulation.addSource('geofences', {
+        // Add farm points source and layer
+        map_simulation.addSource('farms', {
             type: 'geojson',
             data: {
                 type: 'FeatureCollection',
-                features: initialGeofences
+                features: farmFeatures
             }
         });
         map_simulation.addLayer({
-            id: 'geofence-layer',
+            id: 'farm-points',
+            type: 'circle',
+            source: 'farms',
+            paint: {
+                'circle-radius': 5,
+                'circle-color': '#FF4500'
+            }
+        });
+
+        // Add farm polygons source and layer with dashed lines
+        map_simulation.addSource('farm-polygons', {
+            type: 'geojson',
+            data: {
+                type: 'FeatureCollection',
+                features: initialFarmPolygons
+            }
+        });
+        // map_simulation.addLayer({
+        //     id: 'farm-polygons-outline',
+        //     type: 'line',
+        //     source: 'farm-polygons',
+        //     paint: {
+        //         'line-color': '#FF4500',
+        //         'line-width': 2,
+        //         'line-dasharray': [2, 2]
+        //     }
+        // });
+
+        map_simulation.addLayer({
+            id: 'farm-polygons-fill',
             type: 'fill',
-            source: 'geofences',
+            source: 'farm-polygons',
             paint: {
-                'fill-color': '#cb5e65',
-                'fill-opacity': 0.4
-            }
-        });
-        map_simulation.addLayer({
-            id: 'geofence-outline',
-            type: 'line',
-            source: 'geofences',
-            paint: {
-                'line-color': '#cb5e65',
-                'line-width': 2
+                'fill-color': '#FF4500', // Orange fill
+                'fill-opacity': 0.4      // Semi-transparent
             }
         });
 
-        const marker = new mapboxgl.Marker({ draggable: true })
-            .setLngLat([121.423, 14.281])
-            .addTo(map_simulation);
+        // Animation setup
+        let isAnimating = false;
+        const duration = 5000; // 5 seconds
+        const maxScale = 2; // Max scale factor
 
-        marker.on('dragend', () => {
-            const lngLat = marker.getLngLat();
-            const point = turf.point([lngLat.lng, lngLat.lat]);
-            let isInsideAny = false;
-            let nearestBoundary = null;
-            let minDistance = Infinity;
+        function animatePolygons() {
+            if (isAnimating) return; // Prevent multiple animations
+            isAnimating = true;
 
-            currentGeofences.forEach(geofence => {
-                if (turf.booleanPointInPolygon(point, geofence)) {
-                    isInsideAny = true;
+            const startTime = Date.now();
+            let currentPolygons = initialFarmPolygons.map(p => ({ ...p })); // Reset to initial state
+
+            function step() {
+                const currentTime = Date.now();
+                const elapsedTime = currentTime - startTime;
+                let k = 1 + (elapsedTime / duration) * (maxScale - 1); // Scale from 1 to maxScale
+
+                if (k >= maxScale) {
+                    k = maxScale; // Cap at max scale
+                    isAnimating = false;
                 } else {
-                    const geofenceLine = turf.polygonToLine(geofence);
-                    const nearest = turf.nearestPointOnLine(geofenceLine, point);
-                    const distance = turf.distance(point, nearest);
-                    if (distance < minDistance) {
-                        minDistance = distance;
-                        nearestBoundary = nearest.geometry.coordinates;
-                    }
+                    requestAnimationFrame(step); // Continue animation
+                }
+
+                currentPolygons = initialFarmPolygons.map(polygon => scalePolygon(polygon, k));
+                map_simulation.getSource('farm-polygons').setData({
+                    type: 'FeatureCollection',
+                    features: currentPolygons
+                });
+            }
+
+            requestAnimationFrame(step);
+        }
+
+        // Add button event listener (assuming button exists in HTML)
+        document.getElementById('silumate-button').addEventListener('click', () => {
+            animatePolygons();
+        });
+
+        // Populate dropdown
+        const dropdown = document.getElementById('location');
+        const names = data.features
+            .filter(feature => feature.properties.name)
+            .map(feature => feature.properties.name)
+            .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+        names.forEach(name => {
+            const option = document.createElement('option');
+            option.value = name;
+            option.textContent = name;
+            dropdown.appendChild(option);
+        });
+
+        // Dropdown change event with filtering for farm locations
+        document.getElementById('location').addEventListener('change', (event) => {
+            const selectedName = event.target.value;
+            if (selectedName === 'All Municipal') {
+                setTimeout(() => {
+                    document.getElementById('details').style.display = 'none';
+                    mapSimulation(simulate, mapboxgl); // Reload map to reset filters
+                }, 500);
+            } else if (selectedName) {
+                map_simulation.setFilter('laguna-points', ['==', 'name', selectedName]);
+                map_simulation.setFilter('farm-points', ['==', ['get', 'municipal'], selectedName]);
+                map_simulation.setFilter('farm-polygons-outline', ['==', ['get', 'municipal'], selectedName]);
+            }
+        });
+
+        let popup = null;
+        map_simulation.on('mouseenter', 'laguna-points', (e) => {
+            const coordinates = e.features[0].geometry.coordinates.slice();
+            const properties = e.features[0].properties;
+            simulate.forEach(loc => {
+                if (loc.municipal === properties.name) { // Adjusted to use municipal if applicable
+                    const description = `
+                        <div style="background-color: #28a745; padding: 15px; border-radius: 5px; color: white;">
+                            <strong>${properties.name}</strong><br>
+                            Lot Area: ${loc.lot_area || 'N/A'}<br>
+                            Trees: ${loc.trees || 'N/A'}<br>
+                            Meters: ${loc.meters || 'N/A'}
+                        </div>
+                    `;
+                    popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false })
+                        .setLngLat(coordinates)
+                        .setHTML(description)
+                        .addTo(map_simulation);
                 }
             });
-
-            if (!isInsideAny && nearestBoundary) {
-                marker.setLngLat(nearestBoundary);
-                console.log('Marker snapped back to nearest geofence boundary');
-            } else if (isInsideAny) {
-                console.log('Marker is within a geofence');
-            }
         });
-
-        // Start the animation
-        animate();
+        map_simulation.on('mouseleave', 'laguna-points', () => {
+            if (popup) popup.remove();
+        });
     });
 }
