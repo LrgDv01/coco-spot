@@ -172,7 +172,7 @@
                                             </p>
                                         </div>
                                         <div class="mt-3 align-self-end">
-                                            <a href="{{ route('user.viewDetails', $notifs->id) }}" class="btn btn-success">
+                                            <a href="{{ route('user.viewDetails', $notifs->id) }}" class="btn btn-outline-success fw-bold">
                                                 View Details
                                             </a>
                                         </div>
@@ -198,69 +198,66 @@
             }, 3000); 
         }
     });
-
-
-    
 </script>
 
 
 <script>
-    mapboxgl.accessToken = 'pk.eyJ1Ijoicm9uNTcxNDM1IiwiYSI6ImNtM2g3dmcxbzBjajIycnB5NWtwaG1xazMifQ.mhRMxfZ2WfgoAECkTXAXug';
-    let map = null;
-    let marker = null;
+    // mapboxgl.accessToken = 'pk.eyJ1Ijoicm9uNTcxNDM1IiwiYSI6ImNtM2g3dmcxbzBjajIycnB5NWtwaG1xazMifQ.mhRMxfZ2WfgoAECkTXAXug';
+    // let map = null;
+    // let marker = null;
 
-    async function getAddressFromCoordinates(lng, lat) {
-        const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${mapboxgl.accessToken}`;
-        try {
-            const response = await fetch(url);
-            const data = await response.json();
-            if (data.features && data.features.length > 0) {
-                const address = data.features[0].place_name;
-                document.getElementById('address').textContent = `Address: ${address}`;
-                document.getElementById('address_input').value = address; 
-            } else {
-                document.getElementById('address').textContent = 'Address: Not found';
-                document.getElementById('address_input').value = '';
-            }
-        } catch (error) {
-            console.error('Error fetching address:', error);
-            document.getElementById('address').textContent = 'Address: Unable to retrieve';
-            document.getElementById('address_input').value = '';
-        }
-    }
+    // async function getAddressFromCoordinates(lng, lat) {
+    //     const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${mapboxgl.accessToken}`;
+    //     try {
+    //         const response = await fetch(url);
+    //         const data = await response.json();
+    //         if (data.features && data.features.length > 0) {
+    //             const address = data.features[0].place_name;
+    //             document.getElementById('address').textContent = `Address: ${address}`;
+    //             document.getElementById('address_input').value = address; 
+    //         } else {
+    //             document.getElementById('address').textContent = 'Address: Not found';
+    //             document.getElementById('address_input').value = '';
+    //         }
+    //     } catch (error) {
+    //         console.error('Error fetching address:', error);
+    //         document.getElementById('address').textContent = 'Address: Unable to retrieve';
+    //         document.getElementById('address_input').value = '';
+    //     }
+    // }
 
-    function initializeMap(lng, lat) {
-        if (!map) {
-            map = new mapboxgl.Map({
-                container: 'map',
-                style: 'mapbox://styles/mapbox/satellite-streets-v12',
-                center: [lng, lat],
-                zoom: 7,
-                interactive: true
-            });
-            map.addControl(new mapboxgl.NavigationControl());
-            map.on('click', (e) => {
-                const coordinates = e.lngLat;
-                const longitude = coordinates.lng.toFixed(6);
-                const latitude = coordinates.lat.toFixed(6);
-                document.getElementById('location').value = `${latitude}, ${longitude}`;
-                if (marker) {
-                    marker.setLngLat([longitude, latitude]);
-                } else {
-                    marker = new mapboxgl.Marker()
-                        .setLngLat([longitude, latitude])
-                        .addTo(map);
-                }
-                getAddressFromCoordinates(longitude, latitude);
-            });
+    // function initializeMap(lng, lat) {
+    //     if (!map) {
+    //         map = new mapboxgl.Map({
+    //             container: 'map',
+    //             style: 'mapbox://styles/mapbox/satellite-streets-v12',
+    //             center: [lng, lat],
+    //             zoom: 7,
+    //             interactive: true
+    //         });
+    //         map.addControl(new mapboxgl.NavigationControl());
+    //         map.on('click', (e) => {
+    //             const coordinates = e.lngLat;
+    //             const longitude = coordinates.lng.toFixed(6);
+    //             const latitude = coordinates.lat.toFixed(6);
+    //             document.getElementById('location').value = `${latitude}, ${longitude}`;
+    //             if (marker) {
+    //                 marker.setLngLat([longitude, latitude]);
+    //             } else {
+    //                 marker = new mapboxgl.Marker()
+    //                     .setLngLat([longitude, latitude])
+    //                     .addTo(map);
+    //             }
+    //             getAddressFromCoordinates(longitude, latitude);
+    //         });
 
-            setTimeout(() => {
-                document.getElementById('map').classList.add('visible');
-            }, 100);
-        } else {
-            map.setCenter([lng, lat]);
-        }
-    }
+    //         setTimeout(() => {
+    //             document.getElementById('map').classList.add('visible');
+    //         }, 100);
+    //     } else {
+    //         map.setCenter([lng, lat]);
+    //     }
+    // }
 
     function openMapApp() {
         const isAndroid = /android/i.test(navigator.userAgent);
@@ -284,7 +281,7 @@
         openMapApp();
     }
     
-    window.addEventListener('resize', () => {
-        if (map) map.resize();
-    });
+    // window.addEventListener('resize', () => {
+    //     if (map) map.resize();
+    // });
 </script>

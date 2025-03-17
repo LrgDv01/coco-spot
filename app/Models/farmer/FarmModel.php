@@ -42,7 +42,7 @@ class FarmModel extends Model
         return $this->belongsTo(ServicesModel::class, 'farmer_id', 'farmer_id');
     }
 
-    public function reports() {
+    public function technicianReports() {
         return $this->hasMany(TechiniciansReportsModel::class, 'farm_id', 'id');
     }
 

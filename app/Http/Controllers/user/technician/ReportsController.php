@@ -32,7 +32,7 @@ class ReportsController extends Controller
 
     // important > called on "technicianReport" function here
     private function checkStatus() { 
-        $existingReportsCount = FarmModel::whereHas('reports')
+        $existingReportsCount = FarmModel::whereHas('technicianReports')
             ->update(['condition' => 'is Healthy']);
 
         $technicianId = auth()->id();
@@ -55,6 +55,49 @@ class ReportsController extends Controller
     public function technicianReport(Request $request)
     {
         try {
+            // $validated = $request->validate([
+            //     'farm_id' => 'required|integer',
+            //     'farmer_name' => 'required|string',
+            //     'contact_info' => 'required|string',
+            //     'recipient' => 'required|string',
+            //     'farm_location' => 'required|string',
+            //     'district' => 'required|string',
+            //     'farm_size' => 'required|string', 
+            //     'coconut_trees' => 'required|numeric', 
+            //     'coconut_variety' => 'required|string',
+            //     'diagnosis_disease' => 'required|string',
+            //     'treatment_recommendation' => 'required|string',
+            //     'image_proof' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            //     'status' => 'required|string',
+            //     'no_of_infected' => 'required|integer',
+            //     'locations' => 'required|array'
+
+            // ]);
+
+ 
+            // $imagePath = null;
+            // if ($request->hasFile('image_proof')) {
+            //     $imagePath = $request->file('image_proof')->store('images', 'public');
+            // }
+            // $reportDetail = TechiniciansReportsModel::create([
+            //     'technician_id' => auth()->id(),
+            //     'farm_id' => $validated['farm_id'],
+            //     'farmer_name' => $validated['farmer_name'],
+            //     'contact_no' => $validated['contact_info'],
+            //     'recipient' => $validated['recipient'],
+            //     'farm_location' => $validated['farm_location'],
+            //     'district' => $validated['district'],
+            //     'farm_size' => $validated['farm_size'],
+            //     'coconut_trees' => $validated['coconut_trees'],
+            //     'coconut_variety' => $validated['coconut_variety'],
+            //     'diagnosis_disease' => $validated['diagnosis_disease'],
+            //     'treatment_recommendation' => $validated['treatment_recommendation'],
+            //     'image_proof' => $imagePath,
+            //     'status' => $validated['status'],
+            //     'no_of_infected' => $validated['no_of_infected'],
+            //     'coordinates' =>  $validated['locations'],
+            // ]);
+
             $validated = $request->validate([
                 'farm_id' => 'required|integer',
                 'farmer_name' => 'required|string',
@@ -62,23 +105,35 @@ class ReportsController extends Controller
                 'recipient' => 'required|string',
                 'farm_location' => 'required|string',
                 'district' => 'required|string',
-                'farm_size' => 'required|string', 
-                'coconut_trees' => 'required|numeric', 
+                'farm_size' => 'required|numeric', // Changed from string to numeric
+                'coconut_trees' => 'required|numeric',
                 'coconut_variety' => 'required|string',
                 'diagnosis_disease' => 'required|string',
                 'treatment_recommendation' => 'required|string',
-                'image_proof' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'image_proof' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Changed nullable to required
                 'status' => 'required|string',
+                'no_of_infected' => 'required|integer|min:1', // Added min:1 to ensure positive value
+                'locations' => 'required|array', // Basic array validation
+                'locations.*' => 'required|string|regex:/^[-]?[0-9]{1,3}\.[0-9]+,[-]?[0-9]{1,3}\.[0-9]+$/' // Validate each coordinate
             ]);
+            
+            // Check if the number of locations matches no_of_infected
+            if (count($validated['locations']) !== $validated['no_of_infected']) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'locations' => ['The number of locations must match the number of infected trees.'],
+                ]);
+            }
+            
             $imagePath = null;
             if ($request->hasFile('image_proof')) {
                 $imagePath = $request->file('image_proof')->store('images', 'public');
             }
+            
             $reportDetail = TechiniciansReportsModel::create([
                 'technician_id' => auth()->id(),
                 'farm_id' => $validated['farm_id'],
                 'farmer_name' => $validated['farmer_name'],
-                'contact_no' => $validated['contact_info'],
+                'contact_no' => $validated['contact_info'], // Assuming model uses contact_no
                 'recipient' => $validated['recipient'],
                 'farm_location' => $validated['farm_location'],
                 'district' => $validated['district'],
@@ -89,7 +144,10 @@ class ReportsController extends Controller
                 'treatment_recommendation' => $validated['treatment_recommendation'],
                 'image_proof' => $imagePath,
                 'status' => $validated['status'],
+                'no_of_infected' => $validated['no_of_infected'],
+                'coordinates' => $validated['locations'], // Assuming model uses coordinates
             ]);
+
             // $this->checkStatus();
             return response()->json(['success' => true, 'message' => 'Report submitted successfully']);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {

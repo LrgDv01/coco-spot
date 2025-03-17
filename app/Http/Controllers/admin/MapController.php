@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\admin;
 use App\Models\admin\MapModel;
 use App\Models\farmer\FarmModel;
+use App\Models\technician\TechiniciansReportsModel;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -10,7 +11,6 @@ class MapController extends Controller
 {
 
     public function get_map_locations() {
-        $farm_loc = FarmModel::select('latitude', 'longitude', 'municipal', 'hectares', 'planted_coconut')->get();
         $map_loc = MapModel::all();
         $locations = [];
         foreach ($map_loc as $location) {
@@ -24,12 +24,20 @@ class MapController extends Controller
                 'meters' => $location->meters,
             ];
         }
+   
+        $farm_loc = FarmModel::select('latitude', 'longitude', 'municipal', 'hectares', 'planted_coconut')->get();
+
+        // $diseases = TechiniciansReportsModel::with('farms')->pluck('diagnosis_disease')->toArray();
+        // $diseases = TechiniciansReportsModel::with('farms')->get();
+        $diseases = FarmModel::with('farmerReports', 'technicianReports')->get();
+
         $res = [
-            'farm_loc' => $farm_loc,
             'locations' => $locations,
+            'farm_loc' => $farm_loc,
+            'diseases' => $diseases
         ];
         return response()->json($res);
     }
     
 }
-    
+     

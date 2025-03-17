@@ -34,12 +34,17 @@ class NotificationController extends Controller
     }
     public function markAsRead($id)
     {
+     
         $notification = FarmerReportsModel::with('technician')->findOrFail($id);
+        $services = ServicesModel::pluck('farm_id')->toArray();
+        // $exist = in_array($services, $notification->farm_id);
+        $exist = in_array($notification->farm_id, $services);
+        // dd($exist);
         $notification->update(['status' => 'read']);
-
-        return view('admin.pages.notification', compact('notification'));
+        return view('admin.pages.notification', compact('notification', 'exist'));
         // return response()->json(['success' => true]);
-    }
+    } 
+
     public function technicianNotif() {
         $technicianId = auth()->id();
         $notifications = ServicesModel::where('technician_id', $technicianId)

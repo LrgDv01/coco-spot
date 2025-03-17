@@ -3,9 +3,23 @@
 
 <main id="main" class="main">
     <div class="pagetitle mb-5">
-        <h1><strong>{{ $notification->farmer_name}}'s Report</strong></h1>
+        <h1><strong>{{ $notification->farmer_name}}'s Report</strong></h1>  
     </div>
     <section class="section notications">
+        <div class="row p-0 mb-3">
+            <form id="verified" action="/admin/verified-report" method="POST">
+                @csrf
+                <input type="hidden" name="farm_id" value="{{ $notification->farm_id }}">
+                <input type="hidden" name="farmer_id" value="{{ $notification->farmer_id }}">
+                <input type="hidden" name="technician_id" value="{{ $notification->technician_id }}">
+                <input type="hidden" name="farmer_name" value="{{ $notification->farmer_name }}">
+                <div class="d-flex flex-row justify-content-between align-items-center">
+                    <a href="{{ url()->previous() }}" class="btn btn-outline-secondary fw-bold"><i class="fas fa-arrow-left"></i> </a>
+                    <button type="submit" class="btn fw-bold {{ $exist ? 'disabled btn-outline-secondary' : 'btn-outline-success' }}">
+                        <i class="fas fa-check"></i> | {{ $exist ? 'Assigned' : 'Verified Assigned' }} </button>
+                </div>
+            </form>
+        </div>
         <div class="row p-0 m-0">
             <div class="col-lg-6">
                 <div class="row p-0 m-0">
@@ -86,19 +100,7 @@
                 </div>
             </div>
         </div>
-        <div class="row p-0 m-0">
-            <form id="verified" action="/admin/verified-report" method="POST">
-                @csrf
-                <input type="hidden" name="farmer_id" value="{{ $notification->farmer_id }}">
-                <input type="hidden" name="technician_id" value="{{ $notification->technician_id }}">
-                <input type="hidden" name="farmer_name" value="{{ $notification->farmer_name }}">
-
-                <div class="d-flex flex-row justify-content-end align-items-center mt-3">
-                    <a href="{{ url()->previous() }}" class="btn btn-outline-secondary mx-3">Close</a>
-                    <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> | Confirm Assign</button>
-                </div>
-            </form>
-        </div>
+        
         <div class="modal fade" id="confirmVerificationModal" tabindex="-1" aria-labelledby="confirmVerificationModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -107,7 +109,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        Confirm the automate assigned technician by the system on this report ?
+                        Confirm automated assigned technician on this report ?
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>

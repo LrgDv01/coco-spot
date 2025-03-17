@@ -14,7 +14,7 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory(3)->create();
+        User::factory(5)->create();
         // User::where('user_type', 2)->each(function ($user) {
         //     TechnicianModel::factory()->create(['technician_id' => $user->id]);
         // });

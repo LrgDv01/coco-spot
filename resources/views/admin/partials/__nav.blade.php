@@ -154,20 +154,23 @@
     @if (auth()->user()->isAdmin())
       <li class="nav-item">
         <a class="nav-link border border-0 {{ Request::is('admin') ? 'active' : 'inactive' }}" href="{{ url('/admin') }}">
-          <i class="bi bi-grid-fill"></i>
-          <span>Dashboard</span>
+          <i class="bi bi-grid-fill"></i><span>Dashboard</span>
         </a>
       </li>  
       <li class="nav-item">
+        <a class="nav-link border border-0 {{ Request::is('admin/forums') ? 'active' : 'inactive' }}" href="{{ url('/admin/forums') }}">
+
+          <i class="bi bi-chat-dots-fill"></i><span>Forums</span>
+        </a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link border border-0 {{ Request::is('admin/map') ? 'active' : 'inactive' }}" href="{{ url('/admin/map') }}">
-          <i class="bi bi-map-fill"></i>
-          <span>Map</span>
+          <i class="bi bi-map-fill"></i><span>Map</span>
         </a>
       </li>
       <li class="nav-item">
         <a class="nav-link border border-0 {{ Request::is('admin/map_simulation') ? 'active' : 'inactive' }}" href="{{ url('/admin/map_simulation') }}">
-          <i class="bi bi-geo-fill"></i> 
-          <span>Simulation</span>
+          <i class="bi bi-geo-fill"></i> <span>Simulation</span>
         </a>
       </li>
     @endif

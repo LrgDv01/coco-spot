@@ -27,6 +27,8 @@ return new class extends Migration
             $table->text('treatment_recommendation'); 
             $table->string('image_proof'); 
             $table->string('status'); 
+            $table->integer('no_of_infected')->unsigned()->nullable(false); 
+            $table->json('coordinates'); 
             $table->timestamps();
         });
     }

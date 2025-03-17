@@ -7,7 +7,7 @@
                 <h5 class="card-title text-center pt-0" style="font-weight: bold;">Assigned Farm Details</h5>
                 
                 <div class="mb-2">
-                    <strong>Request ID : </strong> {{ $requestDetails->request_id }}
+                    <strong>Report ID : </strong> {{ $requestDetails->request_id }}
                 </div>
                 <div class="mb-2">
                     <strong>Date/Time : </strong> {{ \Carbon\Carbon::parse($requestDetails->created_at)->format('F d, Y | h:i A') }}
@@ -29,7 +29,7 @@
                     <textarea name="note" class="form-control" rows="2" placeholder="Visit the farmer farm for actual confirmation of this reported disease" disabled></textarea>
                 </div>
                 <div class="d-flex justify-content-center gap-5">
-                    <button type="button" class="btn btn-success px-3 w-35 btn-block rounded-pill" 
+                    <button type="button" class="btn btn-outline-success fw-bold px-3 w-35 btn-block rounded-pill" 
                             data-status="acknowledge"
                             data-message="acknowledge"
                             data-bs-toggle="modal" 
@@ -40,8 +40,8 @@
             </div>
               <!-- Back Button -->
             <div class="text-center d-flex">
-                <a href="{{ route('user.notifications') }}" class="btn btn-success align-self-start px-4">
-                    <i class="bi bi-arrow-left w-4"></i> 
+                <a href="{{ route('user.notifications') }}" class="btn btn-outline-secondary align-self-start px-4">
+                    <i class="fas fa-arrow-left w-4"></i> 
                 </a>
             </div>
         </div>

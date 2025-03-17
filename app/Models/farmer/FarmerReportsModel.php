@@ -29,7 +29,7 @@ class FarmerReportsModel extends Model
         'status'
     ];
 
-    public function farm() {
+    public function farms() {
         return $this->belongsTo(FarmModel::class, 'farm_id', 'id'); 
     }
     public function technician() {
@@ -38,4 +38,11 @@ class FarmerReportsModel extends Model
     public function services() {
         return $this->belongsTo(ServicesModel::class, 'farmer_id', 'farmer_id');
     }
+    // public function services() {
+    //     return $this->belongsTo(ServicesModel::class, 'farmer_id', 'farmer_id')
+    //                 ->orWhere('another_id', $this->another_id);
+    // }
+    // public function services() {
+    //     return $this->hasOne(ServicesModel::class, 'farm_id', 'farm_id');
+    // }
 }

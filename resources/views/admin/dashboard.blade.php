@@ -19,7 +19,7 @@
     }
     .card i {
         color:green;
-    }
+    } 
     .card.disease-chart, .variety-chart {
         background-color:lightyellow;
         border-radius: 15px; 

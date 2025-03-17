@@ -17,7 +17,7 @@ class FarmSeeder extends Seeder
 
         $farm_coordinates = [
             [
-                'farmer_id' => 1,
+                'farmer_id' => 2,
                 'name' => 'farm1', 
                 'latitude' => 14.289890827221688, 
                 'longitude' => 121.49150968052746, 
@@ -43,7 +43,7 @@ class FarmSeeder extends Seeder
                 'planted_coconut' => 234,
             ],
             [
-                'farmer_id' => 3,
+                'farmer_id' => 2,
                 'name' => "farm3", 
                 'latitude' => 14.39072170217407, 
                 'longitude' => 121.51243066404795, 

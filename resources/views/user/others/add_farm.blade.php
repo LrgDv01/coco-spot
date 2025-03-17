@@ -21,7 +21,7 @@
                         <div class="input-group">
                             <input type="text" class="form-control" id="location" name="location" required>
                             <input type="hidden" id="address_input" name="address">
-                            <button type="button" class="btn btn-success" onclick="getUserLocation()">Find my farm</button>
+                            <button type="button" class="btn btn-success" id="find_farm" onclick="getUserLocation()">Find my farm</button>
                         </div>
                         <div id="map" class="map-container"></div>
                         <div id="address" class="mt-2 text-muted" style="font-size: 14px;"></div>
@@ -103,6 +103,11 @@
                         .replace(/\s*,\s*/g, ',')
                         .trim();
             $(this).val(value);
+            if ($(this).val()) {
+                $('#find_farm').prop('disabled', true);
+            } else {
+                $('#find_farm').prop('disabled', false);
+            }
         });
     });
 </script>

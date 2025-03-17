@@ -15,6 +15,7 @@ class ServicesModel extends Model
     
     protected $table = "services";
     protected $fillable = [
+        'farm_id',
         'farmer_id',
         'technician_id',
         'farmer_name',
@@ -57,7 +58,7 @@ class ServicesModel extends Model
         return $this->hasOne(FarmModel::class, 'farmer_id', 'farmer_id');
     }
 
-    public function reports() {
+    public function technicianReports() {
         return $this->hasOne(TechiniciansReportsModel::class, 'technician_id', 'technician_id');
     }
 
@@ -65,4 +66,7 @@ class ServicesModel extends Model
         return $this->hasOne(FarmerReportsModel::class, 'farmer_id', 'farmer_id'); 
     }
 
+    public function diseaseVerified() {
+        return $this->hasOne(TechiniciansReportsModel::class, 'farm_id', 'farm_id');
+    }
 }

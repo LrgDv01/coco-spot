@@ -2,7 +2,6 @@
 @include('admin.partials.__nav')
 
 <main id="main" class="main">
-
     <div class="pagetitle">
         <h1><Strong>Map</Strong></h1>
     </div>

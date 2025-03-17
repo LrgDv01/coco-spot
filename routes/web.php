@@ -58,11 +58,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/admin/api/notifications', [NotificationController::class, 'getNotifications'])->name('admin.notifications.get');
         // Route::get('/admin/api/notifications', [NotificationController::class, 'showNotif'])->name('admin.notifications.get');
         Route::get('/admin/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('admin.notifications.read');
-   
-        
-        
         Route::get('/admin', [dashboardController::class, 'display_dashboard'])->name('admin.dashboard');
         // Route::get('/admin/map', [MapController::class, 'view_map'])->name('admin.map'); 
+        Route::view('/admin/forums', 'admin.pages.forums')->name('admin.forums'); 
         Route::view('/admin/map', 'admin.pages.map_locations')->name('admin.map'); 
         Route::view('/admin/map_simulation', 'admin.pages.map_simulation')->name('admin.map_simulation'); 
         Route::get('/admin/get_map_locations', [MapController::class, 'get_map_locations'])->name('admin.map_locations');

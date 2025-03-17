@@ -20,7 +20,7 @@ class ReportSeeder extends Seeder
     {
         $technician_reports = [
             [
-                'technician_id' => 1, 
+                'technician_id' => 2, 
                 'farm_id' => 1, 
                 'farmer_name' => 'John Doe',
                 'contact_no' => '1234567890',
@@ -59,9 +59,9 @@ class ReportSeeder extends Seeder
 
         $farmer_reports = [
             [
-                'farmer_id' => 1, 
+                'farmer_id' => 2, 
                 'farm_id' => 1, 
-                'technician_id' => 1,
+                'technician_id' => 0,
                 'farmer_name' => 'John Doe',
                 'contact_no' => '1234567890',
                 'farm_location' => '123 Farm Road, Countryside',

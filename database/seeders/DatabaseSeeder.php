@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             MapModelSeeder::class,
             FarmSeeder::class,
-            ReportSeeder::class
+            // ReportSeeder::class
         ]);
     }
 }
