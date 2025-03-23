@@ -222,14 +222,14 @@
             </div>
             <div class="modal-footer d-flex flex-column">
                 <div class="d-flex flex-row justify-content-end">
-                    <button type="button" class="btn btn-outline-secondary me-2" 
+                    <button type="button" class="btn btn-outline-secondary me-2 fw-bold" 
                             onclick="viewSolution(event, {{ $farm->id }})">View Solution</button>
-                    <button type="submit" class="btn btn-outline-success"
+                    <button type="submit" class="btn btn-outline-success fw-bold"
                             onclick="submitDiagnosis(event, {{ $farm->id }})">Report</button>
                 </div>
                 <div class="d-flex flex-row justify-content-center">
-                    <a class="farm-status d-none btn btn-secondary border-0 bg-transparent text-secondary" href="{{route('user.services')}}">
-                        <i class="fas fa-arrow-left"></i> See farm status</a>
+                    <a class="farm-status d-none btn btn-secondary border-0 bg-transparent text-secondary fw-bold" href="{{route('user.services')}}">
+                        <i class="fas fa-arrow-left"></i> <u>See farm status</u></a>
                 </div>
             </div>
         </div>

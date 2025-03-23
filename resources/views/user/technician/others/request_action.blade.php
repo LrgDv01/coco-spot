@@ -9,7 +9,7 @@
             <div class="modal-body" id="actionModalBody">
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Later</button>
                 <form id="actionForm" method="POST">
                     @csrf
                     <button type="submit" class="btn" id="actionSubmitBtn" data-bs-dismiss="modal">
@@ -31,7 +31,7 @@
                 </div>
                 <div class="d-flex justify-content-center">
                     <a href="{{ route('user.reports') }}" class="btn btn-success mx-2">See New Report</a>
-                    <button type="button" class="btn btn-secondary mx-2" data-bs-dismiss="modal">Later</button>
+                    <button type="button" class="btn btn-outline-secondary mx-2" data-bs-dismiss="modal">Later</button>
                 </div>
             </div>
         </div>

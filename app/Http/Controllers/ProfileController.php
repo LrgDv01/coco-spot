@@ -17,6 +17,28 @@ class ProfileController extends Controller
         return view('user.pages.settings', ['user' => $user]);
     }
 
+    public function updateProfileImage(Request $request) {
+        $request->validate([
+            'profile_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048', 
+        ]);
+
+        $user = Auth::user();
+
+        // Delete the old profile image if it exists
+        if ($user->profile_img) {
+            Storage::disk('public')->delete($user->profile_img);
+        }
+
+        // Store the new profile image
+        $imagePath = $request->file('profile_image')->store('images', 'public'); 
+
+        // Update user details
+        $user->profile_img = $imagePath;
+        $user->save();
+        
+        return redirect()->back()->with('success', 'Profile image updated successfully.');
+    }
+
     public function updateField(Request $request) {
         $user = auth()->user();
         $field = $request->input('field');

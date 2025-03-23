@@ -33,10 +33,9 @@
   <!-- Summernote -->
   <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
-  
   <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="https://cdn.datatables.net/2.0.7/css/dataTables.bootstrap5.css">
- 
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
   {{-- FullCalendar --}}
@@ -44,7 +43,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>   <!-- Chart js -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
  
-@if(Request::routeIs('admin.map') || Request::routeIs('admin.map_simulation'))
+ {{-- @if(Request::routeIs('admin.map') || Request::routeIs('admin.map_simulation')) --}}
   <!-- Map Styles -->
    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" 
     rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" 
@@ -59,9 +58,9 @@
         #map { position: absolute; top: 0; bottom: 0; width: 100%; }
     </style>
 
-@endif
+{{--  @endif --}}
 
-  <!-- =======================================================
+  <!-- ========================================= ==============
   * Template Name: NiceAdmin
   * Updated: Sep 18 2023 with Bootstrap v5.3.2
   * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
@@ -70,3 +69,4 @@
   ======================================================== -->
 </head>
 <body>
+  

@@ -10,6 +10,7 @@ use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\user\technician\ReportsController;
+use App\Http\Controllers\ForumController;
 
 
 /*
@@ -46,13 +47,45 @@ Route::middleware(['redirect.nonlogin', 'guest'])->group(function () {
     Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
     Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
     Route::view('/contact', 'frontpage.contact')->name('contact');
-
 });
 
 
 Route::middleware(['auth'])->group(function () {
+
+  
+    Route::get('/admin/forums', [ForumController::class, 'index'])->name('admin.forums');
+    Route::post('/forum/post', [ForumController::class, 'storePost'])->name('forum.storePost');
+    // Route::post('/forum/comment/{postId}', [ForumController::class, 'storeComment'])->name('forum.storeComment');
+    Route::post('/forum/post/{postId}/comment', [ForumController::class, 'storeComment'])->name('forum.storeComment');
+    Route::post('/forum/react/{postId}', [ForumController::class, 'react'])->name('forum.react');
+    Route::delete('/forum/post/{postId}', [ForumController::class, 'deletePost'])->name('forum.deletePost');
+    // Route::delete('/forum/comment/{commentId}', [ForumController::class, 'deleteComment'])->name('forum.deleteComment');
+    Route::delete('/forum/comment/{commentId}', [ForumController::class, 'deleteComment'])->name('forum.deleteComment');
+    Route::put('/forum/post/{postId}', [ForumController::class, 'updatePost'])->name('forum.updatePost');
+    // Route::put('/forum/comment/{commentId}', [ForumController::class, 'updateComment'])->name('forum.updateComment');
+    Route::put('/forum/comment/{commentId}', [ForumController::class, 'updateComment'])->name('forum.updateComment');
+
+
+
     
     Route::middleware(['admin'])->group(function () {
+
+
+        // Route::get('/admin/forums', [ForumController::class, 'index'])->name('admin.forums');
+        // Route::post('/forum/post', [ForumController::class, 'storePost'])->name('forum.storePost');
+        // // Route::post('/forum/comment/{postId}', [ForumController::class, 'storeComment'])->name('forum.storeComment');
+        // Route::post('/forum/post/{postId}/comment', [ForumController::class, 'storeComment'])->name('forum.storeComment');
+        // Route::post('/forum/react/{postId}', [ForumController::class, 'react'])->name('forum.react');
+        // Route::delete('/forum/post/{postId}', [ForumController::class, 'deletePost'])->name('forum.deletePost');
+        // // Route::delete('/forum/comment/{commentId}', [ForumController::class, 'deleteComment'])->name('forum.deleteComment');
+        // Route::delete('/forum/comment/{commentId}', [ForumController::class, 'deleteComment'])->name('forum.deleteComment');
+        // Route::put('/forum/post/{postId}', [ForumController::class, 'updatePost'])->name('forum.updatePost');
+        // // Route::put('/forum/comment/{commentId}', [ForumController::class, 'updateComment'])->name('forum.updateComment');
+        // Route::put('/forum/comment/{commentId}', [ForumController::class, 'updateComment'])->name('forum.updateComment');
+
+
+
+
        // Admin dashboard view with notifications
         Route::get('/admin', [NotificationController::class, 'adminNotif'])->name('admin.dashboard'); 
         Route::get('/admin/api/notifications', [NotificationController::class, 'getNotifications'])->name('admin.notifications.get');
@@ -60,7 +93,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/admin/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('admin.notifications.read');
         Route::get('/admin', [dashboardController::class, 'display_dashboard'])->name('admin.dashboard');
         // Route::get('/admin/map', [MapController::class, 'view_map'])->name('admin.map'); 
-        Route::view('/admin/forums', 'admin.pages.forums')->name('admin.forums'); 
+        // Route::view('/admin/forums', 'admin.pages.forums')->name('admin.forums'); 
+
         Route::view('/admin/map', 'admin.pages.map_locations')->name('admin.map'); 
         Route::view('/admin/map_simulation', 'admin.pages.map_simulation')->name('admin.map_simulation'); 
         Route::get('/admin/get_map_locations', [MapController::class, 'get_map_locations'])->name('admin.map_locations');
@@ -74,6 +108,15 @@ Route::middleware(['auth'])->group(function () {
     
 
     Route::middleware(['farmer'])->group(function () {
+
+
+
+       
+
+
+
+
+
         Route::get('/user/farm', [FarmController::class, 'index'])->name('user.farm');
         Route::get('/user/services/hired', [ServicesController::class, 'hired'])->name('user.services.hired');
         Route::get('/technician/{id}', [ServicesController::class, 'show'])->name('technician.info');
@@ -84,11 +127,12 @@ Route::middleware(['auth'])->group(function () {
         
         Route::middleware(['web'])->group(function () {
             Route::post('/user/add_farm', [FarmController::class, 'store'])->name('farm.store');
-            Route::post('/user/update/condition', [FarmController::class, 'updateCondition'])->name('update.condition');
-            Route::post('/user/hire-technician', [ServicesController::class, 'hireTechnician'])->name('user.hire');
+            // Route::post('/user/update/condition', [FarmController::class, 'updateCondition'])->name('update.condition');
+            // Route::post('/user/hire-technician', [ServicesController::class, 'hireTechnician'])->name('user.hire');
+            Route::post('/user/farmer-report', [ServicesController::class, 'farmerReport'])->name('user.farmer-report');
             Route::post('/user/update-field', [ProfileController::class, 'updateField'])->name('user.update-profile');
             Route::post('/user/update-profile', [ProfileController::class, 'updateProfile'])->name('user.update-profile');
-            Route::post('/user/farmer-report', [ServicesController::class, 'farmerReport'])->name('user.farmer-report');
+            Route::post('/user/update-profile-image', [ProfileController::class, 'updateProfileImage'])->name('user.update-profile-image');
         });
     });
 
@@ -102,6 +146,7 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/user/technician-report', [ReportsController::class, 'technicianReport'])->name('user.technician-report');
             Route::post('/user/update-field', [ProfileController::class, 'updateField'])->name('user.update-profile');
             Route::post('/user/update-profile', [ProfileController::class, 'updateProfile'])->name('user.update-profile');
+            Route::post('/user/update-profile-image', [ProfileController::class, 'updateProfileImage'])->name('user.update-profile-image');
         });
     });
 

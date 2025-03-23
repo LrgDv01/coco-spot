@@ -30,8 +30,8 @@
     <section class="section reports">
         <div class="container p-0">
             @if(!$report)
-                <div class="alert alert-secondary text-center fw-bold" role="alert">
-                    <p class="text-secondary text-muted">No new reports to submit.</p>
+                <div class="alert alert-secondary text-center" role="alert">
+                    <p class="text-secondary text-muted">- No new report to submit -</p>
                 </div>
             @else
                 <div class="row g-3">
@@ -65,7 +65,6 @@
                                   id="submitForm" 
                                   enctype="multipart/form-data">
                                 @csrf
-                                <!-- Hidden Inputs -->
                                 @foreach([
                                     'farm_id' => $report->userFarms->id,
                                     'farmer_name' => $report->farmer_name,
@@ -79,7 +78,6 @@
                                 ] as $name => $value)
                                     <input type="hidden" name="{{ $name }}" value="{{ $value }}">
                                 @endforeach
-
                                 <div class="card-body form-section">
                                     <div class="mb-3">
                                         <label class="form-label">Actual Disease Diagnosis :</label>
@@ -143,7 +141,7 @@
                                 </div>
                                 <div class="card-footer text-center">
                                     <button type="submit" 
-                                            class="btn btn-success px-4 rounded-pill" 
+                                            class="btn btn-outline-success fw-bold px-4 rounded-pill" 
                                             id="submitButton">
                                         <i class="bi bi-check-circle me-2"></i>Submit Report
                                     </button>
@@ -270,56 +268,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const form = document.getElementById('submitForm');
     const submitButton = document.getElementById('submitButton');
-    
-    // submitButton.addEventListener('click', function(e) {
-    //     e.preventDefault();
-        
-    //     // Check all required fields
-    //     const diagnosis = document.getElementById('diagnosis_disease');
-    //     const treatment = document.getElementById('treatment_recommendation');
-    //     const image = document.getElementById('image_proof');
-    //     const status = document.querySelector('select[name="status"]');
-
-    //     // Validate each field
-    //     let isValid = true;
-        
-    //     if (!diagnosis.value || diagnosis.value === '') {
-    //         diagnosis.classList.add('is-invalid');
-    //         isValid = false;
-    //     } else {
-    //         diagnosis.classList.remove('is-invalid');
-    //     }
-
-    //     if (!treatment.value.trim()) {
-    //         treatment.classList.add('is-invalid');
-    //         isValid = false;
-    //     } else {
-    //         treatment.classList.remove('is-invalid');
-    //     }
-
-    //     if (!image.files.length) {
-    //         image.classList.add('is-invalid');
-    //         isValid = false;
-    //     } else {
-    //         image.classList.remove('is-invalid');
-    //     }
-
-    //     if (!status.value || status.value === '') {
-    //         status.classList.add('is-invalid');
-    //         isValid = false;
-    //     } else {
-    //         status.classList.remove('is-invalid');
-    //     }
-
-    //     // If all fields are valid, show confirmation modal
-    //     if (isValid) {
-    //         $('#actionModal').modal('show');
-    //     }
-    // });
 
     submitButton.addEventListener('click', function(e) {
         e.preventDefault();
-        
         // Check all required fields
         const diagnosis = document.getElementById('diagnosis_disease');
         const treatment = document.getElementById('treatment_recommendation');

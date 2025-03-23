@@ -32,9 +32,10 @@
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
-  
 
-  @if(Request::routeIs('admin.map') || Request::routeIs('admin.map_simulation'))
+
+
+{{--  @if(Request::routeIs('admin.map') || Request::routeIs('admin.map_simulation')) --}}
   <!-- Map Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" 
     integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" 
@@ -43,7 +44,7 @@
  <!-- Mapbox Latest-->
 
   <script src="{{ URL::asset('js/admin/geomap.js')}}"></script> 
-  @endif
+{{--  @endif  --}}
   <!-- Charts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script> <!-- Chart Zoom -->

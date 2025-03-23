@@ -55,6 +55,9 @@ class ServicesModel extends Model
     }
 
     public function userFarms() {
+        return $this->belongsTo(FarmModel::class, 'farm_id', 'id');
+    }
+    public function farmers() {
         return $this->hasOne(FarmModel::class, 'farmer_id', 'farmer_id');
     }
 

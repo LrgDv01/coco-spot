@@ -42,6 +42,10 @@ class FarmModel extends Model
         return $this->belongsTo(ServicesModel::class, 'farmer_id', 'farmer_id');
     }
 
+    public function farmerServices() {
+        return $this->hasMany(ServicesModel::class, 'farm_id', 'id');
+    }
+
     public function technicianReports() {
         return $this->hasMany(TechiniciansReportsModel::class, 'farm_id', 'id');
     }

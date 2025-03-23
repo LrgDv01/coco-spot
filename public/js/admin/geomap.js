@@ -9,7 +9,6 @@ const simulationContainer = document.getElementById('map_simulation');
 $(document).ready(function() {
     if (setSupported()) {
         mapboxgl.accessToken = 'pk.eyJ1Ijoicm9uNTcxNDM1IiwiYSI6ImNtM2g3dmcxbzBjajIycnB5NWtwaG1xazMifQ.mhRMxfZ2WfgoAECkTXAXug';
-
         $.ajax({
             type: "GET",
             url: "/admin/get_map_locations",
@@ -20,7 +19,7 @@ $(document).ready(function() {
                 const farm_loc = res.farm_loc;
                 const locations = res.locations;
                 const simulation = res.diseases;
-                console.log('simulation', simulation);
+                // console.log('simulation', simulation);
                 if (locationContainer) {
                     locationContainer.innerHTML = "";
                     // selectLocation();
@@ -251,355 +250,46 @@ async function displayMap(farm_loc, locations, mapboxgl) {
     });
 }
 
-// function simulateGenerateRandomPolygon(center, numPoints = 9, radius = 0.01) {
-//     const points = [];
-//     for (let i = 0; i < numPoints; i++) {
-//         const angle = (i / numPoints) * 2 * Math.PI;
-//         const randomRadius = radius * (0.5 + Math.random() * 0.5);
-//         const randomAngle = angle + (Math.random() - 0.5) * 0.5;
-//         const lon = center[0] + randomRadius * Math.cos(randomAngle);
-//         const lat = center[1] + randomRadius * Math.sin(randomAngle);
-//         points.push([lon, lat]);
-//     }
-//     points.push(points[0]);
-//     return {
-//         type: 'Feature',
-//         geometry: {
-//             type: 'Polygon',
-//             coordinates: [points]
-//         },
-//         properties: { center }
-//     };
-// }
-
-// function scalePolygon(polygon, k, zoomFactor = 1) {
-//     const center = polygon.properties.center;
-//     const points = polygon.geometry.coordinates[0];
-//     const scaledPoints = points.map(point => {
-//         const newLon = center[0] + k * zoomFactor * (point[0] - center[0]);
-//         const newLat = center[1] + k * zoomFactor * (point[1] - center[1]);
-//         return [newLon, newLat];
-//     });
-//     return {
-//         type: 'Feature',
-//         geometry: {
-//             type: 'Polygon',
-//             coordinates: [scaledPoints]
-//         },
-//         properties: polygon.properties
-//     };
-// }
 
 
-// Helper function to convert RGB to HSL
+function simulateGenerateRandomPolygon(center, numPoints = 9, radius = 0.01) {
+    const points = [];
+    for (let i = 0; i < numPoints; i++) {
+        const angle = (i / numPoints) * 2 * Math.PI;
+        const randomRadius = radius * (0.5 + Math.random() * 0.5);
+        const randomAngle = angle + (Math.random() - 0.5) * 0.5;
+        const lon = center[0] + randomRadius * Math.cos(randomAngle);
+        const lat = center[1] + randomRadius * Math.sin(randomAngle);
+        points.push([lon, lat]);
+    }
+    points.push(points[0]);
+    return {
+        type: 'Feature',
+        geometry: {
+            type: 'Polygon',
+            coordinates: [points]
+        },
+        properties: { center }
+    };
+}
 
-// Interpolate between two colors using HSL
-// function interpolateColor(progress, colors) {
-//     const [start, end] = colors.map(c => rgbToHsl(...c));
-//     const h = start[0] + progress * (end[0] - start[0]);
-//     const s = start[1] + progress * (end[1] - start[1]);
-//     const l = start[2] + progress * (end[2] - start[2]);
-//     return hslToRgb(h, s, l);
-// }
-
-
-
-
-// Generate a random polygon around a center point
-// function simulateGenerateRandomPolygon(center, numPoints = 9, radius = 0.01) {
-//     const points = [];
-//     for (let i = 0; i < numPoints; i++) {
-//         const angle = (i / numPoints) * 2 * Math.PI;
-//         const randomRadius = radius * (0.5 + Math.random() * 0.5);
-//         const randomAngle = angle + (Math.random() - 0.5) * 0.5;
-//         const lon = center[0] + randomRadius * Math.cos(randomAngle);
-//         const lat = center[1] + randomRadius * Math.sin(randomAngle);
-//         points.push([lon, lat]);
-//     }
-//     points.push(points[0]);
-//     return {
-//         type: 'Feature',
-//         geometry: { type: 'Polygon', coordinates: [points] },
-//         properties: { center }
-//     };
-// }
-
-// Scale the polygon based on factor k and zoomFactor
-// function scalePolygon(polygon, k, zoomFactor = 1) {
-//     const center = polygon.properties.center;
-//     const points = polygon.geometry.coordinates[0];
-//     const scaledPoints = points.map(point => {
-//         const newLon = center[0] + k * zoomFactor * (point[0] - center[0]);
-//         const newLat = center[1] + k * zoomFactor * (point[1] - center[1]);
-//         return [newLon, newLat];
-//     });
-//     return {
-//         type: 'Feature',
-//         geometry: { type: 'Polygon', coordinates: [scaledPoints] },
-//         properties: polygon.properties
-//     };
-// }
-
-// Main map simulation function
-// async function mapSimulation(simulate, mapboxgl) {
-//     const map_simulation = new mapboxgl.Map({
-//         container: 'map_simulation',
-//         style: 'mapbox://styles/mapbox/satellite-streets-v11',
-//         center: [121.37575102352582, 14.27976852821142],
-//         zoom: 9,
-//         minZoom: 0,
-//         maxZoom: 15,
-//         maxBounds: [[120.70, 13.92], [121.95, 14.65]]
-//     });
-
-//     map_simulation.on('load', async () => {
-//         const data = await geoJsonData();
-//         map_simulation.addSource('municipal', { type: 'geojson', data });
-//         map_simulation.addLayer({
-//             id: 'laguna-boundary',
-//             type: 'line',
-//             source: 'municipal',
-//             filter: ['==', ['geometry-type'], 'Polygon'],
-//             paint: {
-//                 'line-color': '#FFD700',
-//                 'line-width': 3,
-//                 'line-dasharray': [2, 2]
-//             }
-//         });
-
-//         map_simulation.addSource('farms', {
-//             type: 'geojson',
-//             data: { type: 'FeatureCollection', features: [] }
-//         });
-
-//         map_simulation.addLayer({
-//             id: 'farm-points',
-//             type: 'circle',
-//             source: 'farms',
-//             paint: {
-//                 'circle-radius': 5,
-//                 'circle-color': ['get', 'pointColor']
-//             }
-//         });
-
-//         map_simulation.addSource('farm-polygons', {
-//             type: 'geojson',
-//             data: { type: 'FeatureCollection', features: [] }
-//         });
-
-//         map_simulation.addLayer({
-//             id: 'farm-polygons-fill',
-//             type: 'fill',
-//             source: 'farm-polygons',
-//             paint: {
-//                 'fill-color': ['get', 'color'],
-//                 'fill-opacity': 0.4,
-//                 'fill-outline-width': [
-//                     'interpolate', ['linear'], ['zoom'],
-//                     0, 0.5, 11, 2
-//                 ]
-//             }
-//         });
-
-//         // Zoom listener to adjust polygon size based on zoom level
-//         map_simulation.on('zoom', () => {
-//             const zoom = map_simulation.getZoom();
-//             const zoomFactor = Math.pow(2, (9 - zoom)) * 0.5;
-//             const currentData = map_simulation.getSource('farm-polygons')._data;
-//             const scaledFeatures = currentData.features.map(feature => scalePolygon(feature, 1, zoomFactor));
-//             map_simulation.getSource('farm-polygons').setData({
-//                 type: 'FeatureCollection',
-//                 features: scaledFeatures
-//             });
-//         });
-
-//         // Get farm state based on latest reports
-//         function getFarmState(farm) {
-//             const now = new Date();
-//             const sevenDays = 7 * 24 * 60 * 60 * 1000;
-
-//             const latestFarmerReport = farm.farmer_reports.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
-//             const latestTechnicianReport = farm.technician_reports.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
-
-//             if (latestTechnicianReport && (!latestFarmerReport || new Date(latestTechnicianReport.created_at) > new Date(latestFarmerReport.created_at))) {
-//                 const timeSinceTreatment = now - new Date(latestTechnicianReport.created_at);
-//                 const progress = Math.min(timeSinceTreatment / sevenDays, 1);
-//                 return { isTreated: true, progress };
-//             } else if (latestFarmerReport) {
-//                 const timeSinceReport = now - new Date(latestFarmerReport.created_at);
-//                 const progress = Math.min(timeSinceReport / sevenDays, 1);
-//                 return { isTreated: false, progress };
-//             } else {
-//                 return { isTreated: false, progress: 0 };
-//             }
-//         }
-
-//         // Update farm data based on selected disease
-//         function updateFarmData(selectedDisease) {
-//             let filteredFarms = selectedDisease === 'All' ? simulate : simulate.filter(farm =>
-//                 farm.technician_reports.some(report => report.diagnosis_disease === selectedDisease) ||
-//                 farm.farmer_reports.some(report => report.disease === selectedDisease)
-//             );
-
-//             const farmFeatures = filteredFarms.map(farm => {
-//                 const longitude = parseFloat(farm.longitude);
-//                 const latitude = parseFloat(farm.latitude);
-//                 if (isNaN(longitude) || isNaN(latitude)) return null;
-
-//                 const { isTreated, progress } = getFarmState(farm);
-//                 let pointColor;
-
-//                 if (farm.farmer_reports.length === 0 && farm.technician_reports.length === 0) {
-//                     pointColor = '#00FF00'; // Green for no reports
-//                 } else if (isTreated) {
-//                     const rgb = interpolateColor(progress, [[255, 0, 0], [0, 255, 0]]);
-//                     pointColor = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
-//                 } else {
-//                     const rgb = interpolateColor(progress, [[255, 255, 0], [255, 0, 0]]);
-//                     pointColor = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
-//                 }
-
-//                 return {
-//                     type: 'Feature',
-//                     geometry: { type: 'Point', coordinates: [longitude, latitude] },
-//                     properties: {
-//                         municipal: farm.municipal,
-//                         disease: farm.technician_reports[0]?.diagnosis_disease || farm.farmer_reports[0]?.disease || 'Unknown',
-//                         farmId: farm.id,
-//                         pointColor
-//                     }
-//                 };
-//             }).filter(feature => feature !== null);
-
-//             const farmPolygons = farmFeatures.map(farm => {
-//                 const center = farm.geometry.coordinates;
-//                 const originalFarm = simulate.find(f => f.id === farm.properties.farmId);
-//                 const { isTreated, progress } = getFarmState(originalFarm);
-
-//                 if (originalFarm.farmer_reports.length === 0 && originalFarm.technician_reports.length === 0) return null;
-
-//                 const minRadius = 0.01;
-//                 const maxRadius = 0.02;
-//                 let baseRadius, color;
-
-//                 if (isTreated) {
-//                     const rgb = interpolateColor(progress, [[255, 0, 0], [0, 255, 0]]);
-//                     color = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
-//                     baseRadius = interpolateSize(1 - progress, 0, maxRadius);
-//                 } else {
-//                     const rgb = interpolateColor(progress, [[255, 255, 0], [255, 0, 0]]);
-//                     color = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
-//                     baseRadius = interpolateSize(progress, minRadius, maxRadius);
-//                 }
-
-//                 const zoom = map_simulation.getZoom();
-//                 const zoomFactor = Math.pow(2, (9 - zoom)) * 1.5;
-//                 const polygon = simulateGenerateRandomPolygon(center, 9, baseRadius);
-//                 return {
-//                     ...scalePolygon(polygon, 1, zoomFactor),
-//                     properties: {
-//                         municipal: farm.properties.municipal,
-//                         disease: farm.properties.disease,
-//                         farmId: farm.properties.farmId,
-//                         center,
-//                         color,
-//                         baseRadius
-//                     }
-//                 };
-//             }).filter(p => p !== null && p.properties.color);
-
-//             map_simulation.getSource('farms').setData({
-//                 type: 'FeatureCollection',
-//                 features: farmFeatures
-//             });
-
-//             map_simulation.getSource('farm-polygons').setData({
-//                 type: 'FeatureCollection',
-//                 features: farmPolygons
-//             });
-
-//             return { farmPolygons };
-//         }
-
-//         // Helper function to interpolate size
-//         function interpolateSize(progress, minSize, maxSize) {
-//             return minSize + progress * (maxSize - minSize);
-//         }
-
-//         // Animate polygons for simulation
-//         function animatePolygons(farmPolygons) {
-//             const duration = 7000; // 7 seconds
-//             const startTime = Date.now();
-//             let isAnimating = false;
-
-//             if (isAnimating) return;
-//             isAnimating = true;
-
-//             function step() {
-//                 const elapsed = Date.now() - startTime;
-//                 const animationProgress = Math.min(elapsed / duration, 1);
-
-//                 const updatedPolygons = farmPolygons.map(polygon => {
-//                     const farm = simulate.find(f => f.id === polygon.properties.farmId);
-//                     const { isTreated, progress: farmProgress } = getFarmState(farm);
-
-//                     if (isTreated && farmProgress >= 1) {
-//                         polygon.properties.color = 'rgb(0, 255, 0)'; // Fully treated
-//                     } else {
-//                         let color;
-//                         if (isTreated) {
-//                             const rgb = interpolateColor(animationProgress, [[255, 0, 0], [0, 255, 0]]);
-//                             color = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
-//                         } else {
-//                             const rgb = interpolateColor(animationProgress, [[255, 255, 0], [255, 0, 0]]);
-//                             color = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
-//                         }
-//                         polygon.properties.color = color;
-//                     }
-//                     return polygon;
-//                 });
-
-//                 map_simulation.getSource('farm-polygons').setData({
-//                     type: 'FeatureCollection',
-//                     features: updatedPolygons
-//                 });
-
-//                 if (animationProgress < 1) {
-//                     requestAnimationFrame(step);
-//                 } else {
-//                     isAnimating = false;
-//                 }
-//             }
-//             requestAnimationFrame(step);
-//         }
-
-//         // Event listener for disease selection
-//         document.getElementById('disease').addEventListener('change', (event) => {
-//             const selectedDisease = event.target.value;
-//             updateFarmData(selectedDisease);
-//         });
-
-//         // Event listener for simulate button
-//         document.getElementById('silumate-button').addEventListener('click', () => {
-//             const selectedDisease = document.getElementById('disease').value;
-//             const { farmPolygons } = updateFarmData(selectedDisease);
-//             animatePolygons(farmPolygons);
-
-//             const progressBar = document.getElementById('week-progress');
-//             progressBar.style.transition = 'width 7s linear';
-//             progressBar.style.width = '100%';
-
-//             setTimeout(() => {
-//                 progressBar.style.width = '0%';
-//             }, 7000);
-//         });
-
-//         // Initial data load
-//         updateFarmData('All');
-//     });
-// }
-
-
+function scalePolygon(polygon, k, zoomFactor = 1) {
+    const center = polygon.properties.center;
+    const points = polygon.geometry.coordinates[0];
+    const scaledPoints = points.map(point => {
+        const newLon = center[0] + k * zoomFactor * (point[0] - center[0]);
+        const newLat = center[1] + k * zoomFactor * (point[1] - center[1]);
+        return [newLon, newLat];
+    });
+    return {
+        type: 'Feature',
+        geometry: {
+            type: 'Polygon',
+            coordinates: [scaledPoints]
+        },
+        properties: polygon.properties
+    };
+}
 
 // async function mapSimulation(simulate, mapboxgl) {
 //     const simulationContainer = document.getElementById('simulationContainer');
@@ -620,7 +310,6 @@ async function displayMap(farm_loc, locations, mapboxgl) {
 
 //     map_simulation.on('load', async () => {
 //         const data = await geoJsonData();
-
 //         map_simulation.addSource('municipal', { type: 'geojson', data });
 //         map_simulation.addLayer({
 //             id: 'laguna-boundary',
@@ -674,13 +363,13 @@ async function displayMap(farm_loc, locations, mapboxgl) {
 //             paint: {
 //                 'fill-color': ['get', 'color'],
 //                 'fill-opacity': 0.4,
-//                 'fill-outline-width': [
-//                     'interpolate',
-//                     ['linear'],
-//                     ['zoom'],
-//                     0, 0.5,  // Small outline at low zoom
-//                     11, 2    // Larger outline at max zoom
-//                 ]
+//                 // 'fill-outline-width': [
+//                 //     'interpolate',
+//                 //     ['linear'],
+//                 //     ['zoom'],
+//                 //     0, 0.5,  // Small outline at low zoom
+//                 //     11, 2    // Larger outline at max zoom
+//                 // ]
 //             }
 //         });
 
@@ -700,118 +389,56 @@ async function displayMap(farm_loc, locations, mapboxgl) {
 //             });
 //         });
 
-
-//         // function rgbToHsl(r, g, b) {
-//         //     r /= 255; g /= 255; b /= 255;
-//         //     const max = Math.max(r, g, b), min = Math.min(r, g, b);
-//         //     let h, s, l = (max + min) / 2;
-//         //     if (max === min) {
-//         //         h = s = 0; // Achromatic
-//         //     } else {
-//         //         const d = max - min;
-//         //         s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-//         //         switch (max) {
-//         //             case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-//         //             case g: h = (b - r) / d + 2; break;
-//         //             case b: h = (r - g) / d + 4; break;
-//         //         }
-//         //         h /= 6;
-//         //     }
-//         //     return [h, s, l];
-//         // }
-        
-//         // Helper function to convert HSL back to RGB
-//         // function hslToRgb(h, s, l) {
-//         //     let r, g, b;
-//         //     if (s === 0) {
-//         //         r = g = b = l; // Achromatic
-//         //     } else {
-//         //         const hue2rgb = (p, q, t) => {
-//         //             if (t < 0) t += 1;
-//         //             if (t > 1) t -= 1;
-//         //             if (t < 1 / 6) return p + (q - p) * 6 * t;
-//         //             if (t < 1 / 2) return q;
-//         //             if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
-//         //             return p;
-//         //         };
-//         //         const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-//         //         const p = 2 * l - q;
-//         //         r = hue2rgb(p, q, h + 1 / 3);
-//         //         g = hue2rgb(p, q, h);
-//         //         b = hue2rgb(p, q, h - 1 / 3);
-//         //     }
-//         //     return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
-//         // }
-        
-
 //         // Convert RGB to HSL
-// // function rgbToHsl(r, g, b) {
-// //     r /= 255; g /= 255; b /= 255;
-// //     const max = Math.max(r, g, b), min = Math.min(r, g, b);
-// //     let h, s, l = (max + min) / 2;
-// //     if (max === min) {
-// //         h = s = 0; // Achromatic
-// //     } else {
-// //         const d = max - min;
-// //         s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-// //         switch (max) {
-// //             case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-// //             case g: h = (b - r) / d + 2; break;
-// //             case b: h = (r - g) / d + 4; break;
-// //         }
-// //         h /= 6;
-// //     }
-// //     return [h, s, l];
-// // }
+//         function rgbToHsl(r, g, b) {
+//             r /= 255; g /= 255; b /= 255;
+//             const max = Math.max(r, g, b), min = Math.min(r, g, b);
+//             let h, s, l = (max + min) / 2;
+//             if (max === min) {
+//                 h = s = 0; // Achromatic
+//             } else {
+//                 const d = max - min;
+//                 s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+//                 switch (max) {
+//                     case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+//                     case g: h = (b - r) / d + 2; break;
+//                     case b: h = (r - g) / d + 4; break;
+//                 }
+//                 h /= 6;
+//             }
+//             return [h, s, l];
+//         }
 
-// // // Convert HSL back to RGB
-// // function hslToRgb(h, s, l) {
-// //     let r, g, b;
-// //     if (s === 0) {
-// //         r = g = b = l; // Achromatic
-// //     } else {
-// //         const hue2rgb = (p, q, t) => {
-// //             if (t < 0) t += 1;
-// //             if (t > 1) t -= 1;
-// //             if (t < 1 / 6) return p + (q - p) * 6 * t;
-// //             if (t < 1 / 2) return q;
-// //             if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
-// //             return p;
-// //         };
-// //         const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-// //         const p = 2 * l - q;
-// //         r = hue2rgb(p, q, h + 1 / 3);
-// //         g = hue2rgb(p, q, h);
-// //         b = hue2rgb(p, q, h - 1 / 3);
-// //     }
-// //     return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
-// // }
+//         // Convert HSL back to RGB
+//         function hslToRgb(h, s, l) {
+//             let r, g, b;
+//             if (s === 0) {
+//                 r = g = b = l; // Achromatic
+//             } else {
+//                 const hue2rgb = (p, q, t) => {
+//                     if (t < 0) t += 1;
+//                     if (t > 1) t -= 1;
+//                     if (t < 1 / 6) return p + (q - p) * 6 * t;
+//                     if (t < 1 / 2) return q;
+//                     if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+//                     return p;
+//                 };
+//                 const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+//                 const p = 2 * l - q;
+//                 r = hue2rgb(p, q, h + 1 / 3);
+//                 g = hue2rgb(p, q, h);
+//                 b = hue2rgb(p, q, h - 1 / 3);
+//             }
+//             return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+//         }
 
-// // Interpolate between two colors using HSL
-// // function interpolateColor(progress, colors) {
-// //     const [start, end] = colors.map(c => rgbToHsl(...c));
-// //     const h = start[0] + progress * (end[0] - start[0]);
-// //     const s = start[1] + progress * (end[1] - start[1]);
-// //     const l = start[2] + progress * (end[2] - start[2]);
-// //     return hslToRgb(h, s, l);
-// // }
-
-
-// // function interpolateColor(progress, colors) {
-// //     const [start, end] = colors;
-// //     const r = Math.round(start[0] + (end[0] - start[0]) * progress);
-// //     const g = Math.round(start[1] + (end[1] - start[1]) * progress);
-// //     const b = Math.round(start[2] + (end[2] - start[2]) * progress);
-// //     return [r, g, b];
-// // }
-
-//         // // Helper function to interpolate colors
+//         // Interpolate between two colors using HSL
 //         function interpolateColor(progress, colors) {
-//             const [start, end] = colors;
-//             const r = Math.round(start[0] + (end[0] - start[0]) * progress);
-//             const g = Math.round(start[1] + (end[1] - start[1]) * progress);
-//             const b = Math.round(start[2] + (end[2] - start[2]) * progress);
-//             return `rgb(${r}, ${g}, ${b})`;
+//             const [start, end] = colors.map(c => rgbToHsl(...c));
+//             const h = start[0] + progress * (end[0] - start[0]);
+//             const s = start[1] + progress * (end[1] - start[1]);
+//             const l = start[2] + progress * (end[2] - start[2]);
+//             return hslToRgb(h, s, l);
 //         }
 
 //         // Helper function to interpolate size (base radius for polygons)
@@ -819,249 +446,227 @@ async function displayMap(farm_loc, locations, mapboxgl) {
 //             return minSize + (maxSize - minSize) * progress;
 //         }
 
+//         function getFarmState(farm) {
+//             const now = new Date();
+//             const sevenDays = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+     
 
-// function getFarmState(farm) {
-//     const now = new Date();
-//     const sevenDays = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+//             // Get the latest reports
+//             const latestFarmerReport = farm.farmer_reports.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
+//             const latestTechnicianReport = farm.technician_reports.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
 
-//     const latestFarmerReport = farm.farmer_reports.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
-//     const latestTechnicianReport = farm.technician_reports.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
-
-//     if (latestTechnicianReport && (!latestFarmerReport || new Date(latestTechnicianReport.created_at) > new Date(latestFarmerReport.created_at))) {
-//         const timeSinceTreatment = now - new Date(latestTechnicianReport.created_at);
-//         const progress = Math.min(timeSinceTreatment / sevenDays, 1);
-//         return { isTreated: true, progress };
-//     } else if (latestFarmerReport) {
-//         const timeSinceReport = now - new Date(latestFarmerReport.created_at);
-//         const progress = Math.min(timeSinceReport / sevenDays, 1);
-//         return { isTreated: false, progress };
-//     } else {
-//         return { isTreated: false, progress: 0 };
-//     }
-// }
-
-// // function getFarmState(farm) {
-// //     const now = new Date();
-// //     const sevenDays = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
-
-// //     // Get the latest reports
-// //     const latestFarmerReport = farm.farmer_reports.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
-// //     const latestTechnicianReport = farm.technician_reports.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
-
-// //     if (latestTechnicianReport && (!latestFarmerReport || new Date(latestTechnicianReport.created_at) > new Date(latestFarmerReport.created_at))) {
-// //         const timeSinceTreatment = now - new Date(latestTechnicianReport.created_at);
-// //         if (timeSinceTreatment > sevenDays) {
-// //             // Farm treated over 7 days ago: fully healthy
-// //             return { isTreated: true, progress: 1 };
-// //         } else {
-// //             // Farm still in treatment process
-// //             const progress = Math.min(timeSinceTreatment / sevenDays, 1);
-// //             return { isTreated: true, progress };
-// //         }
-// //     } else if (latestFarmerReport) {
-// //         // Untreated farm based on farmer report
-// //         const timeSinceReport = now - new Date(latestFarmerReport.created_at);
-// //         const progress = Math.min(timeSinceReport / sevenDays, 1);
-// //         return { isTreated: false, progress };
-// //     } else {
-// //         // No reports
-// //         return { isTreated: false, progress: 0 };
-// //     }
-// // }
-
-
+//             if (latestTechnicianReport && (!latestFarmerReport || new Date(latestTechnicianReport.created_at) > new Date(latestFarmerReport.created_at))) {
+//                 const timeSinceTreatment = now - new Date(latestTechnicianReport.created_at);
+//                 // console.log('timeSinceTreatment', timeSinceTreatment);
+//                 if (timeSinceTreatment > sevenDays) {
+//                     // Farm treated over 7 days ago: fully healthy
+//                     return { isTreated: true, progress: 1 };
+//                 } else if (timeSinceTreatment) {
+//                     // Farm still in treatment process
+//                     // const progress = Math.min(timeSinceTreatment / sevenDays, 1);
+//                     const timeSinceReport = now - new Date(latestFarmerReport.created_at);
+//                     const progress = Math.min(timeSinceReport / sevenDays, 1);
+//                     return { isTreated: true, progress};
+//                 }
+//             } else if (latestFarmerReport) {
+//                 // Untreated farm based on farmer report
+//                 const timeSinceReport = now - new Date(latestFarmerReport.created_at);
+//                 const progress = Math.min(timeSinceReport / sevenDays, 1);
+//                 return { isTreated: false, progress };
+//             } else {
+//                 // No reports
+//                 return { isTreated: false, progress: 0 };
+//             }
+//         }
 
 //         // Function to update farm data with zoom-dependent size
-//         function updateFarmData(selectedDisease) {
-//             const currentDate = new Date();
-//             const dayIndex = currentDate.getDay();
-//             const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-//             const orderedDays = [...days.slice(dayIndex), ...days.slice(0, dayIndex)];
+//         // function updateFarmData(selectedDisease) {
+//         //     const currentDate = new Date();
+//         //     const dayIndex = currentDate.getDay();
+//         //     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+//         //     const orderedDays = [...days.slice(dayIndex), ...days.slice(0, dayIndex)];
 
-//             let filteredFarms = selectedDisease === 'All'
-//                 ? simulate
-//                 : simulate.filter(farm =>
-//                     farm.technician_reports.some(report => report.diagnosis_disease === selectedDisease) ||
-//                     farm.farmer_reports.some(report => report.disease === selectedDisease)
-//                   );
+//         //     let filteredFarms = selectedDisease === 'All'
+//         //         ? simulate
+//         //         : simulate.filter(farm =>
+//         //             farm.technician_reports.some(report => report.diagnosis_disease === selectedDisease) ||
+//         //             farm.farmer_reports.some(report => report.disease === selectedDisease)
+//         //           );
 
-//             const farmFeatures = filteredFarms.map(farm => {
-//                 const longitude = parseFloat(farm.longitude);
-//                 const latitude = parseFloat(farm.latitude);
-//                 if (isNaN(longitude) || isNaN(latitude)) {
-//                     console.warn(`Invalid coordinates for farm ${farm.id}: ${farm.longitude}, ${farm.latitude}`);
-//                     return null;
-//                 }
+//         //     const farmFeatures = filteredFarms.map(farm => {
+//         //         const longitude = parseFloat(farm.longitude);
+//         //         const latitude = parseFloat(farm.latitude);
+//         //         if (isNaN(longitude) || isNaN(latitude)) {
+//         //             console.warn(`Invalid coordinates for farm ${farm.id}: ${farm.longitude}, ${farm.latitude}`);
+//         //             return null;
+//         //         }
 
-//                 const { isTreated, progress } = getFarmState(farm);
-//                 let pointColor;
+//         //         // const { isTreated, progress } = getFarmState(farm);
+//         //         const { isTreated, progress: farmProgress } = getFarmState(farm);
 
-//                 if (farm.farmer_reports.length === 0 && farm.technician_reports.length === 0) {
-//                     pointColor = '#00FF00';
-//                 } else if (isTreated) {
-//                     pointColor = interpolateColor(progress, [[255, 0, 0], [0, 255, 0]]);
-//                 } else {
-//                     pointColor = interpolateColor(progress, [[255, 255, 0], [255, 0, 0]]);
-//                 }
+//         //         let pointColor;
 
-//                 return {
-//                     type: 'Feature',
-//                     geometry: { type: 'Point', coordinates: [longitude, latitude] },
-//                     properties: {
-//                         municipal: farm.municipal,
-//                         disease: farm.technician_reports[0]?.diagnosis_disease || farm.farmer_reports[0]?.disease || 'Unknown',
-//                         farmId: farm.id,
-//                         pointColor
-//                     }
-//                 };
-//             }).filter(feature => feature !== null);
+//         //         if (farm.farmer_reports.length === 0 && farm.technician_reports.length === 0) {
+//         //             pointColor = '#00FF00';
+//         //         } else if (isTreated) {
+//         //             pointColor = interpolateColor(farmProgress, [[255, 0, 0], [0, 255, 0]]);
+//         //         } else {
+//         //             pointColor = interpolateColor(farmProgress, [[255, 255, 0], [255, 0, 0]]);
+//         //         }
 
-//             const farmPolygons = farmFeatures.map(farm => {
-//                 // Existing logic...
-//                 const center = farm.geometry.coordinates;
-//                 const originalFarm = simulate.find(f => f.id === farm.properties.farmId);
-//                 const { isTreated, progress } = getFarmState(originalFarm);
-//                 if (originalFarm.farmer_reports.length === 0 && originalFarm.technician_reports.length === 0) {
-//                     return null;
-//                 }
-//                 const minRadius = 0.01;
-//                 const maxRadius = 0.02;
-//                 let baseRadius, color;
-//                 if (isTreated) {
-//                     baseRadius = interpolateSize(1 - progress, 0, maxRadius);
-//                     color = interpolateColor(progress, [[255, 0, 0], [0, 255, 0]]);
-//                 } else {
-//                     baseRadius = interpolateSize(progress, minRadius, maxRadius);
-//                     color = interpolateColor(progress, [[255, 255, 0], [255, 0, 0]]);
-//                 }
-//                 const zoom = map_simulation.getZoom();
-//                 const zoomFactor = Math.pow(2, (9 - zoom)) * 1.5; // Apply reverse scaling initially
-//                 const polygon = simulateGenerateRandomPolygon(center, 9, baseRadius);
-//                 return {
-//                     ...scalePolygon(polygon, 1, zoomFactor),
-//                     properties: {
-//                         municipal: farm.properties.municipal,
-//                         disease: farm.properties.disease,
-//                         farmId: farm.properties.farmId,
-//                         center,
-//                         color,
-//                         baseRadius
-//                     }
-//                 };
-//             }).filter(p => p !== null && p.properties.color);
+//         //         return {
+//         //             type: 'Feature',
+//         //             geometry: { type: 'Point', coordinates: [longitude, latitude] },
+//         //             properties: {
+//         //                 municipal: farm.municipal,
+//         //                 disease: farm.technician_reports[0]?.diagnosis_disease || farm.farmer_reports[0]?.disease || 'Unknown',
+//         //                 farmId: farm.id,
+//         //                 pointColor
+//         //             }
+//         //         };
+//         //     }).filter(feature => feature !== null);
 
-//             map_simulation.getSource('farms').setData({
-//                 type: 'FeatureCollection',
-//                 features: farmFeatures
-//             });
+//         //     const farmPolygons = farmFeatures.map(farm => {
+//         //         // Existing logic...
+//         //         const center = farm.geometry.coordinates;
+//         //         const originalFarm = simulate.find(f => f.id === farm.properties.farmId);
+//         //         // const { isTreated, progress } = getFarmState(originalFarm);
+//         //         const { isTreated, progress: farmProgress } = getFarmState(originalFarm);
+//         //         if (originalFarm.farmer_reports.length === 0 && originalFarm.technician_reports.length === 0) { 
+//         //             return null;
+//         //         }
+//         //         console.log('farmProgress', farmProgress);
+//         //         const minRadius = 0.01;
+//         //         const maxRadius = 0.02;
+//         //         let baseRadius, color;
+//         //         if (isTreated) {
+//         //             if (isTreated && (farmProgress > 0.6 || farmProgress > 0.2 )) {
+//         //                 baseRadius = interpolateSize(1 - farmProgress, 0, maxRadius);
+//         //                 color = interpolateColor(farmProgress, [[255, 0, 0], [0, 255, 0]]);
+//         //             } else {
+//         //                 baseRadius = interpolateSize(farmProgress, minRadius, maxRadius);
+//         //                 color = interpolateColor(farmProgress, [[255, 0, 0], [0, 255, 0]]);
+//         //             }
+//         //         } else {
+//         //             baseRadius = interpolateSize(farmProgress, minRadius, maxRadius);
+//         //             color = interpolateColor(farmProgress, [[255, 255, 0], [255, 0, 0]]);
+//         //         }
+//         //         const zoom = map_simulation.getZoom();
+//         //         const zoomFactor = Math.pow(2, (9 - zoom)) * 1.5; // Apply reverse scaling initially
+//         //         const polygon = simulateGenerateRandomPolygon(center, 9, baseRadius);
+//         //         return {
+//         //             ...scalePolygon(polygon, 1, zoomFactor),
+//         //             properties: {
+//         //                 municipal: farm.properties.municipal,
+//         //                 disease: farm.properties.disease,
+//         //                 farmId: farm.properties.farmId,
+//         //                 center,
+//         //                 color,
+//         //                 baseRadius
+//         //             }
+//         //         };
+//         //     }).filter(p => p !== null && p.properties.color);
 
-//             map_simulation.getSource('farm-polygons').setData({
-//                 type: 'FeatureCollection',
-//                 features: farmPolygons
-//             });
+//         //     map_simulation.getSource('farms').setData({
+//         //         type: 'FeatureCollection',
+//         //         features: farmFeatures
+//         //     });
 
-//             return { farmPolygons, orderedDays };
-//         }
+//         //     map_simulation.getSource('farm-polygons').setData({
+//         //         type: 'FeatureCollection',
+//         //         features: farmPolygons
+//         //     });
+
+//         //     return { farmPolygons, orderedDays };
+//         // }
+
 
 
 //         function animatePolygons(farmPolygons) {
-//             const duration = 7000; // 7 seconds for the animation
+//             let isAnimating = false;
+//             const duration = 7000; // 7 seconds
+//             const maxScale = 1.5;
+//             const shrinkColors = [[255, 0, 0], [255, 255, 0], [0, 255, 0]]; // added
+
+//             if (isAnimating) return;
+//             isAnimating = true;
 //             const startTime = Date.now();
-        
+//             let currentPolygons = farmPolygons.map(p => ({ ...p }));
+
 //             function step() {
-//                 const elapsed = Date.now() - startTime;
-//                 const animationProgress = Math.min(elapsed / duration, 1);
+//                 const elapsedTime = Date.now() - startTime;
+//                 const animationProgress = Math.min(elapsedTime / duration, 1);
         
-//                 const updatedPolygons = farmPolygons.map(polygon => {
+
+//                 // added
+//                 const zoom = map_simulation.getZoom();
+//                 const zoomFactor = Math.pow(2, (9 - zoom)) * 1.5;
+//                 //.
+//                 currentPolygons = farmPolygons.map(polygon => {
 //                     const farm = simulate.find(f => f.id === polygon.properties.farmId);
 //                     const { isTreated, progress: farmProgress } = getFarmState(farm);
-        
-//                     let color;
+//                     // const { isTreated } = getFarmState(farm);
+//                     if (isTreated && farmProgress === 1) {
+//                         // Fully treated farm (over 7 days): stay green, no animation
+//                         polygon.properties.color = 'rgb(0, 255, 0)';
+//                         return polygon;
+//                     } 
+//                     let scale, color;
 //                     if (isTreated) {
-//                         if (farmProgress >= 1) {
-//                             color = [0, 255, 0]; // Green for fully treated farms
+//                         // Treated farm in progress
+//                         scale = 1 - animationProgress; // Shrink
+//                         if (isTreated && (farmProgress > 0.6 || farmProgress > 0.2)) {
+//                                 const newAnimationProgress = Math.min(elapsedTime / duration, 0.5);
+//                                 const rgb = interpolateColor(farmProgress  + newAnimationProgress, [[255, 0, 0], [0, 255, 0]]);
+//                                 color = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
 //                         } else {
-//                             // Red to green transition
-//                             color = interpolateColor(farmProgress, [[255, 0, 0], [0, 255, 0]]);
+//                             const rgb = interpolateColor(farmProgress + animationProgress, [[255, 0, 0], [0, 255, 0]]);
+//                             // color = interpolateColor(farmProgress + animationProgress, [shrinkColors[0], shrinkColors[2]]); // added
+//                             console.log('animationProgress', animationProgress);
+//                             color = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
 //                         }
 //                     } else {
-//                         // Yellow to red transition
-//                         color = interpolateColor(farmProgress, [[255, 255, 0], [255, 0, 0]]);
+//                         // Untreated farm
+//                         scale = 1 + animationProgress * (maxScale - 1); // Grow
+//                         const rgb = interpolateColor(farmProgress + animationProgress, [[255, 255, 0], [255, 0, 0]]);
+//                         // color = interpolateColor(farmProgress + animationProgress, [shrinkColors[0], shrinkColors[2]]); // added
+//                         color = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+//                     }  
+         
+//                     polygon.properties.color = color;
+//                     // added
+//                     const farmFeatures = map_simulation.getSource('farms')._data.features;
+//                     const matchingFarm = farmFeatures.find(f =>
+//                         f.geometry.coordinates[0] === polygon.properties.center[0] &&
+//                         f.geometry.coordinates[1] === polygon.properties.center[1]
+//                     );
+//                     if (matchingFarm) {
+//                         matchingFarm.properties.pointColor = animationProgress >= 1 && isTreated ? '#00FF00' : color;
 //                     }
-        
-//                     polygon.properties.color = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
-//                     return polygon;
-//                 });
-        
+//                     //.
+//                     return scale > 0 ? scalePolygon(polygon, scale, zoomFactor) : null;
+//                     // return scale > 0 ? scalePolygon(polygon, scale, /* zoomFactor */ ) : null;
+//                 }).filter(p => p !== null);
+                
+
 //                 map_simulation.getSource('farm-polygons').setData({
 //                     type: 'FeatureCollection',
-//                     features: updatedPolygons
+//                     features: currentPolygons
 //                 });
-        
+//                 map_simulation.getSource('farms').setData({
+//                     type: 'FeatureCollection',
+//                     features: map_simulation.getSource('farms')._data.features
+//                 });
+
+
 //                 if (animationProgress < 1) {
 //                     requestAnimationFrame(step);
+//                 } else {
+//                     isAnimating = false;
 //                 }
 //             }
 //             requestAnimationFrame(step);
 //         }
-
-
-// // function animatePolygons(farmPolygons) {
-// //     let isAnimating = false;
-// //     const duration = 7000; // 7 seconds
-// //     const maxScale = 2;
-
-// //     if (isAnimating) return;
-// //     isAnimating = true;
-// //     const startTime = Date.now();
-// //     let currentPolygons = farmPolygons.map(p => ({ ...p }));
-
-// //     function step() {
-// //         const elapsedTime = Date.now() - startTime;
-// //         const animationProgress = Math.min(elapsedTime / duration, 1);
-
-// //         currentPolygons = farmPolygons.map(polygon => {
-// //             const farm = simulate.find(f => f.id === polygon.properties.farmId);
-// //             const { isTreated, progress: farmProgress } = getFarmState(farm);
-
-// //             if (isTreated && farmProgress === 1) {
-// //                 // Fully treated farm (over 7 days): stay green, no animation
-// //                 polygon.properties.color = 'rgb(0, 255, 0)';
-// //                 return polygon;
-// //             }
-
-// //             let scale, color;
-// //             if (isTreated) {
-// //                 // Treated farm in progress
-// //                 scale = 1 - animationProgress; // Shrink
-// //                 const rgb = interpolateColor(farmProgress, [[255, 0, 0], [0, 255, 0]]);
-// //                 color = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
-// //             } else {
-// //                 // Untreated farm
-// //                 scale = 1 + animationProgress * (maxScale - 1); // Grow
-// //                 const rgb = interpolateColor(farmProgress, [[255, 255, 0], [255, 0, 0]]);
-// //                 color = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
-// //             }
-
-// //             polygon.properties.color = color;
-// //             return scale > 0 ? scalePolygon(polygon, scale, /* zoomFactor */) : null;
-// //         }).filter(p => p !== null);
-
-// //         map_simulation.getSource('farm-polygons').setData({
-// //             type: 'FeatureCollection',
-// //             features: currentPolygons
-// //         });
-
-// //         if (animationProgress < 1) {
-// //             requestAnimationFrame(step);
-// //         } else {
-// //             isAnimating = false;
-// //         }
-// //     }
-// //     requestAnimationFrame(step);
-// // }
-
-       
 
 //         const treatments = {
 //             'Stem Bleeding': `
@@ -1116,12 +721,12 @@ async function displayMap(farm_loc, locations, mapboxgl) {
 //             const selectedDisease = event.target.value;
 //             treatmentText.innerHTML = treatments[selectedDisease] || `<p class="mt-5 text-center">Please select a disease to view treatment recommendations.</p>`;
 //             const { farmPolygons } = updateFarmData(selectedDisease);
-//             if (farmPolygons.length > 0) {
+//             if (farmPolygons.length > 0 && (selectedDisease !== 'All')) {
 //                 const coordinates = farmPolygons.map(p => p.properties.center);
 //                 const bounds = coordinates.reduce((bounds, coord) => bounds.extend(coord), new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
 //                 map_simulation.fitBounds(bounds, { padding: 50 });
 //             } else if (selectedDisease === 'All') {
-//                 map_simulation.setZoom(9);
+//                 map_simulation.setZoom(0);
 //             }
 //         });
 
@@ -1163,46 +768,13 @@ async function displayMap(farm_loc, locations, mapboxgl) {
 
 
 
-function simulateGenerateRandomPolygon(center, numPoints = 9, radius = 0.01) {
-    const points = [];
-    for (let i = 0; i < numPoints; i++) {
-        const angle = (i / numPoints) * 2 * Math.PI;
-        const randomRadius = radius * (0.5 + Math.random() * 0.5);
-        const randomAngle = angle + (Math.random() - 0.5) * 0.5;
-        const lon = center[0] + randomRadius * Math.cos(randomAngle);
-        const lat = center[1] + randomRadius * Math.sin(randomAngle);
-        points.push([lon, lat]);
-    }
-    points.push(points[0]);
-    return {
-        type: 'Feature',
-        geometry: {
-            type: 'Polygon',
-            coordinates: [points]
-        },
-        properties: { center }
-    };
-}
 
-function scalePolygon(polygon, k, zoomFactor = 1) {
-    const center = polygon.properties.center;
-    const points = polygon.geometry.coordinates[0];
-    const scaledPoints = points.map(point => {
-        const newLon = center[0] + k * zoomFactor * (point[0] - center[0]);
-        const newLat = center[1] + k * zoomFactor * (point[1] - center[1]);
-        return [newLon, newLat];
-    });
-    return {
-        type: 'Feature',
-        geometry: {
-            type: 'Polygon',
-            coordinates: [scaledPoints]
-        },
-        properties: polygon.properties
-    };
-}
+
+// ... (Keep your existing geoJsonData, simulateGenerateRandomPolygon, and scalePolygon functions unchanged)
 
 async function mapSimulation(simulate, mapboxgl) {
+    console.log('simulate', simulate);
+
     const simulationContainer = document.getElementById('simulationContainer');
     if (simulationContainer) simulationContainer.innerHTML = "";
 
@@ -1221,13 +793,11 @@ async function mapSimulation(simulate, mapboxgl) {
 
     map_simulation.on('load', async () => {
         const data = await geoJsonData();
-
         map_simulation.addSource('municipal', { type: 'geojson', data });
         map_simulation.addLayer({
             id: 'laguna-boundary',
             type: 'line',
             source: 'municipal',
-            // filter: ['==', '$type', 'Polygon'],
             filter: ['==', ['geometry-type'], 'Polygon'],
             paint: {
                 'line-color': '#FFD700',
@@ -1235,18 +805,6 @@ async function mapSimulation(simulate, mapboxgl) {
                 'line-dasharray': [2, 2],
             }
         });
-
-        // map_simulation.addLayer({
-        //     id: 'laguna-boundary',
-        //     type: 'fill',
-        //     source: 'municipal',
-        //     // filter: ['==', '$type', 'Polygon'],
-        //     filter: ['==', ['geometry-type'], 'Polygon'],
-        //     paint: {
-        //         'fill-color': 'darkblue',
-        //         'fill-opacity': 0.3
-        //     }
-        // });
 
         map_simulation.addSource('farms', {
             type: 'geojson',
@@ -1258,14 +816,14 @@ async function mapSimulation(simulate, mapboxgl) {
             type: 'circle',
             source: 'farms',
             paint: {
-                'circle-radius': 5, 
+                'circle-radius': ['match', ['get', 'pointType'], 'technician', 3, 5],
                 'circle-color': ['get', 'pointColor']
             }
         });
 
         map_simulation.addSource('farm-polygons', {
             type: 'geojson',
-            data: { type: 'FeatureCollection', features: [] } 
+            data: { type: 'FeatureCollection', features: [] }
         });
 
         map_simulation.addLayer({
@@ -1274,270 +832,170 @@ async function mapSimulation(simulate, mapboxgl) {
             source: 'farm-polygons',
             paint: {
                 'fill-color': ['get', 'color'],
-                'fill-opacity': 0.4,
-                // 'fill-outline-width': [
-                //     'interpolate',
-                //     ['linear'],
-                //     ['zoom'],
-                //     0, 0.5,  // Small outline at low zoom
-                //     11, 2    // Larger outline at max zoom
-                // ]
+                'fill-opacity': 0.4
             }
         });
 
-        // Updated zoom listener
+        map_simulation.addSource('technician-geofences', {
+            type: 'geojson',
+            data: { type: 'FeatureCollection', features: [] }
+        });
+
+        map_simulation.addLayer({
+            id: 'technician-geofences-fill',
+            type: 'fill',
+            source: 'technician-geofences',
+            paint: {
+                'fill-color': '#FF0000',
+                'fill-opacity': 0.3 // Initial opacity
+            }
+        });
+
+        // map_simulation.addLayer({
+        //     id: 'technician-geofences-outline',
+        //     type: 'line',
+        //     source: 'technician-geofences',
+        //     paint: {
+        //         'line-color': '#FF0000',
+        //         'line-width': 2,
+        //         'line-dasharray': [1, 1],
+        //         'line-opacity': 1 // Initial opacity
+        //     }
+        // });
+
         map_simulation.on('zoom', () => {
             const zoom = map_simulation.getZoom();
-            const zoomFactor = Math.pow(2, (9 - zoom)) * 0.5; // Reverse scaling
-            const currentData = map_simulation.getSource('farm-polygons')._data;
-            
-            const scaledFeatures = currentData.features.map(feature => {
+            const zoomFactor = Math.pow(2, (9 - zoom)) * 0.5;
+            const currentFarmData = map_simulation.getSource('farm-polygons')._data;
+            const currentGeofenceData = map_simulation.getSource('technician-geofences')._data;
+
+            const scaledFarmFeatures = currentFarmData.features.map(feature => {
+                return scalePolygon(feature, 1, zoomFactor);
+            });
+
+            const scaledGeofenceFeatures = currentGeofenceData.features.map(feature => {
                 return scalePolygon(feature, 1, zoomFactor);
             });
 
             map_simulation.getSource('farm-polygons').setData({
                 type: 'FeatureCollection',
-                features: scaledFeatures
+                features: scaledFarmFeatures
+            });
+
+            map_simulation.getSource('technician-geofences').setData({
+                type: 'FeatureCollection',
+                features: scaledGeofenceFeatures
             });
         });
 
-  // Convert RGB to HSL
-function rgbToHsl(r, g, b) {
-    r /= 255; g /= 255; b /= 255;
-    const max = Math.max(r, g, b), min = Math.min(r, g, b);
-    let h, s, l = (max + min) / 2;
-    if (max === min) {
-        h = s = 0; // Achromatic
-    } else {
-        const d = max - min;
-        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-        switch (max) {
-            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-            case g: h = (b - r) / d + 2; break;
-            case b: h = (r - g) / d + 4; break;
+                // Updated zoom listener
+        // map_simulation.on('zoom', () => {
+        //     const zoom = map_simulation.getZoom();
+        //     const zoomFactor = Math.pow(2, (9 - zoom)) * 0.5; // Reverse scaling
+        //     const currentData = map_simulation.getSource('farm-polygons')._data;
+            
+        //     const scaledFeatures = currentData.features.map(feature => {
+        //         return scalePolygon(feature, 1, zoomFactor);
+        //     });
+
+        //     map_simulation.getSource('farm-polygons').setData({
+        //         type: 'FeatureCollection',
+        //         features: scaledFeatures
+        //     });
+        // });
+
+        // Convert RGB to HSL
+        function rgbToHsl(r, g, b) {
+            r /= 255; g /= 255; b /= 255;
+            const max = Math.max(r, g, b), min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
+            if (max === min) {
+                h = s = 0; // Achromatic
+            } else {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch (max) {
+                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                    case g: h = (b - r) / d + 2; break;
+                    case b: h = (r - g) / d + 4; break;
+                }
+                h /= 6;
+            }
+            return [h, s, l];
         }
-        h /= 6;
-    }
-    return [h, s, l];
-}
 
- // Convert HSL back to RGB
-function hslToRgb(h, s, l) {
-    let r, g, b;
-    if (s === 0) {
-        r = g = b = l; // Achromatic
-    } else {
-        const hue2rgb = (p, q, t) => {
-            if (t < 0) t += 1;
-            if (t > 1) t -= 1;
-            if (t < 1 / 6) return p + (q - p) * 6 * t;
-            if (t < 1 / 2) return q;
-            if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
-            return p;
-        };
-        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-        const p = 2 * l - q;
-        r = hue2rgb(p, q, h + 1 / 3);
-        g = hue2rgb(p, q, h);
-        b = hue2rgb(p, q, h - 1 / 3);
-    }
-    return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
-}
+        // Convert HSL back to RGB
+        function hslToRgb(h, s, l) {
+            let r, g, b;
+            if (s === 0) {
+                r = g = b = l; // Achromatic
+            } else {
+                const hue2rgb = (p, q, t) => {
+                    if (t < 0) t += 1;
+                    if (t > 1) t -= 1;
+                    if (t < 1 / 6) return p + (q - p) * 6 * t;
+                    if (t < 1 / 2) return q;
+                    if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+                    return p;
+                };
+                const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                const p = 2 * l - q;
+                r = hue2rgb(p, q, h + 1 / 3);
+                g = hue2rgb(p, q, h);
+                b = hue2rgb(p, q, h - 1 / 3);
+            }
+            return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+        }
 
-// // Interpolate between two colors using HSL
-function interpolateColor(progress, colors) {
-    const [start, end] = colors.map(c => rgbToHsl(...c));
-    const h = start[0] + progress * (end[0] - start[0]);
-    const s = start[1] + progress * (end[1] - start[1]);
-    const l = start[2] + progress * (end[2] - start[2]);
-    return hslToRgb(h, s, l);
-}
-
-        // Helper function to interpolate colors
-        // function interpolateColor(progress, colors) {
-        //     const [start, end] = colors;
-        //     const r = Math.round(start[0] + (end[0] - start[0]) * progress);  
-        //     const g = Math.round(start[1] + (end[1] - start[1]) * progress);
-        //     const b = Math.round(start[2] + (end[2] - start[2]) * progress);
-        //     return `rgb(${r}, ${g}, ${b})`;
-        // }
+        // Interpolate between two colors using HSL
+        function interpolateColor(progress, colors) {
+            const [start, end] = colors.map(c => rgbToHsl(...c));
+            const h = start[0] + progress * (end[0] - start[0]);
+            const s = start[1] + progress * (end[1] - start[1]);
+            const l = start[2] + progress * (end[2] - start[2]);
+            return hslToRgb(h, s, l);
+        }
 
         // Helper function to interpolate size (base radius for polygons)
         function interpolateSize(progress, minSize, maxSize) {
             return minSize + (maxSize - minSize) * progress;
         }
 
-        // Function to determine farm state and progress
-        // function getFarmState(farm) {
-        //     const now = new Date();
-        //     const sevenDays = 7 * 24 * 60 * 60 * 1000;
+        function getFarmState(farm) {
+            const now = new Date();
+            const sevenDays = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+     
 
-        //     const latestFarmerReport = farm.farmer_reports.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
-        //     const latestTechnicianReport = farm.technician_reports.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
-        //     let isTreated = false;
-        //     let progress = 0;
+            // Get the latest reports
+            const latestFarmerReport = farm.farmer_reports.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
+            const latestTechnicianReport = farm.technician_reports.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
 
-        //     if (latestFarmerReport && (!latestTechnicianReport || new Date(latestFarmerReport.created_at) > new Date(latestTechnicianReport.created_at))) {
-        //         const timeElapsed = now - new Date(latestFarmerReport.created_at);
-        //         progress = Math.min(timeElapsed / sevenDays, 1);
-        //     } if (latestTechnicianReport && (!latestFarmerReport || new Date(latestTechnicianReport.created_at) > new Date(latestFarmerReport.created_at))) {
-        //         isTreated = true;
-        //         const timeElapsed = now - new Date(latestTechnicianReport.created_at);
-        //         progress = Math.min(timeElapsed / sevenDays, 1);
-        //     }
-
-        //     return { isTreated, progress };
-        // }
-
-        
-// function getFarmState(farm) {
-//     const now = new Date();
-//     const sevenDays = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
-
-//     const latestFarmerReport = farm.farmer_reports.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
-//     const latestTechnicianReport = farm.technician_reports.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
-
-//     if (latestTechnicianReport && (!latestFarmerReport || new Date(latestTechnicianReport.created_at) > new Date(latestFarmerReport.created_at))) {
-//         const timeSinceTreatment = now - new Date(latestTechnicianReport.created_at);
-//         const progress = Math.min(timeSinceTreatment / sevenDays, 1);
-//         return { isTreated: true, progress };
-//     } else if (latestFarmerReport) {
-//         const timeSinceReport = now - new Date(latestFarmerReport.created_at);
-//         const progress = Math.min(timeSinceReport / sevenDays, 1);
-//         return { isTreated: false, progress };
-//     } else {
-//         return { isTreated: false, progress: 0 };
-//     }
-// }
-
-
-function getFarmState(farm) {
-    const now = new Date();
-    const sevenDays = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
-
-    // Get the latest reports
-    const latestFarmerReport = farm.farmer_reports.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
-    const latestTechnicianReport = farm.technician_reports.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
-
-    if (latestTechnicianReport && (!latestFarmerReport || new Date(latestTechnicianReport.created_at) > new Date(latestFarmerReport.created_at))) {
-        const timeSinceTreatment = now - new Date(latestTechnicianReport.created_at);
-        if (timeSinceTreatment > sevenDays) {
-            // Farm treated over 7 days ago: fully healthy
-            return { isTreated: true, progress: 1 };
-        } else {
-            // Farm still in treatment process
-            const progress = Math.min(timeSinceTreatment / sevenDays, 1);
-            return { isTreated: true, progress };
+            if (latestTechnicianReport && (!latestFarmerReport || new Date(latestTechnicianReport.created_at) > new Date(latestFarmerReport.created_at))) {
+                const timeSinceTreatment = now - new Date(latestTechnicianReport.created_at);
+                // console.log('timeSinceTreatment', timeSinceTreatment);
+                if (timeSinceTreatment > sevenDays) {
+                    // Farm treated over 7 days ago: fully healthy
+                    return { isTreated: true, progress: 1 };
+                } else if (timeSinceTreatment) {
+                    // Farm still in treatment process
+                    // const progress = Math.min(timeSinceTreatment / sevenDays, 1);
+                    const timeSinceReport = now - new Date(latestFarmerReport.created_at);
+                    const progress = Math.min(timeSinceReport / sevenDays, 1);
+                    return { isTreated: true, progress};
+                }
+            } else if (latestFarmerReport) {
+                // Untreated farm based on farmer report
+                const timeSinceReport = now - new Date(latestFarmerReport.created_at);
+                const progress = Math.min(timeSinceReport / sevenDays, 1);
+                return { isTreated: false, progress };
+            } else {
+                // No reports
+                return { isTreated: false, progress: 0 };
+            }
         }
-    } else if (latestFarmerReport) {
-        // Untreated farm based on farmer report
-        const timeSinceReport = now - new Date(latestFarmerReport.created_at);
-        const progress = Math.min(timeSinceReport / sevenDays, 1);
-        return { isTreated: false, progress };
-    } else {
-        // No reports
-        return { isTreated: false, progress: 0 };
-    }
-}
 
+        // ... (Keep rgbToHsl, hslToRgb, interpolateColor, interpolateSize, getFarmState unchanged)
 
-
-        // Function to update farm data with zoom-dependent size
-        // function updateFarmData(selectedDisease) {
-        //     const currentDate = new Date();
-        //     const dayIndex = currentDate.getDay();
-        //     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        //     const orderedDays = [...days.slice(dayIndex), ...days.slice(0, dayIndex)];
-
-        //     let filteredFarms = selectedDisease === 'All'
-        //         ? simulate
-        //         : simulate.filter(farm =>
-        //             farm.technician_reports.some(report => report.diagnosis_disease === selectedDisease) ||
-        //             farm.farmer_reports.some(report => report.disease === selectedDisease)
-        //           );
-
-        //     const farmFeatures = filteredFarms.map(farm => {
-        //         const longitude = parseFloat(farm.longitude);
-        //         const latitude = parseFloat(farm.latitude);
-        //         if (isNaN(longitude) || isNaN(latitude)) {
-        //             console.warn(`Invalid coordinates for farm ${farm.id}: ${farm.longitude}, ${farm.latitude}`);
-        //             return null;
-        //         }
-
-        //         const { isTreated, progress } = getFarmState(farm);
-        //         let pointColor;
-
-        //         if (farm.farmer_reports.length === 0 && farm.technician_reports.length === 0) {
-        //             pointColor = '#00FF00';
-        //         } else if (isTreated) {
-        //             pointColor = interpolateColor(progress, [[255, 0, 0], [0, 255, 0]]);
-        //         } else {
-        //             pointColor = interpolateColor(progress, [[255, 255, 0], [255, 0, 0]]);
-        //         }
-
-        //         return {
-        //             type: 'Feature',
-        //             geometry: { type: 'Point', coordinates: [longitude, latitude] },
-        //             properties: {
-        //                 municipal: farm.municipal,
-        //                 disease: farm.technician_reports[0]?.diagnosis_disease || farm.farmer_reports[0]?.disease || 'Unknown',
-        //                 farmId: farm.id,
-        //                 pointColor
-        //             }
-        //         };
-        //     }).filter(feature => feature !== null);
-
-        //     const farmPolygons = farmFeatures.map(farm => {
-        //         // Existing logic...
-        //         const center = farm.geometry.coordinates;
-        //         const originalFarm = simulate.find(f => f.id === farm.properties.farmId);
-        //         const { isTreated, progress } = getFarmState(originalFarm);
-        //         if (originalFarm.farmer_reports.length === 0 && originalFarm.technician_reports.length === 0) {
-        //             return null;
-        //         }
-        //         const minRadius = 0.01;
-        //         const maxRadius = 0.02;
-        //         let baseRadius, color;
-        //         if (isTreated) {
-        //             baseRadius = interpolateSize(1 - progress, 0, maxRadius);
-        //             color = interpolateColor(progress, [[255, 0, 0], [0, 255, 0]]);
-        //         } else {
-        //             baseRadius = interpolateSize(progress, minRadius, maxRadius);
-        //             color = interpolateColor(progress, [[255, 255, 0], [255, 0, 0]]);
-        //         }
-        //         const zoom = map_simulation.getZoom();
-        //         const zoomFactor = Math.pow(2, (9 - zoom)) * 1.5; // Apply reverse scaling initially
-        //         const polygon = simulateGenerateRandomPolygon(center, 9, baseRadius);
-        //         return {
-        //             ...scalePolygon(polygon, 1, zoomFactor),
-        //             properties: {
-        //                 municipal: farm.properties.municipal,
-        //                 disease: farm.properties.disease,
-        //                 farmId: farm.properties.farmId,
-        //                 center,
-        //                 color,
-        //                 baseRadius
-        //             }
-        //         };
-        //     }).filter(p => p !== null && p.properties.color);
-
-        //     map_simulation.getSource('farms').setData({
-        //         type: 'FeatureCollection',
-        //         features: farmFeatures
-        //     });
-
-        //     map_simulation.getSource('farm-polygons').setData({
-        //         type: 'FeatureCollection',
-        //         features: farmPolygons
-        //     });
-
-        //     return { farmPolygons, orderedDays };
-        // }
-
-
-        
-
-        // Function to update farm data with zoom-dependent size
         function updateFarmData(selectedDisease) {
             const currentDate = new Date();
             const dayIndex = currentDate.getDay();
@@ -1551,70 +1009,145 @@ function getFarmState(farm) {
                     farm.farmer_reports.some(report => report.disease === selectedDisease)
                   );
 
-            const farmFeatures = filteredFarms.map(farm => {
+            const farmFeatures = [];
+            const technicianGeofences = [];
+
+            filteredFarms.forEach(farm => {
                 const longitude = parseFloat(farm.longitude);
                 const latitude = parseFloat(farm.latitude);
                 if (isNaN(longitude) || isNaN(latitude)) {
                     console.warn(`Invalid coordinates for farm ${farm.id}: ${farm.longitude}, ${farm.latitude}`);
-                    return null;
+                    return;
                 }
 
-                const { isTreated, progress } = getFarmState(farm);
-                let pointColor;
+                const { isTreated, progress: farmProgress } = getFarmState(farm);
 
+                let pointColor;
                 if (farm.farmer_reports.length === 0 && farm.technician_reports.length === 0) {
                     pointColor = '#00FF00';
                 } else if (isTreated) {
-                    pointColor = interpolateColor(progress, [[255, 0, 0], [0, 255, 0]]);
+                    pointColor = interpolateColor(farmProgress, [[255, 0, 0], [0, 255, 0]]);
                 } else {
-                    pointColor = interpolateColor(progress, [[255, 255, 0], [255, 0, 0]]);
+                    pointColor = interpolateColor(farmProgress, [[255, 255, 0], [255, 0, 0]]);
                 }
 
-                return {
+                // Add farm point
+                farmFeatures.push({
                     type: 'Feature',
                     geometry: { type: 'Point', coordinates: [longitude, latitude] },
                     properties: {
                         municipal: farm.municipal,
                         disease: farm.technician_reports[0]?.diagnosis_disease || farm.farmer_reports[0]?.disease || 'Unknown',
                         farmId: farm.id,
-                        pointColor
+                        pointColor,
+                        pointType: 'farm'
                     }
-                };
-            }).filter(feature => feature !== null);
+                });
 
-            const farmPolygons = farmFeatures.map(farm => {
-                // Existing logic...
-                const center = farm.geometry.coordinates;
-                const originalFarm = simulate.find(f => f.id === farm.properties.farmId);
-                const { isTreated, progress } = getFarmState(originalFarm);
-                if (originalFarm.farmer_reports.length === 0 && originalFarm.technician_reports.length === 0) { 
-                    return null;
-                }
-                const minRadius = 0.01;
-                const maxRadius = 0.02;
-                let baseRadius, color;
-                if (isTreated) {
-                    baseRadius = interpolateSize(1 - progress, 0, maxRadius);
-                    color = interpolateColor(progress, [[255, 0, 0], [0, 255, 0]]);
-                } else {
-                    baseRadius = interpolateSize(progress, minRadius, maxRadius);
-                    color = interpolateColor(progress, [[255, 255, 0], [255, 0, 0]]);
-                }
-                const zoom = map_simulation.getZoom();
-                const zoomFactor = Math.pow(2, (9 - zoom)) * 1.5; // Apply reverse scaling initially
-                const polygon = simulateGenerateRandomPolygon(center, 9, baseRadius);
-                return {
-                    ...scalePolygon(polygon, 1, zoomFactor),
-                    properties: {
-                        municipal: farm.properties.municipal,
-                        disease: farm.properties.disease,
-                        farmId: farm.properties.farmId,
-                        center,
-                        color,
-                        baseRadius
+                // Add technician points and create geofence
+                if (farm.technician_reports && Array.isArray(farm.technician_reports)) {
+                    const technicianCoords = [];
+                    farm.technician_reports.forEach(report => {
+                        if (report.coordinates && Array.isArray(report.coordinates)) {
+                            report.coordinates.forEach(coord => {
+                                const [lat, lon] = coord.split(',').map(Number);
+                                if (!isNaN(lat) && !isNaN(lon)) {
+                                    technicianCoords.push([lon, lat]);
+                                    farmFeatures.push({
+                                        type: 'Feature',
+                                        geometry: { type: 'Point', coordinates: [lon, lat] },
+                                        properties: {
+                                            municipal: farm.municipal,
+                                            disease: report.diagnosis_disease || 'Unknown',
+                                            farmId: farm.id,
+                                            pointColor,
+                                            pointType: 'technician'
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+
+                    if (technicianCoords.length > 0) {
+                        // Calculate centroid of technician coordinates
+                        const centroid = technicianCoords.reduce(
+                            (acc, coord) => [acc[0] + coord[0] / technicianCoords.length, acc[1] + coord[1] / technicianCoords.length],
+                            [0, 0]
+                        );
+
+                        // Use same size and color logic as farm polygons
+                        const minRadius = 0.01;
+                        const maxRadius = 0.02;
+                        let baseRadius, color;
+                        if (isTreated) {
+                            if (farmProgress > 0.6 || farmProgress > 0.2) {
+                                baseRadius = interpolateSize(1 - farmProgress, 0, maxRadius);
+                                color = interpolateColor(farmProgress, [[255, 0, 0], [0, 255, 0]]);
+                            } else {
+                                baseRadius = interpolateSize(farmProgress, minRadius, maxRadius);
+                                color = interpolateColor(farmProgress, [[255, 0, 0], [0, 255, 0]]);
+                            }
+                        } else {
+                            baseRadius = interpolateSize(farmProgress, minRadius, maxRadius);
+                            color = interpolateColor(farmProgress, [[255, 255, 0], [255, 0, 0]]);
+                        }
+                        const zoom = map_simulation.getZoom();
+                        const zoomFactor = Math.pow(2, (9 - zoom)) * 1.5;
+                        const geofence = simulateGenerateRandomPolygon(centroid, 9, baseRadius);
+                        technicianGeofences.push({
+                            ...scalePolygon(geofence, 1.5, zoomFactor),
+                            properties: {
+                                farmId: farm.id,
+                                disease: farm.technician_reports[0]?.diagnosis_disease || 'Unknown',
+                                center: centroid,
+                                color: `rgb(${color[0]}, ${color[1]}, ${color[2]})`, // Match farm polygon color
+                                baseRadius
+                            }
+                        });
                     }
-                };
-            }).filter(p => p !== null && p.properties.color);
+                }
+            });
+
+            const farmPolygons = farmFeatures
+                .filter(f => f.properties.pointType === 'farm')
+                .map(farm => {
+                    const center = farm.geometry.coordinates;
+                    const originalFarm = simulate.find(f => f.id === farm.properties.farmId);
+                    const { isTreated, progress: farmProgress } = getFarmState(originalFarm);
+                    if (originalFarm.farmer_reports.length === 0 && originalFarm.technician_reports.length === 0) {
+                        return null;
+                    }
+                    const minRadius = 0.01;
+                    const maxRadius = 0.02;
+                    let baseRadius, color;
+                    if (isTreated) {
+                        if (farmProgress > 0.6 || farmProgress > 0.2) {
+                            baseRadius = interpolateSize(1 - farmProgress, 0, maxRadius);
+                            color = interpolateColor(farmProgress, [[255, 0, 0], [0, 255, 0]]);
+                        } else {
+                            baseRadius = interpolateSize(farmProgress, minRadius, maxRadius);
+                            color = interpolateColor(farmProgress, [[255, 0, 0], [0, 255, 0]]);
+                        }
+                    } else {
+                        baseRadius = interpolateSize(farmProgress, minRadius, maxRadius);
+                        color = interpolateColor(farmProgress, [[255, 255, 0], [255, 0, 0]]);
+                    }
+                    const zoom = map_simulation.getZoom();
+                    const zoomFactor = Math.pow(2, (9 - zoom)) * 1.5;
+                    const polygon = simulateGenerateRandomPolygon(center, 9, baseRadius);
+                    return {
+                        ...scalePolygon(polygon, 1, zoomFactor),
+                        properties: {
+                            municipal: farm.properties.municipal,
+                            disease: farm.properties.disease,
+                            farmId: farm.properties.farmId,
+                            center,
+                            color: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
+                            baseRadius
+                        }
+                    };
+                }).filter(p => p !== null && p.properties.color);
 
             map_simulation.getSource('farms').setData({
                 type: 'FeatureCollection',
@@ -1626,14 +1159,18 @@ function getFarmState(farm) {
                 features: farmPolygons
             });
 
+            map_simulation.getSource('technician-geofences').setData({
+                type: 'FeatureCollection',
+                features: technicianGeofences
+            });
+
             return { farmPolygons, orderedDays };
         }
 
         // function animatePolygons(farmPolygons) {
         //     let isAnimating = false;
-        //     const duration = 7000;
-        //     const maxScale = 2;
-        //     const shrinkColors = [[255, 0, 0], [255, 255, 0], [0, 255, 0]];
+        //     const duration = 7000; // 7 seconds
+        //     const maxScale = 1.5;
 
         //     if (isAnimating) return;
         //     isAnimating = true;
@@ -1641,39 +1178,54 @@ function getFarmState(farm) {
         //     let currentPolygons = farmPolygons.map(p => ({ ...p }));
 
         //     function step() {
-        //         const currentTime = Date.now();
-        //         const elapsedTime = currentTime - startTime;
-        //         const progress = Math.min(elapsedTime / duration, 1);
+        //         const elapsedTime = Date.now() - startTime;
+        //         const animationProgress = Math.min(elapsedTime / duration, 1);
         //         const zoom = map_simulation.getZoom();
         //         const zoomFactor = Math.pow(2, (9 - zoom)) * 1.5;
 
+        //         // Animate farm polygons
         //         currentPolygons = farmPolygons.map(polygon => {
         //             const farm = simulate.find(f => f.id === polygon.properties.farmId);
-        //             const { isTreated } = getFarmState(farm);
-        //             let k, color;
-
-        //             if (isTreated) {
-        //                 k = 1 - progress;
-        //                 color = interpolateColor(progress, [shrinkColors[0], shrinkColors[2]]);
-        //             } else {
-        //                 k = 1 + progress * (maxScale - 1);
-        //                 color = '#FF0000';
+        //             const { isTreated, progress: farmProgress } = getFarmState(farm);
+        //             if (isTreated && farmProgress === 1) {
+        //                 polygon.properties.color = 'rgb(0, 255, 0)';
+        //                 return polygon;
         //             }
- 
-        
-        //             polygon.properties.color = color;
+        //             let scale, color;
+        //             if (isTreated) {
+        //                 scale = 1 - animationProgress;
+        //                 if (isTreated && (farmProgress > 0.6 || farmProgress > 0.2)) {
+        //                     const newAnimationProgress = Math.min(elapsedTime / duration, 0.5);
+        //                     const rgb = interpolateColor(farmProgress + newAnimationProgress, [[255, 0, 0], [0, 255, 0]]);
+        //                     color = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+        //                 } else {
+        //                     const rgb = interpolateColor(farmProgress + animationProgress, [[255, 0, 0], [0, 255, 0]]);
+        //                     color = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+        //                 }
+        //             } else {
+        //                 scale = 1 + animationProgress * (maxScale - 1);
+        //                 const rgb = interpolateColor(farmProgress + animationProgress, [[255, 255, 0], [255, 0, 0]]);
+        //                 color = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+        //             }
         //             const farmFeatures = map_simulation.getSource('farms')._data.features;
         //             const matchingFarm = farmFeatures.find(f =>
         //                 f.geometry.coordinates[0] === polygon.properties.center[0] &&
         //                 f.geometry.coordinates[1] === polygon.properties.center[1]
         //             );
         //             if (matchingFarm) {
-        //                 matchingFarm.properties.pointColor = progress >= 1 && isTreated ? '#00FF00' : color;
+        //                 matchingFarm.properties.pointColor = animationProgress >= 1 && isTreated ? '#00FF00' : color;
         //             }
-
-        //             return k > 0 ? scalePolygon(polygon, k, zoomFactor) : null;
+        //             return scale > 0 ? scalePolygon(polygon, scale, zoomFactor) : null;
         //         }).filter(p => p !== null);
 
+        //         // Fade out technician geofences
+        //         const fadeProgress = animationProgress; // 0 to 1 over 7 seconds
+        //         const newFillOpacity = 0.3 * (1 - fadeProgress); // Fade from 0.3 to 0
+        //         const newLineOpacity = 1 * (1 - fadeProgress);  // Fade from 1 to 0
+        //         map_simulation.setPaintProperty('technician-geofences-fill', 'fill-opacity', newFillOpacity);
+        //         map_simulation.setPaintProperty('technician-geofences-outline', 'line-opacity', newLineOpacity);
+
+        //         // Update farm polygons and points
         //         map_simulation.getSource('farm-polygons').setData({
         //             type: 'FeatureCollection',
         //             features: currentPolygons
@@ -1683,101 +1235,107 @@ function getFarmState(farm) {
         //             features: map_simulation.getSource('farms')._data.features
         //         });
 
-        //         if (progress < 1) {
-        //             requestAnimationFrame(step);
-        //         } else {
+        //         // Remove geofences when fully faded
+        //         if (animationProgress >= 1) {
+        //             map_simulation.getSource('technician-geofences').setData({
+        //                 type: 'FeatureCollection',
+        //                 features: []
+        //             });
         //             isAnimating = false;
+        //         } else {
+        //             requestAnimationFrame(step);
         //         }
         //     }
         //     requestAnimationFrame(step);
         // }
 
-
-function animatePolygons(farmPolygons) {
-    let isAnimating = false;
-    const duration = 7000; // 7 seconds
-    const maxScale = 1.5;
-    const shrinkColors = [[255, 0, 0], [255, 255, 0], [0, 255, 0]]; // added
-
-    if (isAnimating) return;
-    isAnimating = true;
-    const startTime = Date.now();
-    let currentPolygons = farmPolygons.map(p => ({ ...p }));
-
-    function step() {
-        const elapsedTime = Date.now() - startTime;
-        const animationProgress = Math.min(elapsedTime / duration, 1);
-
-        // added
-        const zoom = map_simulation.getZoom();
-        const zoomFactor = Math.pow(2, (9 - zoom)) * 1.5;
-        //.
-
-        currentPolygons = farmPolygons.map(polygon => {
-            const farm = simulate.find(f => f.id === polygon.properties.farmId);
-            const { isTreated, progress: farmProgress } = getFarmState(farm);
-            // const { isTreated } = getFarmState(farm);
-
- 
-
-            if (isTreated && farmProgress === 1) {
-                // Fully treated farm (over 7 days): stay green, no animation
-                polygon.properties.color = 'rgb(0, 255, 0)';
-                return polygon;
+        function animatePolygons(farmPolygons) {
+            let isAnimating = false;
+            const duration = 7000; // 7 seconds
+            const maxScale = 1.5;
+    
+            if (isAnimating) return;
+            isAnimating = true;
+            const startTime = Date.now();
+            let currentPolygons = farmPolygons.map(p => ({ ...p }));
+            // Store the initial geofence data before animation
+            const initialGeofences = map_simulation.getSource('technician-geofences')._data.features.map(g => ({ ...g }));
+    
+            function step() {
+                const elapsedTime = Date.now() - startTime;
+                const animationProgress = Math.min(elapsedTime / duration, 1);
+                const zoom = map_simulation.getZoom();
+                const zoomFactor = Math.pow(2, (9 - zoom)) * 1.5;
+    
+                // Animate farm polygons
+                currentPolygons = farmPolygons.map(polygon => {
+                    const farm = simulate.find(f => f.id === polygon.properties.farmId);
+                    const { isTreated, progress: farmProgress } = getFarmState(farm);
+                    if (isTreated && farmProgress === 1) {
+                        polygon.properties.color = 'rgb(0, 255, 0)';
+                        return polygon;
+                    }
+                    let scale, color;
+                    if (isTreated) {
+                        scale = 1 - animationProgress;
+                        if (isTreated && (farmProgress > 0.6 || farmProgress > 0.2)) {
+                            const newAnimationProgress = Math.min(elapsedTime / duration, 0.5);
+                            const rgb = interpolateColor(farmProgress + newAnimationProgress, [[255, 0, 0], [0, 255, 0]]);
+                            color = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+                        } else {
+                            const rgb = interpolateColor(farmProgress + animationProgress, [[255, 0, 0], [0, 255, 0]]);
+                            color = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+                        }
+                    } else {
+                        scale = 1 + animationProgress * (maxScale - 1);
+                        const rgb = interpolateColor(farmProgress + animationProgress, [[255, 255, 0], [255, 0, 0]]);
+                        color = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+                    }
+                    const farmFeatures = map_simulation.getSource('farms')._data.features;
+                    const matchingFarm = farmFeatures.find(f =>
+                        f.geometry.coordinates[0] === polygon.properties.center[0] &&
+                        f.geometry.coordinates[1] === polygon.properties.center[1]
+                    );
+                    if (matchingFarm) {
+                        matchingFarm.properties.pointColor = animationProgress >= 1 && isTreated ? '#00FF00' : color;
+                    }
+                    return scale > 0 ? scalePolygon(polygon, scale, zoomFactor) : null;
+                }).filter(p => p !== null);
+    
+                // Fade out technician geofences
+                const fadeProgress = animationProgress; // 0 to 1 over 7 seconds
+                const newFillOpacity = 0.3 * (1 - fadeProgress); // Fade from 0.3 to 0
+                const newLineOpacity = 1 * (1 - fadeProgress);  // Fade from 1 to 0
+                map_simulation.setPaintProperty('technician-geofences-fill', 'fill-opacity', newFillOpacity);
+                map_simulation.setPaintProperty('technician-geofences-outline', 'line-opacity', newLineOpacity);
+    
+                // Update farm polygons and points
+                map_simulation.getSource('farm-polygons').setData({
+                    type: 'FeatureCollection',
+                    features: currentPolygons
+                });
+                map_simulation.getSource('farms').setData({
+                    type: 'FeatureCollection',
+                    features: map_simulation.getSource('farms')._data.features
+                });
+    
+                // Reset geofences when animation completes
+                if (animationProgress >= 1) {
+                    // Restore initial opacity
+                    map_simulation.setPaintProperty('technician-geofences-fill', 'fill-opacity', 0.3);
+                    map_simulation.setPaintProperty('technician-geofences-outline', 'line-opacity', 1);
+                    // Restore initial geofence features
+                    map_simulation.getSource('technician-geofences').setData({
+                        type: 'FeatureCollection',
+                        features: initialGeofences
+                    });
+                    isAnimating = false;
+                } else {
+                    requestAnimationFrame(step);
+                }
             }
-
-            let scale, color;
-            if (isTreated) {
-                // Treated farm in progress
-                scale = 1 - animationProgress; // Shrink
-                const rgb = interpolateColor(farmProgress + animationProgress, [[255, 0, 0], [0, 255, 0]]);
-                // color = interpolateColor(animationProgress, [shrinkColors[0], shrinkColors[2]]); // added
-                color = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
-            } else {
-                // Untreated farm
-                scale = 1 + animationProgress * (maxScale - 1); // Grow
-                const rgb = interpolateColor(farmProgress + animationProgress, [[255, 255, 0], [255, 0, 0]]);
-                // color = interpolateColor(animationProgress, [shrinkColors[0], shrinkColors[2]]); // added
-                color = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
-            }  
-
-            polygon.properties.color = color;
-            // added
-            const farmFeatures = map_simulation.getSource('farms')._data.features;
-            const matchingFarm = farmFeatures.find(f =>
-                f.geometry.coordinates[0] === polygon.properties.center[0] &&
-                f.geometry.coordinates[1] === polygon.properties.center[1]
-            );
-            if (matchingFarm) {
-                matchingFarm.properties.pointColor = animationProgress >= 1 && isTreated ? '#00FF00' : color;
-            }
-            //.
-            return scale > 0 ? scalePolygon(polygon, scale, zoomFactor) : null;
-            // return scale > 0 ? scalePolygon(polygon, scale, /* zoomFactor */ ) : null;
-        }).filter(p => p !== null);
-         
-
-        map_simulation.getSource('farm-polygons').setData({
-            type: 'FeatureCollection',
-            features: currentPolygons
-        });
-        map_simulation.getSource('farms').setData({
-            type: 'FeatureCollection',
-            features: map_simulation.getSource('farms')._data.features
-        });
-
-
-        if (animationProgress < 1) {
             requestAnimationFrame(step);
-        } else {
-            isAnimating = false;
         }
-    }
-    requestAnimationFrame(step);
-}
-
-       
-
 
         const treatments = {
             'Stem Bleeding': `

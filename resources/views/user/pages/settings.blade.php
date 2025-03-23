@@ -3,8 +3,23 @@
 <main id="main" class="main">
     <section class="section settings">
         <div class="container">
-            <h4 class="mb-4">About Me</h4>
+            <h4 class="mb-4"><strong>About Me</strong></h4>
             <div class="list-group">
+                @php
+                    $prof_img = $user->profile_img ? URL::asset('storage/' . $user->profile_img) 
+                                : ($user->user_type === 0 ? URL::asset('img/admin.png') 
+                                : ($user->user_type === '1' ? URL::asset('img/farmer.png') 
+                                : URL::asset('img/technician.png'))) ;
+                @endphp
+                <!-- Profile Image -->
+                <div class="list-group-item d-flex flex-row justify-content-center align-items-center">
+                    <div class="d-flex flex-column align-items-center">
+                        <img src="{{ $prof_img }}" alt="Logo" class="img-fluid rounded-circle my-3" style="width: 100px; height: 100px;">
+                        <button class="btn btn-outline-success btn-sm mb-2" onclick="editProfileImage()">
+                            <i class="bi bi-pencil"></i> Edit
+                        </button>
+                    </div>
+                </div>
                 <!-- Username -->
                 <div class="list-group-item d-flex justify-content-between align-items-center">
                     <div>
@@ -100,7 +115,7 @@
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="editFieldModalLabel">Edit Field</h5>
+                        <h5 class="modal-title" id="editFieldModalLabel"><strong>Edit Field</strong></h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <form id="editFieldForm">
@@ -123,11 +138,61 @@
             </div>
         </div>
         @include('user.others.update_profile')
+
+        <!-- Modal for Editing Profile Image -->
+        <div class="modal fade" id="editProfileImageModal" tabindex="-1" aria-labelledby="editProfileImageModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editProfileImageModalLabel"><strong>Edit Profile Image</strong></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form id="editProfileImageForm" method="POST" action="{{ route('user.update-profile-image') }}" enctype="multipart/form-data">
+                        @csrf
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="profileImage" class="form-label"><strong>Upload New Profile Image</strong></label>
+                                <input type="file" id="profileImage" name="profile_image" class="form-control" accept="image/*" required onchange="previewImage(event)">
+                            </div>
+                            <div class="mb-3 d-flex flex-column align-items-center justify-content-center">
+                                <img id="profileImagePreview" src="#" alt="Profile Image Preview" class="img-fluid rounded-circle" style="display: none; width: 100px; height: 100px;">
+                                <label id="preview-label" class="mt-2" for="profileImagePreview"><u>Preview</u></label>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-success">
+                                Save
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
     </section>
 </main>
 @include('user.partials.__footer')
 
 <script>
+
+    function editProfileImage() {
+        const editProfileImageModal = new bootstrap.Modal(document.getElementById('editProfileImageModal'));
+        editProfileImageModal.show();
+    }
+    const preview = document.getElementById('preview-label');
+    preview.style.display = 'none';
+    function previewImage(event) {
+        const reader = new FileReader();
+        reader.onload = function() {
+            const output = document.getElementById('profileImagePreview');
+            preview.style.display = 'block';
+            output.src = reader.result;
+            output.style.display = 'block';
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    }
+
     function editField(field, value) {
         document.getElementById('fieldName').value = field;
         document.getElementById('fieldValue').value = value;

@@ -154,7 +154,9 @@
         <section class="section notifications">
             <div class="container">
                 @if($notifications->isEmpty())
-                    <p class="text-center">No notifications available at the moment.</p>
+                    <div class="alert alert-secondary text-center" role="alert">
+                    <p class="text-secondary text-muted"> - No new notifications at the moment -</p>
+                </div>
                 @else
                     <div class="card shadow-sm">
                         <div class="card-header bg-success text-white sticky-top" style="z-index: 1;">

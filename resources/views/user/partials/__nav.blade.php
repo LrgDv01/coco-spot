@@ -12,24 +12,46 @@
       <ul class="d-flex align-items-center">
         <li class="nav-item dropdown pe-3">
           <div class="d-flex align-items-center">
-
+              @php
+                $prof_img = Auth::user()->profile_img ? URL::asset('storage/' . Auth::user()->profile_img) 
+                            : (Auth::user()->user_type === '1' ? URL::asset('img/farmer.png') 
+                            : URL::asset('img/technician.png')) ;
+              @endphp
             <a class="nav-link bg-transparent border border-0 text-dark nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-              {{-- <img src="{{ Auth::user()->profile_img != '' ? asset('storage/'.Auth::user()->profile_img) : URL::asset('img/admin-profile.png') }}" alt="Profile" class="rounded-circle"> --}}
-              <img src="{{ Auth::user()->profile_img ? asset('storage/'.Auth::user()->profile_img) : URL::asset('img/admin-profile.png') }}" alt="Profile" class="rounded-circle">
-
-              <span class="d-none d-md-block dropdown-toggle ps-2">{{ Auth::user()->user_name }}</span>
-            </a><!-- End Profile Iamge Icon -->
-  
+              <img src="{{ $prof_img }}" alt="Profile" class="img-fluid rounded-circle" style="width: 37px; height: 40px;">
+              <span class="d-md-block dropdown-toggle ps-2">{{ Auth::user()->user_name }}</span>
+            </a>
             <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
-              <li class="dropdown-header">
+              <li class="dropdown-header"> 
                 <h6>{{ Auth::user()->full_name }}</h6>
-                {{--<span>Farmer</span>--}}
+                <span>{{ auth()->user()->isFarmer() ? "Farmer" : "Technician"  }}</span>
               </li>
               <li>
-                <hr class="dropdown-divider mb-2">
+                <hr class="dropdown-divider">
               </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li>
+                <a class="dropdown-item d-flex align-items-center" href="{{ auth()->user()->isFarmer() ? url('/user/farmer/settings') 
+                          : url('/user/technician/settings')  }}">  <i class="text-dark bi bi-gear"></i>
+                  <span>Settings</span>
+                </a>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              {{--   <li>
+                <a class="dropdown-item d-flex align-items-center" 
+                  data-bs-toggle="modal"
+                  data-bs-target="#forgotpasswordmodal" href="#forgotpassword">
+                  <i class="text-dark bi bi-question-circle"></i>
+                  <span>Forgot Password?</span>
+                </a>
+              </li>--}}
               <li class="">
-                <button form="logoutform" type="submit" class="dropdown-item d-flex align-items-center justify-content-center">
+                <button type="button"  class="dropdown-item d-flex align-items-center" data-bs-toggle="modal" 
+                        data-bs-target="#logoutModal">
                   <i class="text-dark bi bi-box-arrow-right"></i>
                   <span>Sign Out</span>
                 </button>
@@ -73,10 +95,16 @@
 <aside id="sidebar" class="sidebar d-flex flex-column justify-content-between" style="background-color:#134125">
   <ul class="sidebar-nav" id="sidebar-nav">
     @if (auth()->user()->isFarmer())
-      <li class="nav-item">
+      <li class="nav-item"> 
         <a class="nav-link border border-0 {{ Request::is('user/farm') ? 'active' : 'inactive' }}" href="{{ url('/user/farm') }}">
           <i class="bi bi-house"></i>  
           <span>My Farm</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link border border-0 {{ Request::is('admin/forums') ? 'active' : 'inactive' }}" href="{{ url('/admin/forums') }}">
+
+          <i class="bi bi-chat-dots-fill"></i><span>Forums</span>
         </a>
       </li>
       <li class="nav-item">
@@ -97,6 +125,12 @@
         <a class="nav-link border border-0 {{ Request::is('user/notifications') ? 'active' : 'inactive' }}" href="{{ url('/user/notifications') }}">
           <i class="bi bi-bell"></i>  
           <span>Notifications</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link border border-0 {{ Request::is('admin/forums') ? 'active' : 'inactive' }}" href="{{ url('/admin/forums') }}">
+
+          <i class="bi bi-chat-dots-fill"></i><span>Forums</span>
         </a>
       </li>
       <li class="nav-item">
@@ -137,14 +171,12 @@
         Are you sure you want to log out ?
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
           Cancel
         </button>
         <form action="{{ route('logout') }}" method="POST" onsubmit="disableSubmitButton(this)">
           @csrf
-          <button type="submit" class="btn btn-primary" id="logoutSubmitButton">
-            Yes
-          </button>
+          <button type="submit" class="btn btn-success" id="logoutSubmitButton">Yes</button>
         </form>
       </div>
     </div>

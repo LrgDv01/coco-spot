@@ -67,7 +67,7 @@
         var buttonClass = 'btn-success';
         var buttonIcon = 'bi-check-circle';
         modal.find('#actionSubmitBtn')
-            .removeClass('btn-success btn-danger')
+            .removeClass('btn-outline-success btn-danger')
             .addClass(buttonClass);
         modal.find('#actionSubmitBtn i')
             .removeClass('bi-check-circle bi-x-circle')

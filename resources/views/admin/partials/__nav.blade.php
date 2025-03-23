@@ -1,6 +1,3 @@
-
-
-
 <header id="header" class="header fixed-top d-flex align-items-center py-4">
 
     <div class="d-flex align-items-center justify-content-between">
@@ -10,18 +7,19 @@
       </a>
       <i class="text-dark bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
-       @if (session('success'))
+    {{--        @if (session('success'))
         <div class="alert alert-success">
             {{ session('success') }}
         </div>
-    @endif
+    @endif  --}}
+
     <nav class="header-nav ms-auto">
       <ul class="d-flex align-items-center">
         <li class="nav-item dropdown pe-3">
           <div class="d-flex align-items-center">
             
       <!-- Notification Bell -->
-      <a href="#notification"
+      <a href="#notification" 
         data-bs-toggle="modal"
         data-bs-target="#notificationmodal"
         id="notification-bell"
@@ -35,15 +33,18 @@
               </span>
           @endif
       </a>
-
+            @php
+              $prof_img = Auth::user()->profile_img ? URL::asset('storage/' . Auth::user()->profile_img) 
+                          : URL::asset('img/admin.png');
+            @endphp
             <a class="nav-link bg-transparent border border-0 text-dark nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-              <img src="{{ Auth::user()->profile_img != '' ? asset('storage/'.Auth::user()->profile_img) : URL::asset('img/admin-profile.png') }}" alt="Profile" class="rounded-circle">
-              <span class="d-none d-md-block dropdown-toggle ps-2">{{ auth()->user()->isAdmin() ? "Admin" : "Farmer" }}</span>
+              <img src="{{ $prof_img}}" alt="Profile" class="rounded-circle">
+              <span class="d-none d-md-block dropdown-toggle ps-2">{{ Auth::user()->user_name  }}</span>
             </a>
             <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
               <li class="dropdown-header">
-                <h6>{{ auth()->user()->isAdmin() ? "Administrator" : "Personel" }}</h6>
-                <span>{{ auth()->user()->isAdmin() ? "Super Admin" : "Sub Admin" }}</span>
+                <h6>{{ Auth::user()->full_name }}</h6>
+                <span>{{ auth()->user()->isAdmin() ? "Administrator" : "Personel"  }}</span>
               </li>
               <li>
                 <hr class="dropdown-divider">
@@ -51,26 +52,25 @@
               <li>
                 <hr class="dropdown-divider">
               </li>
-    
-              @if (auth()->user()->isAdmin())
-                <li>
-                  <a class="dropdown-item d-flex align-items-center" href="{{ url('/admin/settings') }}">
-                    <i class="text-dark bi bi-gear"></i>
-                    <span>Settings</span>
-                  </a>
-                </li>
-              @endif
+              {{--               <li>
+                <a class="dropdown-item d-flex align-items-center" href="{{ url('/admin/settings') }}">
+                  <i class="text-dark bi bi-gear"></i>
+                  <span>Settings</span>
+                </a>
+              </li>  --}}
+
               <li>
                 <hr class="dropdown-divider">
               </li>
-              <li>
+              {{--  <li>
                 <a class="dropdown-item d-flex align-items-center" 
                   data-bs-toggle="modal"
                   data-bs-target="#forgotpasswordmodal" href="#forgotpassword">
                   <i class="text-dark bi bi-question-circle"></i>
                   <span>Forgot Passwword?</span>
                 </a>
-              </li>
+              </li>  --}}
+             
               {{-- <li>
                 <a class="dropdown-item d-flex align-items-center" href="{{ url('/admin/help') }}">
                   <i class="text-dark bi bi-question-circle"></i>
@@ -78,11 +78,8 @@
                 </a>
               </li> --}}
               <li>
-                <hr class="dropdown-divider">
-              </li>
-  
-              <li>
-                <button form="logoutform" type="submit" class="dropdown-item d-flex align-items-center">
+                <button form="logoutform" type="submit" class="dropdown-item d-flex align-items-center" data-bs-toggle="modal" 
+                        data-bs-target="#logoutModal">  
                   <i class="text-dark bi bi-box-arrow-right"></i>
                   <span>Sign Out</span>
                 </button>
@@ -98,7 +95,6 @@
 </header>
   
 <style>
-
   .modal-dialog-notif {
     position: fixed;
     top: 7%; /* Distance from the top */
@@ -116,10 +112,7 @@
       max-width: 90%; /* Responsive width */
     }
   }
-
 </style>
-
-
 
 <style>
   .nav-item .nav-link.active {
@@ -258,14 +251,12 @@
         Are you sure you want to log out ?
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
           Cancel
         </button>
         <form action="{{ route('logout') }}" method="POST" onsubmit="disableSubmitButton(this)">
           @csrf
-          <button type="submit" class="btn btn-success" id="logoutSubmitButton">
-            Yes
-          </button>
+          <button type="submit" class="btn btn-success" id="logoutSubmitButton">Yes</button>
         </form>
       </div>
     </div>
