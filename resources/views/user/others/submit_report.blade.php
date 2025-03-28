@@ -242,7 +242,6 @@
 @include('user.partials.__footer')
 
  <script>
-    
     document.addEventListener('DOMContentLoaded', function() {
         const forms = document.querySelectorAll('[id^="report-form-"]');
         forms.forEach(form => {
@@ -263,7 +262,7 @@
             checkboxes.forEach(checkbox => {
                 checkbox.addEventListener('change', toggleButtonState);
             });
-
+            
             function viewSolution(event, farmId) {
                 event.stopPropagation(); 
                 const diagnosisText = document.getElementById(`diagnosis-text-${farmId}`);
@@ -414,6 +413,7 @@
                     });
                 });
             }
+
             function closeSolution(event, farmId) {
                 event.stopPropagation(); 
                 event.preventDefault();  
@@ -422,7 +422,7 @@
                 if (solutionDiv) {
                     solutionDiv.remove();
                 }
-            }
+            } 
             const viewButton = modalElement.querySelector('.btn-outline-secondary');
             viewButton.addEventListener('click', function(event) {
                 viewSolution(event, farmId);
@@ -433,7 +433,7 @@
                 const checkedSymptoms = formData.getAll('symptoms[]');
                 const diseaseSymptoms = {
                     'Stem Bleeding': ['reddish_brown', 'cracks_or_wounds', 'stem_decay'],
-                    'Coconut Leaf Spot': ['circular_spots', 'black_or_brown_spots', 'lost_leaves', 'reduced_yield'],
+                    'Leaf Spot': ['circular_spots', 'black_or_brown_spots', 'lost_leaves', 'reduced_yield'],
                     'Lethal Yellowing': ['yellowing_leaves', 'dying_leaves', 'dropping_fruits', 'dying_tree']
                 };
                 const diseaseProbabilities = {};
@@ -521,5 +521,8 @@
             });
         });
     });
+  
+
+  
 </script>
 
