@@ -2,9 +2,11 @@
 @include('user.partials.__nav')
 
 <main id="main" class="main">
-    <div class="pagetitle">
-        <h1><Strong>Forums</Strong></h1>
+    <div class="pagetitle position-fixed d-flex align-items-end justify-content-center" 
+        style="top:5%; right:0; left:0; z-index: 995; height: 80px; width: 100%; background-color: #134125;">
+        <h2 class="py-2 mt-2 text-white"><strong>Forums</strong></h2>
     </div>
+    <div style="margin-top: 60px;"></div>
     <section class="section forums p-0 m-1 mt-4">
         @php
             $prof_img = $user->profile_img ? asset('storage/' . $user->profile_img) 
@@ -38,240 +40,242 @@
         <div class="d-flex flex-row justify-content-between my-3">
             <hr class="w-50 me-3"> <h5 class="text-muted text-center fw-bold w-25"><i class="bi bi-people mx-2"></i>Discussions</h5> <hr class="w-50 ms-3">
         </div>
-        <div>
-            <ul class="list-unstyled">
-                @foreach ($posts as $post)
-                    @php
-                        $post_prof_img = $post->user->profile_img  ? asset('storage/' . $post->user->profile_img) 
-                                        : ($post->user->user_type === '0' ? URL::asset('img/admin.png') 
-                                        : ($post->user->user_type === '1' ? URL::asset('img/farmer.png') 
-                                        : URL::asset('img/technician.png')));
-                    @endphp  
-                    <li>
-                        <div class="card p-3 text-white" style="background-color: #1a4d2e;">
-                            <div class="d-flex flex-row">
-                                 <img src="{{ $post_prof_img }}" alt="Logo" class="img-fluid rounded-circle" style="width: 50px; height: 50px;">  
-                                <div class="ms-2">
-                                    @php
-                                        $userTypePost = $post->user->user_type === '0' ? 'Administrator' 
-                                                        : ($post->user->user_type === '1' ? 'Farmer' : 'Technician');  
-                                    @endphp
-                                    <h4 class="p-0 m-0 fw-bold"> {{ $post->user->full_name }}</h4> <!-- Adjust field name -->
-                                    <p>{{ $userTypePost }}</p> <!-- Adjust field name -->
-                                </div>
-                            </div>
-                            <div class="mx-2 my-0">
-                                @if ($post->image_path)
-                                    <img class="align-self-center p-1 rounded rounded-3 border border-1 border-secondary"
-                                        src="{{ URL::asset('storage/' . $post->image_path) }}" width="100%" height="auto" alt="post-image">
-                                @endif
-                                <div class="px-3 m-0 py-3">
-                                    <p class="text-white"><strong>`{{ $post->caption }}.</strong> </p>
-                                </div>
-                            </div>
-                            <div class="d-flex flex-row justify-content-between mx-3 my-0 py-0">
+        <div class="card bg-transparent border border-0 shadow-none">
+            <div class="card-body text-truncate p-0" style="max-height: 80vh; overflow-y: auto;">
+                <ul class="list-unstyled">
+                    @foreach ($posts as $post)
+                        @php
+                            $post_prof_img = $post->user->profile_img  ? asset('storage/' . $post->user->profile_img) 
+                                            : ($post->user->user_type === '0' ? URL::asset('img/admin.png') 
+                                            : ($post->user->user_type === '1' ? URL::asset('img/farmer.png') 
+                                            : URL::asset('img/technician.png')));
+                        @endphp  
+                        <li>
+                            <div class="card p-3 text-white" style="background-color: #1a4d2e;">
                                 <div class="d-flex flex-row">
-                                    <!-- Like Form -->
-                                    <form method="POST" action="{{ route('forum.react', $post->id) }}" class="react-form" data-post-id="{{ $post->id }}">
-                                        @csrf
-                                        <input type="hidden" name="type" value="like">
-                                        <button type="submit" class="btn btn-outline-success me-2 text-white border-white">
-                                            <i class="bi bi-hand-thumbs-up-fill"></i> <span id="like-count-{{ $post->id }}">{{ $post->likesCount() }}</span>
-                                        </button>
-                                    </form>
-                                                                        <!-- Dislike Form -->
-                                    <form method="POST" action="{{ route('forum.react', $post->id) }}" class="react-form" data-post-id="{{ $post->id }}">
-                                        @csrf
-                                        <input type="hidden" name="type" value="dislike">
-                                        <button type="submit" class="btn btn-outline-secondary me-2 text-white border-white">
-                                            <i class="bi bi-hand-thumbs-down-fill"></i> <span id="dislike-count-{{ $post->id }}">{{ $post->dislikesCount() }}</span>
-                                        </button>
-                                    </form>
-                                        <button class="btn btn-outline-primary text-white border-white" onclick="toggleComments({{ $post->id }})">
-                                            <i class="bi bi-chat-fill"></i> <span id="comment-count-{{ $post->id }}">{{ $post->comments->count() }}</span> | Comment
-                                        </button>
-                                </div>
-                    
-                                <!-- Added -->
-                                <div class="d-flex flex-row">
-                                    @if ($post->user_id == Auth::id())
-                                        <button class="btn btn-outline-primary btn-md me-2 text-white border-white" data-bs-toggle="modal" data-bs-target="#editPostModal{{ $post->id }}">
-                                            <i class="bi bi-pencil-fill"></i></button>
-                                        <button type="submit" class="btn btn-outline-danger btn-md text-white border-white" data-bs-toggle="modal" data-bs-target="#deletePostModal{{ $post->id }}">
-                                            <i class="bi bi-trash-fill"></i></button>
-                                    @endif
-                                </div>
-                            </div>
-            
-                            <div class="d-flex flex-row m-3 mt-4">
-                                @php
-                                    $comment_prof_img = $user->profile_img ? asset('storage/' . $user->profile_img) 
-                                                : ($user->user_type === '0' ? asset('img/admin.png') 
-                                                : ($user->user_type === '1' ? asset('img/farmer.png') 
-                                                : asset('img/technician.png')));
-                                @endphp   
-                                <img src="{{ $comment_prof_img }}" alt="Logo" class="img-fluid rounded-circle" style="width: 50px; height: 50px;">
-                                <form method="POST" action="{{ route('forum.storeComment', $post->id) }}" class="comment-form w-100" data-post-id="{{ $post->id }}">
-                                    @csrf
-                                    <textarea name="text" class="form-control ms-2" rows="3" placeholder="Write a comment . ." required></textarea>
-                                    <div class="d-flex flex-row justify-content-end mt-1">
-                                        <button type="submit" class="btn btn-outline-success ms-2 text-white border-white"><i class="bi bi-send-fill"></i></button>
+                                    <img src="{{ $post_prof_img }}" alt="Logo" class="img-fluid rounded-circle" style="width: 50px; height: 50px;">  
+                                    <div class="ms-2">
+                                        @php
+                                            $userTypePost = $post->user->user_type === '0' ? 'Administrator' 
+                                                            : ($post->user->user_type === '1' ? 'Farmer' : 'Technician');  
+                                        @endphp
+                                        <h4 class="p-0 m-0 fw-bold"> {{ $post->user->full_name }}</h4> <!-- Adjust field name -->
+                                        <p>{{ $userTypePost }}</p> <!-- Adjust field name -->
                                     </div>
-                                </form>
-                            </div>
-                            <hr class="p-0 m-0">
-                            <div id="comments-{{ $post->id }}" class="m-3" style="display: none;">
-                                <ul class="list-unstyled pe-3" style="max-height: 300px; overflow-y: auto;">
-                                    @foreach ($post->comments as $comment)
-                                        <li class="my-2" id="comment-{{ $comment->id }}">
-                                            @php
-                                                $comment_list_prof_img = $comment->user->profile_img ? URL::asset('storage/' . $comment->user->profile_img) 
-                                                            : ($comment->user->user_type === '0' ? URL::asset('img/admin.png') 
-                                                            : ($comment->user->user_type === '1' ? URL::asset('img/farmer.png') 
-                                                            : URL::asset('img/technician.png')));
-                                            @endphp
-                                            <div class="p-2 d-flex flex-row">
-                                                <img src="{{ $comment_list_prof_img }}" alt="Logo" class="img-fluid rounded-circle align-self-start" style="width: 40px; height: 40px;">
-                                                <div class="d-flex flex-column justify-content-end mx-3 w-100">
-                                                    <p class="text-bottom my-0 fw-bold">{{ $comment->user->full_name }}</p>
-                                                    <p class="text-bottom my-0">{{ $comment->text }}</p>
-                                                </div>
-                                                <!-- Added -->
-                                                @if ($comment->user_id == Auth::id())
-                                                    <div class="dropdown">
-                                                        <button class="btn btn-outline-secondary btn-sm text-white border-white" type="button" id="dropdownMenuButton{{ $comment->id }}" data-bs-toggle="dropdown" aria-expanded="false">
-                                                            <i class="bi bi-three-dots-vertical"></i>
-                                                        </button>
-                                                        <ul class="dropdown-menu p-0 m-0" aria-labelledby="dropdownMenuButton{{ $comment->id }}">
-                                                            <li>
-                                                                <button class="dropdown-item fs-6 fw-bold text-muted" data-bs-toggle="modal" data-bs-target="#editCommentModal{{ $comment->id }}">
-                                                                <i class="bi bi-pencil-fill"></i> Edit
-                                                                </button>
-                                                            </li>
-                                                            <li>
-                                                                <button class="dropdown-item fs-6 fw-bold text-muted" data-bs-toggle="modal" data-bs-target="#deleteCommentModal{{ $comment->id }}">
-                                                                    <i class="bi bi-trash-fill"></i> Delete
-                                                                </button>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                @endif
-                                            </div>
-                                        </li>
-                                   
-                                        <!-- for editing comment -->
-                                        <div class="modal fade text-black" id="editCommentModal{{ $comment->id }}" tabindex="-1" aria-labelledby="editCommentModalLabel{{ $comment->id }}" aria-hidden="true">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title fw-bold" id="editCommentModalLabel{{ $comment->id }}">Edit Comment</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                    </div>
-                                                    <form method="POST" action="{{ route('forum.updateComment', $comment->id) }}" class="edit-comment-form" data-post-id="{{ $post->id }}" data-comment-id="{{ $comment->id }}">
-                                                        @csrf
-                                                        @method('PUT')
-                                                        <div class="modal-body">
-                                                            <div class="mb-3">
-                                                                <label for="text{{ $comment->id }}" class="form-label fw-bold">Comment</label>
-                                                                <textarea name="text" id="text{{ $comment->id }}" class="form-control" rows="3" required>{{ $comment->text }}</textarea>
-                                                            </div>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-                                                            <button type="submit" class="btn btn-primary">Save changes</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
+                                </div>
+                                <div class="mx-2 my-0">
+                                    @if ($post->image_path)
+                                        <img class="align-self-center p-1 rounded rounded-3 border border-1 border-secondary"
+                                            src="{{ URL::asset('storage/' . $post->image_path) }}" width="100%" height="auto" alt="post-image">
+                                    @endif
+                                    <div class="px-3 m-0 py-3">
+                                        <p class="text-white"><strong>`{{ $post->caption }}.</strong> </p>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-row justify-content-between mx-3 my-0 py-0">
+                                    <div class="d-flex flex-row">
+                                        <!-- Like Form -->
+                                        <form method="POST" action="{{ route('forum.react', $post->id) }}" class="react-form" data-post-id="{{ $post->id }}">
+                                            @csrf
+                                            <input type="hidden" name="type" value="like">
+                                            <button type="submit" class="btn btn-outline-success me-2 text-white border-white">
+                                                <i class="bi bi-hand-thumbs-up-fill"></i> <span id="like-count-{{ $post->id }}">{{ $post->likesCount() }}</span>
+                                            </button>
+                                        </form>
+                                                                            <!-- Dislike Form -->
+                                        <form method="POST" action="{{ route('forum.react', $post->id) }}" class="react-form" data-post-id="{{ $post->id }}">
+                                            @csrf
+                                            <input type="hidden" name="type" value="dislike">
+                                            <button type="submit" class="btn btn-outline-secondary me-2 text-white border-white">
+                                                <i class="bi bi-hand-thumbs-down-fill"></i> <span id="dislike-count-{{ $post->id }}">{{ $post->dislikesCount() }}</span>
+                                            </button>
+                                        </form>
+                                            <button class="btn btn-outline-primary text-white border-white" onclick="toggleComments({{ $post->id }})">
+                                                <i class="bi bi-chat-fill"></i> <span id="comment-count-{{ $post->id }}">{{ $post->comments->count() }}</span> | Comment
+                                            </button>
+                                    </div>
+                        
+                                    <!-- Added -->
+                                    <div class="d-flex flex-row">
+                                        @if ($post->user_id == Auth::id())
+                                            <button class="btn btn-outline-primary btn-md me-2 text-white border-white" data-bs-toggle="modal" data-bs-target="#editPostModal{{ $post->id }}">
+                                                <i class="bi bi-pencil-fill"></i></button>
+                                            <button type="submit" class="btn btn-outline-danger btn-md text-white border-white" data-bs-toggle="modal" data-bs-target="#deletePostModal{{ $post->id }}">
+                                                <i class="bi bi-trash-fill"></i></button>
+                                        @endif
+                                    </div>
+                                </div>
+                
+                                <div class="d-flex flex-row m-3 mt-4">
+                                    @php
+                                        $comment_prof_img = $user->profile_img ? asset('storage/' . $user->profile_img) 
+                                                    : ($user->user_type === '0' ? asset('img/admin.png') 
+                                                    : ($user->user_type === '1' ? asset('img/farmer.png') 
+                                                    : asset('img/technician.png')));
+                                    @endphp   
+                                    <img src="{{ $comment_prof_img }}" alt="Logo" class="img-fluid rounded-circle" style="width: 50px; height: 50px;">
+                                    <form method="POST" action="{{ route('forum.storeComment', $post->id) }}" class="comment-form w-100" data-post-id="{{ $post->id }}">
+                                        @csrf
+                                        <textarea name="text" class="form-control ms-2" rows="3" placeholder="Write a comment . ." required></textarea>
+                                        <div class="d-flex flex-row justify-content-end mt-1">
+                                            <button type="submit" class="btn btn-outline-success ms-2 text-white border-white"><i class="bi bi-send-fill"></i></button>
                                         </div>
-
-                                        <!-- for deleting comment -->
-                                        <div class="modal fade text-black" id="deleteCommentModal{{ $comment->id }}" tabindex="-1" aria-labelledby="deleteCommentModalLabel{{ $comment->id }}" aria-hidden="true">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title fw-bold" id="deleteCommentModalLabel{{ $comment->id }}">Confirm Deletion</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </form>
+                                </div>
+                                <hr class="p-0 m-0">
+                                <div id="comments-{{ $post->id }}" class="m-3" style="display: none;">
+                                    <ul class="list-unstyled pe-3" style="max-height: 300px; overflow-y: auto;">
+                                        @foreach ($post->comments as $comment)
+                                            <li class="my-2" id="comment-{{ $comment->id }}">
+                                                @php
+                                                    $comment_list_prof_img = $comment->user->profile_img ? URL::asset('storage/' . $comment->user->profile_img) 
+                                                                : ($comment->user->user_type === '0' ? URL::asset('img/admin.png') 
+                                                                : ($comment->user->user_type === '1' ? URL::asset('img/farmer.png') 
+                                                                : URL::asset('img/technician.png')));
+                                                @endphp
+                                                <div class="p-2 d-flex flex-row">
+                                                    <img src="{{ $comment_list_prof_img }}" alt="Logo" class="img-fluid rounded-circle align-self-start" style="width: 40px; height: 40px;">
+                                                    <div class="d-flex flex-column justify-content-end mx-3 w-100">
+                                                        <p class="text-bottom my-0 fw-bold">{{ $comment->user->full_name }}</p>
+                                                        <p class="text-bottom my-0">{{ $comment->text }}</p>
                                                     </div>
-                                                    <div class="modal-body">
-                                                        Are you sure you want to delete this comment?
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                        <form method="POST" action="{{ route('forum.deleteComment', $comment->id) }}" class="delete-comment-form" data-post-id="{{ $post->id }}" data-comment-id="{{ $comment->id }}" style="display:inline;">
+                                                    <!-- Added -->
+                                                    @if ($comment->user_id == Auth::id())
+                                                        <div class="dropdown">
+                                                            <button class="btn btn-outline-secondary btn-sm text-white border-white" type="button" id="dropdownMenuButton{{ $comment->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                <i class="bi bi-three-dots-vertical"></i>
+                                                            </button>
+                                                            <ul class="dropdown-menu p-0 m-0" aria-labelledby="dropdownMenuButton{{ $comment->id }}">
+                                                                <li>
+                                                                    <button class="dropdown-item fs-6 fw-bold text-muted" data-bs-toggle="modal" data-bs-target="#editCommentModal{{ $comment->id }}">
+                                                                    <i class="bi bi-pencil-fill"></i> Edit
+                                                                    </button>
+                                                                </li>
+                                                                <li>
+                                                                    <button class="dropdown-item fs-6 fw-bold text-muted" data-bs-toggle="modal" data-bs-target="#deleteCommentModal{{ $comment->id }}">
+                                                                        <i class="bi bi-trash-fill"></i> Delete
+                                                                    </button>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            </li>
+                                    
+                                            <!-- for editing comment -->
+                                            <div class="modal fade text-black" id="editCommentModal{{ $comment->id }}" tabindex="-1" aria-labelledby="editCommentModalLabel{{ $comment->id }}" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title fw-bold" id="editCommentModalLabel{{ $comment->id }}">Edit Comment</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <form method="POST" action="{{ route('forum.updateComment', $comment->id) }}" class="edit-comment-form" data-post-id="{{ $post->id }}" data-comment-id="{{ $comment->id }}">
                                                             @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit" class="btn btn-danger">Delete</button>
+                                                            @method('PUT')
+                                                            <div class="modal-body">
+                                                                <div class="mb-3">
+                                                                    <label for="text{{ $comment->id }}" class="form-label fw-bold">Comment</label>
+                                                                    <textarea name="text" id="text{{ $comment->id }}" class="form-control" rows="3" required>{{ $comment->text }}</textarea>
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                                                                <button type="submit" class="btn btn-primary">Save changes</button>
+                                                            </div>
                                                         </form>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        </div>
-                    </li>
-                    <!-- for editing post -->
-                    <div class="modal fade" id="editPostModal{{ $post->id }}" tabindex="-1" aria-labelledby="editPostModalLabel{{ $post->id }}" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title fw-bold" id="editPostModalLabel{{ $post->id }}">Edit Post</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <form method="POST" action="{{ route('forum.updatePost', $post->id) }}" enctype="multipart/form-data">
-                                    @csrf
-                                    @method('PUT')
-                                    <div class="modal-body">
-                                        <div class="mb-3">
-                                            <label for="caption{{ $post->id }}" class="form-label fw-bold">Caption</label>
-                                            <textarea name="caption" id="caption{{ $post->id }}" class="form-control" rows="3" required>{{ $post->caption }}</textarea>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="image_proof{{ $post->id }}" class="form-label fw-bold">Update Image</label>
-                                            <input type="file" class="form-control" id="image_proof{{ $post->id }}" name="image_proof" accept="image/*"  onchange="previewImage(event)">
-                                        </div>
-                                        @if ($post->image_path)
-                                            <div class="mb-3">
-                                                <img id="current_img" src="{{ URL::asset('storage/' . $post->image_path) }}" alt="Current Image" 
-                                                        class="img-fluid rounded h-50" style="width: 100%; height: auto;">
-                                                <img id="editpost_img_prvw" src="#" alt="Image Preview" class="img-fluid rounded" style="display: none; width: 100%; height: auto;"> 
+
+                                            <!-- for deleting comment -->
+                                            <div class="modal fade text-black" id="deleteCommentModal{{ $comment->id }}" tabindex="-1" aria-labelledby="deleteCommentModalLabel{{ $comment->id }}" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title fw-bold" id="deleteCommentModalLabel{{ $comment->id }}">Confirm Deletion</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            Are you sure you want to delete this comment?
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                            <form method="POST" action="{{ route('forum.deleteComment', $comment->id) }}" class="delete-comment-form" data-post-id="{{ $post->id }}" data-comment-id="{{ $comment->id }}" style="display:inline;">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        @endif
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-                                        <button type="submit" class="btn btn-primary">Save changes</button>
-                                    </div>
-                                </form>
+                                        @endforeach
+                                    </ul>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <!-- for deleting post -->
-                    <div class="modal fade" id="deletePostModal{{ $post->id }}" tabindex="-1" aria-labelledby="deletePostModalLabel{{ $post->id }}" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title fw-bold" id="deletePostModalLabel{{ $post->id }}">Confirm Deletion</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    Are you sure you want to delete this post ? This action cannot be undone.
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                                    <form method="POST" action="{{ route('forum.deletePost', $post->id) }}" id="deletePostForm{{ $post->id }}" style="display:inline;">
+                        </li>
+                        <!-- for editing post -->
+                        <div class="modal fade" id="editPostModal{{ $post->id }}" tabindex="-1" aria-labelledby="editPostModalLabel{{ $post->id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title fw-bold" id="editPostModalLabel{{ $post->id }}">Edit Post</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <form method="POST" action="{{ route('forum.updatePost', $post->id) }}" enctype="multipart/form-data">
                                         @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                        @method('PUT')
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label for="caption{{ $post->id }}" class="form-label fw-bold">Caption</label>
+                                                <textarea name="caption" id="caption{{ $post->id }}" class="form-control" rows="3" required>{{ $post->caption }}</textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="image_proof{{ $post->id }}" class="form-label fw-bold">Update Image</label>
+                                                <input type="file" class="form-control" id="image_proof{{ $post->id }}" name="image_proof" accept="image/*"  onchange="previewImage(event)">
+                                            </div>
+                                            @if ($post->image_path)
+                                                <div class="mb-3">
+                                                    <img id="current_img" src="{{ URL::asset('storage/' . $post->image_path) }}" alt="Current Image" 
+                                                            class="img-fluid rounded h-50" style="width: 100%; height: auto;">
+                                                    <img id="editpost_img_prvw" src="#" alt="Image Preview" class="img-fluid rounded" style="display: none; width: 100%; height: auto;"> 
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary">Save changes</button>
+                                        </div>
                                     </form>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                @endforeach
-            </ul>
+                        <!-- for deleting post -->
+                        <div class="modal fade" id="deletePostModal{{ $post->id }}" tabindex="-1" aria-labelledby="deletePostModalLabel{{ $post->id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title fw-bold" id="deletePostModalLabel{{ $post->id }}">Confirm Deletion</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Are you sure you want to delete this post ? This action cannot be undone.
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <form method="POST" action="{{ route('forum.deletePost', $post->id) }}" id="deletePostForm{{ $post->id }}" style="display:inline;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger">Delete</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </ul>
+            </div>
         </div>
     </section>
 </main>

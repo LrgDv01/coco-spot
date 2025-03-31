@@ -31,7 +31,7 @@
         <div class="container p-0">
             @if(!$report)
                 <div class="alert alert-secondary text-center" role="alert">
-                    <p class="text-secondary text-muted">- No new report to submit -</p>
+                    <p class="text-secondary">- No new report to submit -</p>
                 </div>
             @else
                 <div class="row g-3">
@@ -52,7 +52,8 @@
                                     <p><strong>Location:</strong> {{ $report->userFarms->address }}</p>
                                     <p><strong>Size:</strong> {{ $report->userFarms->hectares }} hectares</p>
                                     <p><strong>Coconut Trees:</strong> {{ $report->userFarms->planted_coconut }}</p>
-                                    <p><strong>Variety:</strong> {{ $report->userFarms->variety }}</p>
+                                      <p><strong>Variety:</strong> {{ $report->userFarms->variety }}</p>
+                                    <p><strong>Tree Disease:</strong> {{ $report->farmerReports->disease }}</p>
                                 </div>
                             </div>
                         </div>
@@ -162,7 +163,6 @@
     function openMapApp() {
         const isAndroid = /android/i.test(navigator.userAgent);
         const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-
         if (isIOS) {
             // Opens Apple Maps on iOS
             window.location.href = 'maps://';
@@ -180,43 +180,6 @@
     function getUserLocation() {
         openMapApp();
     }
-
-document.addEventListener('DOMContentLoaded', function() {
-
-    // document.getElementById('no_of_infected').addEventListener('input', function() {
-    //     const container = document.getElementById('infectedTreesContainer');
-    //     container.innerHTML = `<small class="form-text text-muted">Tap "Find tree", click the area where tree is planted to get coordinates.</small>`;
-    //     const count = parseInt(this.value);
-    //     if (!isNaN(count) && count > 0) {
-    //         for (let i = 0; i < count; i++) {
-    //             $(document).ready(function() {
-    //                 $(`#location_${i}`).on('input', function() {
-    //                     let value = $(this).val();
-    //                     value = value.replace(/[°NEWS]/g, '')
-    //                                 .replace(/\s*,\s*/g, ',')
-    //                                 .trim();
-    //                     $(this).val(value);
-    //                     if ($(this).val()) {
-    //                         $(`#find_tree_${i}`).prop('disabled', true);
-    //                     } else {
-    //                         $(`#find_tree_${i}`).prop('disabled', false);
-    //                     }
-    //                 });
-    //             });
-    //             const div = document.createElement('div');
-    //             div.classList.add('mb-3');
-    //             div.innerHTML = `
-    //                 <label for="location_${i}" class="form-label my-0">Tree ${i + 1} :</label><br>
-    //                 <div class="input-group">
-    //                     <input type="text" class="form-control @error('coordinates_${i}') is-invalid @enderror" id="location_${i}" name="locations[]" required>
-    //                     <button type="button" class="btn btn-outline-success fw-bold" id="find_tree_${i}" onclick="getUserLocation()">Find tree</button>
-    //                 </div>
-    //                 <div class="invalid-feedback_${i}">Please paste tree coordinates here</div>
-    //             `;
-    //             container.appendChild(div);
-    //         }
-    //     }
-    // });
 
     document.getElementById('no_of_infected').addEventListener('input', function() {
         const container = document.getElementById('infectedTreesContainer');
@@ -266,109 +229,110 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    const form = document.getElementById('submitForm');
-    const submitButton = document.getElementById('submitButton');
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('submitForm');
+        const submitButton = document.getElementById('submitButton');
 
-    submitButton.addEventListener('click', function(e) {
-        e.preventDefault();
-        // Check all required fields
-        const diagnosis = document.getElementById('diagnosis_disease');
-        const treatment = document.getElementById('treatment_recommendation');
-        const image = document.getElementById('image_proof');
-        const status = document.querySelector('select[name="status"]');
-        const infected = document.getElementById('no_of_infected');
-        const locationInputs = document.getElementsByName('locations[]'); // Get all location inputs
+        submitButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Check all required fields
+            const diagnosis = document.getElementById('diagnosis_disease');
+            const treatment = document.getElementById('treatment_recommendation');
+            const image = document.getElementById('image_proof');
+            const status = document.querySelector('select[name="status"]');
+            const infected = document.getElementById('no_of_infected');
+            const locationInputs = document.getElementsByName('locations[]'); // Get all location inputs
 
-        // Validate each field
-        let isValid = true;
-        
-        // Existing validations
-        if (!diagnosis.value || diagnosis.value === '') {
-            diagnosis.classList.add('is-invalid');
-            isValid = false;
-        } else {
-            diagnosis.classList.remove('is-invalid');
-        }
-
-        if (!treatment.value.trim()) {
-            treatment.classList.add('is-invalid');
-            isValid = false;
-        } else {
-            treatment.classList.remove('is-invalid');
-        }
-
-        if (!image.files.length) {
-            image.classList.add('is-invalid');
-            isValid = false;
-        } else {
-            image.classList.remove('is-invalid');
-        }
-
-        if (!status.value || status.value === '') {
-            status.classList.add('is-invalid');
-            isValid = false;
-        } else {
-            status.classList.remove('is-invalid');
-        }
-        if (!infected.value || infected.value === '') {
-            infected.classList.add('is-invalid');
-            isValid = false;
-        } else {
-            infected.classList.remove('is-invalid');
-        }
-        // Validate dynamic location inputs
-        locationInputs.forEach((input, index) => {
-            if (!input.value.trim()) {
-                input.classList.add('is-invalid');
-                // Update the invalid feedback message if it exists
-                const feedback = document.querySelector(`.invalid-feedback_${index}`);
-                if (feedback) {
-                    feedback.style.display = 'block';
-                }
+            // Validate each field
+            let isValid = true;
+            
+            // Existing validations
+            if (!diagnosis.value || diagnosis.value === '') {
+                diagnosis.classList.add('is-invalid');
                 isValid = false;
             } else {
-                input.classList.remove('is-invalid');
-                const feedback = document.querySelector(`.invalid-feedback_${index}`);
-                if (feedback) {
-                    feedback.style.display = 'none';
+                diagnosis.classList.remove('is-invalid');
+            }
+
+            if (!treatment.value.trim()) {
+                treatment.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                treatment.classList.remove('is-invalid');
+            }
+
+            if (!image.files.length) {
+                image.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                image.classList.remove('is-invalid');
+            }
+
+            if (!status.value || status.value === '') {
+                status.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                status.classList.remove('is-invalid');
+            }
+            if (!infected.value || infected.value === '') {
+                infected.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                infected.classList.remove('is-invalid');
+            }
+            // Validate dynamic location inputs
+            locationInputs.forEach((input, index) => {
+                if (!input.value.trim()) {
+                    input.classList.add('is-invalid');
+                    // Update the invalid feedback message if it exists
+                    const feedback = document.querySelector(`.invalid-feedback_${index}`);
+                    if (feedback) {
+                        feedback.style.display = 'block';
+                    }
+                    isValid = false;
+                } else {
+                    input.classList.remove('is-invalid');
+                    const feedback = document.querySelector(`.invalid-feedback_${index}`);
+                    if (feedback) {
+                        feedback.style.display = 'none';
+                    }
                 }
+            });
+
+            // If all fields are valid, show confirmation modal
+            if (isValid) {
+                $('#actionModal').modal('show');
             }
         });
 
-        // If all fields are valid, show confirmation modal
-        if (isValid) {
-            $('#actionModal').modal('show');
-        }
     });
 
-});
+    function submitReportForm() {
+        const form = document.getElementById('submitForm');
+        const formData = new FormData(form);
 
-function submitReportForm() {
-    const form = document.getElementById('submitForm');
-    const formData = new FormData(form);
-
-    fetch('{{ route('user.technician-report') }}', {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
+        fetch('{{ route('user.technician-report') }}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                $('#actionModal').modal('hide');
+                $('#successModal').modal('show');
+                document.getElementById('successMessage').innerText = data.message || 'Report submitted successfully!';
+            } else {
+                $('#actionModal').modal('hide');
+                alert('Error: ' + (data.message || 'Submission failed'));
+            }
+        })
+        .catch(error => {
             $('#actionModal').modal('hide');
-            $('#successModal').modal('show');
-            document.getElementById('successMessage').innerText = data.message || 'Report submitted successfully!';
-        } else {
-            $('#actionModal').modal('hide');
-            alert('Error: ' + (data.message || 'Submission failed'));
-        }
-    })
-    .catch(error => {
-        $('#actionModal').modal('hide');
-        console.error('Error:', error);
-        alert('An error occurred while submitting the report.');
-    });
-}
+            console.error('Error:', error);
+            alert('An error occurred while submitting the report.');
+        });
+    }
 </script>

@@ -123,13 +123,19 @@
     @if (auth()->user()->isTechnician())
       <li class="nav-item">
         <a class="nav-link border border-0 {{ Request::is('user/notifications') ? 'active' : 'inactive' }}" href="{{ url('/user/notifications') }}">
-          <i class="bi bi-bell"></i>  
+          <i class="bi bi-bell"></i>
+          @if ($unreadCount > 0)
+              <span id="notification-count" 
+                class="position-absolute text-white text-center translate-middle bg-danger border border-light"
+                style="border-radius: 50%; width:25px; height:auto;">
+                  {{ $unreadCount }}
+              </span>
+          @endif
           <span>Notifications</span>
         </a>
       </li>
       <li class="nav-item">
         <a class="nav-link border border-0 {{ Request::is('admin/forums') ? 'active' : 'inactive' }}" href="{{ url('/admin/forums') }}">
-
           <i class="bi bi-chat-dots-fill"></i><span>Forums</span>
         </a>
       </li>

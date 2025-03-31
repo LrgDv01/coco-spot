@@ -17,7 +17,6 @@ body {
   font-family: "Open Sans", sans-serif;
   background: #f9ecdb;
   color: #444444;
-  
 }
 * {
   --sb-track-color: #232e33;
@@ -68,11 +67,17 @@ h6 {
   padding: 20px 30px;
   transition: all 0.3s;
   background-color: #f9ecdb;
+  height: auto;
+}
+.section {
+  height: 93vh;
+  overflow-y: auto;
 }
 
 @media (max-width: 1199px) {
   #main {
     padding: 20px;
+   
   }
 }
 

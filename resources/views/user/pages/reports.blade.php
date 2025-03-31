@@ -3,16 +3,15 @@
 
 <main id="main" class="main">
     <section class="section reports">
-        <div class="position-fixed bg-white d-flex align-items-end justify-content-center" 
-             style="top:5%; right:0; left:0; z-index: 995; height: 80px; width: 100%;">
-            <h2 class="py-2 mt-2"><strong>Reports</strong></h2>
+        <div class="position-fixed d-flex align-items-end justify-content-center" 
+             style="top:5%; right:0; left:0; z-index: 995; height: 80px; width: 100%; background-color: #134125;">
+            <h2 class="py-2 mt-2 text-white"><strong>Reports</strong></h2>
         </div>
-        <div style="margin-top: 100px;"></div>
+        <div style="margin-top: 70px;"></div>
         @foreach($farms as $farm)
             @php    
                 $submitReport = in_array($farm->id, $farmReports);
                 $verified = in_array($farm->id, $technicianReport);
-
             @endphp
             <div class="card mb-2 p-0" style="background-color: #f0f8f0; border: 1px solid #28a745;">
                 <a href="{{ $submitReport ? route('user.submitted-report', $farm->id) : route('user.submit-report', $farm->id) }}" class="btn btn-outline-success" >
@@ -39,7 +38,6 @@
         @endforeach
     </section>
 </main>
-
 @include('user.partials.__footer')
 
 

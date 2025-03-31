@@ -29,6 +29,9 @@ class NewFarmerReport implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new Channel('admin-notifications');
+        return [
+            new Channel('admin-notifications'),
+            new Channel('technician-notifications'),
+        ];
     }
 }

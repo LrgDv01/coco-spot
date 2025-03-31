@@ -116,56 +116,59 @@
     @endif
 
     @if (auth()->user()->isFarmer())
-    <div class="position-fixed bg-white d-flex flex-column align-items-center justify-content-end" 
-            style="top:6%; right:0; left:0; z-index: 995; height: 120px; width: 100%;">
-        <h1 class="fs-3 mt-3"><strong>My Farm</strong></h1>
-        <div class="d-flex flex-start px-4 mb-3 align-self-start">
-            <button type="button" class="btn btn-success rounded rounded-3" data-bs-toggle="modal" data-bs-target="#addFarmModal">
-                <strong>Add Farm</strong>
-            </button>
+        <div class="position-fixed d-flex flex-column align-items-center justify-content-end" 
+                style="top:6%; right:0; left:0; z-index: 995; height: 120px; width: 100%; background-color: #134125;">
+            <h1 class="fs-3 mt-3 text-white"><strong>My Farm</strong></h1>
+            <div class="d-flex flex-start px-4 mb-3 align-self-start">
+                <button type="button" class="btn btn-outline-success rounded rounded-3 text-white border-white" data-bs-toggle="modal" data-bs-target="#addFarmModal">
+                    <strong>Add Farm</strong>
+                </button>
+            </div>
         </div>
-    </div>
-    <section class="section farm">
-        <div class="container p-0 m-0">
-            <div style="margin-top: 150px;"></div>
-            @foreach($farms as $farm)
-                <div class="card mb-2 p-0">
-                    <div class="card-body">
-                        <h5 class="card-title p-0 d-flex flex-row justify-content-between">
-                            <strong>{{ $farm->name }}</strong> 
-                        </h5>
-                        <hr>
-                        <p class="card-text text-truncate">
-                            <strong>Address :</strong> {{ $farm->address }}<br>
-                            <strong>Variety :</strong> {{ $farm->variety }}<br>
-                            <strong>Hectares :</strong> {{ $farm->hectares }}<br>
-                            <strong>Tree Age :</strong> {{ $farm->tree_age }}<br>
-                            <strong>Planted Coconut :</strong> {{ $farm->planted_coconut }}<br>
-                        </p>
+        <div style="margin-top: 130px;"></div>
+        <section class="section farm d-flex flex-column align-items-center">
+            <div class="container">
+                @foreach($farms as $farm)
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <h5 class="card-title p-0">
+                                <strong>{{ $farm->name }}</strong> 
+                            </h5>
+                            <hr>
+                            <p class="card-text text-truncate">
+                                <strong>Address :</strong> {{ $farm->address }}<br>
+                                <strong>Variety :</strong> {{ $farm->variety }}<br>
+                                <strong>Hectares :</strong> {{ $farm->hectares }}<br>
+                                <strong>Tree Age :</strong> {{ $farm->tree_age }}<br>
+                                <strong>Planted Coconut :</strong> {{ $farm->planted_coconut }}<br>
+                            </p>
+                        </div>
                     </div>
-                </div>
-            @endforeach
-        </div>
-        @include('user.others.add_farm') 
-    </section>
+                @endforeach
+            </div>
+            @include('user.others.add_farm') 
+        </section>
     @endif
 
     @if (auth()->user()->isTechnician())
+        <div class="position-fixed d-flex flex-column align-items-center justify-content-end" 
+                style="top:6%; right:0; left:0; z-index: 995; height: 70px; width: 100%; background-color: #134125;">
+            <h1 class="fs-3 mt-3 text-white"><strong>Notifications</strong></h1>
+        </div>
+        <div style="margin-top: 70px;"></div>
         <section class="section notifications">
             <div class="container">
                 @if($notifications->isEmpty())
                     <div class="alert alert-secondary text-center" role="alert">
-                    <p class="text-secondary text-muted"> - No new notifications at the moment -</p>
-                </div>
+                        <p class="text-secondary text-muted"> - No new notifications at the moment -</p>
+                    </div>
                 @else
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-success text-white sticky-top" style="z-index: 1;">
-                            <h4>Notification</h4>
-                        </div>
-                        <div class="card-body text-truncate p-0" style="max-height: 80vh; overflow-y: auto;">
+                    <div class="card bg-transparent border border-0 shadow-none">
+                        <div class="card-body text-truncate p-0" style="height: 100%; overflow-y: auto;">
                             <ul class="list-group">
                                 @foreach ($notifications as $notifs)
-                                    <li class="list-group-item d-flex flex-column align-items-start shadow-sm p-3">
+                                    <li class="list-group-item d-flex flex-column align-items-start shadow-sm p-3 mb-2" 
+                                        style="border: 1px solid #188754; border-radius: 8px;">
                                         <div class="mb-2">
                                             <h5 class="mb-1">New Farm Assigned you to Visit</h5>
                                             <p class="mb-1">

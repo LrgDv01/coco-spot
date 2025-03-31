@@ -26,12 +26,12 @@
                 </div>
                 <div class="mb-3">
                     <strong>Admin's Instructions : </strong>
-                    <textarea name="note" class="form-control" rows="2" placeholder="Visit the farmer farm for actual confirmation of this reported disease" disabled></textarea>
+                    <textarea name="note" class="form-control" rows="2" placeholder="Visit this farm for actual confirmation with the reported disease" disabled></textarea>
                 </div>
                 <div class="d-flex justify-content-center gap-5">
                     <button type="button" class="btn btn-outline-success fw-bold px-3 w-35 btn-block rounded-pill" 
-                            data-status="acknowledge"
-                            data-message="acknowledge"
+                            data-status="Acknowledge"
+                            data-message="Acknowledge"
                             data-bs-toggle="modal" 
                             data-bs-target="#actionModal">
                         <i class="bi bi-check-circle"></i> Acknowledge & Proceed

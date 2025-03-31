@@ -17,15 +17,6 @@ class ServicesController extends Controller
 {
     public function index()
     {   
-
-    //  $municipal = FarmModel::pluck('municipal')->unique()->toArray();
-    // $technician_id = User::where('user_type', 2)->whereIn('municipal', $municipal)->value('id');
-    // dd($technician_id);
-    // $all_technician_id = User::where('user_type', 2)->value('id');
-    // $new_id = $technician_id ?? $all_technician_id;
-    
-
-
         $userId = Auth::id(); 
         $farms = FarmModel::where('farmer_id', $userId)
         // ->orderBy('created_at', 'desc')->limit(4) // Order by created_at, newest first
@@ -37,15 +28,9 @@ class ServicesController extends Controller
         return view('user.pages.reports', compact('farms', 'farmReports', 'technicianReport'));
     }
 
-
     public function viewReport($id)
     {
-        // $requestDetails = ServicesModel::with('farms')->findOrFail($id);
-        // $farm = FarmModel::where('id', $id)->get(); 
         $farm = FarmModel::findOrFail($id);
-        // foreach ($farm as $f) {
-            // dd($farm->name);
-        // }
         return view('user.others.submit_report', compact('farm'));
     }
 
@@ -133,7 +118,7 @@ class ServicesController extends Controller
         $confirmation->technician_id = $validated['technician_id'];
         $confirmation->farmer_name = $validated['farmer_name'];
         $confirmation->request_id = $request_id;
-        $confirmation->status = 'assigned';
+        $confirmation->status = 'Assigned';
 
         try {
             $confirmation->save();
@@ -171,7 +156,7 @@ class ServicesController extends Controller
     public function show($id) {
         $technician = User::join('technicians_info', 'users.id', '=', 'technicians_info.technician_id')
             ->where('users.id', $id)
-            ->select('users.*', 'technicians_info.*')
+            ->select('users.*', '  .*')
             ->first();
         if ($technician) {
             return response()->json([

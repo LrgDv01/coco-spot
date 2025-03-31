@@ -114,7 +114,6 @@ function displayDiseaseChart(year = null) {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
               }, 
             success: function (data) {
-                console.log('response', data);
                 if (!data.count_disease) {
                     console.error("Invalid data format received");
                     return;
