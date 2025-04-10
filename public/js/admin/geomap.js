@@ -32,7 +32,6 @@ $(document).ready(function() {
     } 
 });
 
-
 function zoomOut(map) {
     map.flyTo({
         center: [121.423, 14.281],
@@ -80,28 +79,36 @@ function generateRandomPolygon(center, numPoints = 6, radius = 0.01) {
 }
 
 async function displayMap(farm_loc, locations, mapboxgl) {
-
     const map_locations = new mapboxgl.Map({
         container: 'map_locations',
         style: 'mapbox://styles/mapbox/satellite-streets-v11',
-        center: [121.37575102352582, 14.27976852821142], 
+        center: [121.37575102352582, 14.27976852821142],
         zoom: 9,
         minZoom: 3,
         maxZoom: 16,
         maxBounds: [
-            [121.0, 13.8], // Southwest
-            [122.0, 14.8]  // Northeast
+            [121.0, 13.8],
+            [122.0, 14.8]
         ]
     });
-
+    let originalFarmPolygonsData = null;
+    // Fixed interpolation function
+    const interpolateZoom = (currentZoom, minZoom, maxZoom, minScale, maxScale) => {
+        const progress = Math.min(1, Math.max(0, 
+            (currentZoom - minZoom) / (maxZoom - minZoom)
+        ));
+        return maxScale + (minScale - maxScale) * progress;
+    };
+    const scalePolygon = (feature, center, scaleFactor) =>
+        turf.transformScale(feature, scaleFactor, { origin: center });
     map_locations.on('load', async () => {
+        // Load geojson data
         const data = await geoJsonData();
-
+        // Add municipal boundaries
         map_locations.addSource('municipal', {
             type: 'geojson',
             data: data
         });
-
         map_locations.addLayer({
             id: 'laguna-boundary',
             type: 'line',
@@ -113,52 +120,40 @@ async function displayMap(farm_loc, locations, mapboxgl) {
                 'line-dasharray': [2, 2]
             }
         });
-
-        // Add municipal points layer
-        map_locations.loadImage('/img/municipal_loc.png', (error, image) => {
-            if (error) throw error;
-            map_locations.addImage('custom-location-icon', image);
-            map_locations.addLayer({
-                id: 'laguna-points',
-                type: 'symbol',
-                source: 'municipal',
-                filter: ['==', '$type', 'Point'],
-                // layout: {
-                //     'icon-image': 'custom-location-icon',
-                //     'icon-size': 0.1,
-                //     'icon-allow-overlap': true
-                // }
-            });
-        });
-
         const farmFeatures = farm_loc.map(farm => ({
             type: 'Feature',
             geometry: {
                 type: 'Point',
                 coordinates: [parseFloat(farm.longitude), parseFloat(farm.latitude)]
             },
-            properties: {
-                municipal: farm.municipal 
-            }
+            properties: { municipal: farm.municipal }
         }));
-
         const farmPolygons = farmFeatures.map(farm => {
             const center = farm.geometry.coordinates;
+            const polygon = generateRandomPolygon(center);
             return {
-                ...generateRandomPolygon(center),
+                ...polygon,
                 properties: {
-                    municipal: farm.properties.municipal 
+                    municipal: farm.properties.municipal,
+                    originalCenter: center,
+                    originalCoordinates: polygon.geometry.coordinates
                 }
             };
         });
-
+        originalFarmPolygonsData = {
+            type: 'FeatureCollection',
+            features: JSON.parse(JSON.stringify(farmPolygons))
+        };
+        // Add farm data sources
         map_locations.addSource('farms', {
             type: 'geojson',
-            data: {
-                type: 'FeatureCollection',
-                features: farmFeatures
-            }
+            data: { type: 'FeatureCollection', features: farmFeatures }
         });
+        map_locations.addSource('farm-polygons', {
+            type: 'geojson',
+            data: { type: 'FeatureCollection', features: farmPolygons }
+        });
+        // Add farm points layer
         map_locations.addLayer({
             id: 'farm-points',
             type: 'circle',
@@ -168,12 +163,20 @@ async function displayMap(farm_loc, locations, mapboxgl) {
                 'circle-color': '#FFD700'
             }
         });
-
-        map_locations.addSource('farm-polygons', {
-            type: 'geojson',
-            data: {
-                type: 'FeatureCollection',
-                features: farmPolygons
+        // Add polygon visualization layers
+        map_locations.addLayer({
+            id: 'farm-polygons-fill',
+            type: 'fill',
+            source: 'farm-polygons',
+            paint: {
+                'fill-color': '#FFD700',
+                'fill-opacity': [
+                    'interpolate',
+                    ['linear'],
+                    ['zoom'],
+                    3, 0.3,  // More visible when zoomed out
+                    14, 0    // Fully hidden at zoom 14
+                ]
             }
         });
         map_locations.addLayer({
@@ -183,22 +186,49 @@ async function displayMap(farm_loc, locations, mapboxgl) {
             paint: {
                 'line-color': '#FFD700',
                 'line-width': 2,
-                'line-dasharray': [2, 2]
+                'line-dasharray': [2, 2],
+                'line-opacity': [
+                    'interpolate',
+                    ['linear'],
+                    ['zoom'],
+                    12, 1,  // Fully visible until zoom 12
+                    16, 1    // Fade out at high zoom
+                ]
             }
         });
-
+        let zoomAnimationFrame = null;
+        map_locations.on('zoom', () => {
+            if (zoomAnimationFrame) cancelAnimationFrame(zoomAnimationFrame);
+            zoomAnimationFrame = requestAnimationFrame(() => {
+                const zoom = map_locations.getZoom();
+                const scaleFactor = interpolateZoom(zoom, 2, 15, 0.3, 1.7);
+                const scaledFeatures = originalFarmPolygonsData.features.map(feature => 
+                    scalePolygon(
+                        JSON.parse(JSON.stringify(feature)),
+                        feature.properties.originalCenter,
+                        scaleFactor
+                    )
+                );
+                map_locations.getSource('farm-polygons').setData({
+                    type: 'FeatureCollection',
+                    features: scaledFeatures
+                });
+            });
+        });
+        // Municipal selection dropdown
         const dropdown = document.getElementById('location');
         const names = data.features
             .filter(feature => feature.properties.name)
             .map(feature => feature.properties.name)
             .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+        
         names.forEach(name => {
             const option = document.createElement('option');
             option.value = name;
             option.textContent = name;
             dropdown.appendChild(option);
         });
-
+        // Location selection handler
         document.getElementById('location').addEventListener('change', (event) => {
             const selectedName = event.target.value;
             if (selectedName === 'All Municipal') {
@@ -206,46 +236,56 @@ async function displayMap(farm_loc, locations, mapboxgl) {
                     document.getElementById('details').style.display = 'none';
                     displayMap(farm_loc, locations, mapboxgl); 
                 }, 500);
-            } else if (selectedName) {
-                map_locations.setFilter('laguna-points', ['==', 'name', selectedName]);
-                map_locations.setFilter('farm-points', ['==', ['get', 'municipal'], selectedName]);
-                map_locations.setFilter('farm-polygons-outline', ['==', ['get', 'municipal'], selectedName]);
-                locations.forEach(loc => {
-                    if (loc.name === selectedName) { 
-                        document.getElementById('name').textContent = loc.name || 'N/A';
-                        document.getElementById('lot-area').textContent = loc.lot_area || 'N/A';
-                        document.getElementById('number-of-trees').textContent = loc.trees || 'N/A';
-                        document.getElementById('meters').textContent = loc.meters || 'N/A';
-                        document.getElementById('details').style.display = 'block';
-                    }
-                });
+            }
+            const filter = selectedName === 'All Municipal' 
+                ? ['==', ['get', 'municipal'], '']
+                : ['==', ['get', 'municipal'], selectedName];
+
+            ['laguna-points', 'farm-points', 'farm-polygons-outline'].forEach(layer => {
+                map_locations.setFilter(layer, filter);
+            });
+            const loc = locations.find(l => l.name === selectedName);
+            if (loc) {
+                document.getElementById('name').textContent = loc.name || 'N/A';
+                document.getElementById('lot-area').textContent = loc.lot_area || 'N/A';
+                document.getElementById('number-of-trees').textContent = loc.trees || 'N/A';
+                document.getElementById('meters').textContent = loc.meters || 'N/A';
+                document.getElementById('details').style.display = 'block';
+            } else {
+                document.getElementById('details').style.display = 'none';
             }
         });
-
+        // Popup handling
         let popup = null;
         map_locations.on('mouseenter', 'laguna-points', (e) => {
-            const coordinates = e.features[0].geometry.coordinates.slice();
-            const properties = e.features[0].properties;
-            locations.forEach(loc => {
+            if (e.features.length > 0 && !popup) {
+                const { coordinates } = e.features[0].geometry;
+                const loc = locations.find(l => l.name === e.features[0].properties.name);
                 
-                if (loc.name === properties.name) {
-                    const description = `
-                        <div style="background-color: #28a745; padding: 15px; border-radius: 5px; color: white;">
-                            <strong>${properties.name}</strong><br>
-                            Lot Area: ${loc.lot_area || 'N/A'}<br>
-                            Trees: ${loc.trees || 'N/A'}<br>
-                            Meters: ${loc.meters || 'N/A'}
-                        </div>
-                    `;
-                    popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false })
+                if (loc) {
+                    popup = new mapboxgl.Popup({ closeButton: false })
                         .setLngLat(coordinates)
-                        .setHTML(description)
+                        .setHTML(`
+                            <div class="map-popup">
+                                <strong>${loc.name}</strong><br>
+                                ${Object.entries({
+                                    'Lot Area': loc.lot_area,
+                                    'Trees': loc.trees,
+                                    'Meters': loc.meters
+                                }).map(([key, val]) => `
+                                    ${key}: ${val || 'N/A'}
+                                `).join('<br>')}
+                            </div>
+                        `)
                         .addTo(map_locations);
                 }
-            });
+            }
         });
         map_locations.on('mouseleave', 'laguna-points', () => {
-            if (popup) popup.remove();
+            if (popup) {
+                popup.remove();
+                popup = null;
+            }
         });
     });
 }
@@ -288,7 +328,6 @@ function scalePolygon(polygon, k, zoomFactor = 1) {
         properties: polygon.properties
     };
 }
-
 
 async function mapSimulation(simulate, mapboxgl) {
     console.log('simulate', simulate);
@@ -537,9 +576,7 @@ async function mapSimulation(simulate, mapboxgl) {
                     console.warn(`Invalid coordinates for farm ${farm.id}: ${farm.longitude}, ${farm.latitude}`);
                     return;
                 }
-
                 const { isTreated, progress: farmProgress } = getFarmState(farm);
-
                 let pointColor;
                 if (farm.farmer_reports.length === 0 && farm.technician_reports.length === 0) {
                     pointColor = '#00FF00';
@@ -548,7 +585,6 @@ async function mapSimulation(simulate, mapboxgl) {
                 } else {
                     pointColor = interpolateColor(farmProgress, [[255, 255, 0], [255, 0, 0]]);
                 }
-
                 // Add farm point
                 farmFeatures.push({
                     type: 'Feature',
@@ -561,7 +597,6 @@ async function mapSimulation(simulate, mapboxgl) {
                         pointType: 'farm'
                     }
                 });
-
                 // Add technician points and create geofence
                 if (farm.technician_reports && Array.isArray(farm.technician_reports)) {
                     const technicianCoords = [];

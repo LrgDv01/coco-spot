@@ -3,7 +3,7 @@
 
 <main id="main" class="main">
     <section class="section reports">
-        <div class="position-fixed d-flex align-items-end justify-content-center" 
+        <div class="position-fixed d-flex align-items-end justify-content-center rounded-3" 
              style="top:5%; right:0; left:0; z-index: 995; height: 80px; width: 100%; background-color: #134125;">
             <h2 class="py-2 mt-2 text-white"><strong>Reports</strong></h2>
         </div>
@@ -25,13 +25,13 @@
                                 <strong>{{ $farm->name }}</strong> </h5>
                         </div>
                         <hr class="my-1 p-0">
-                        <p class="card-text text-truncate p-0 m-0">
-                            <strong>Address :</strong> {{ $farm->address }}<br>
-                            <strong>Variety :</strong> {{ $farm->variety }}<br>
-                            <strong>Hectares :</strong> {{ $farm->hectares }}<br>
-                            <strong>Tree Age :</strong> {{ $farm->tree_age }}<br>
-                            <strong>Planted Coconut :</strong> {{ $farm->planted_coconut }}<br>
-                        </p>
+                        <div class="card-text">
+                            <p class="d-flex flex-row mb-0 pb-0"> <span class="fw-bold me-2">Address:</span>  {{ $farm->address }}</p>
+                            <p class="d-flex flex-row mb-0 pb-0">  <span class="fw-bold me-2">Variety:</span>   {{ $farm->variety }}</p>
+                            <p class="d-flex flex-row mb-0 pb-0"> <span class="fw-bold me-2">Hectares:</span>   {{ $farm->hectares }}</p>
+                            <p class="d-flex flex-row mb-0 pb-0">  <span class="fw-bold me-2">Tree Age:</span>   {{ $farm->tree_age }}</p>
+                            <p class="d-flex flex-row mb-0 pb-0">   <span class=" fw-bold me-2">Planted Coconut:</span> {{ $farm->planted_coconut }}</p>
+                        </div>
                     </div>
                 </a>
             </div>

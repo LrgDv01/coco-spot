@@ -24,7 +24,7 @@ class RedirectIfNotAdmin
             }
         } else {
             // User is not authenticated, redirect to login page
-            return redirect()->route('login');
+            return redirect()->route('welcome');
         }
         return $next($request);
     }

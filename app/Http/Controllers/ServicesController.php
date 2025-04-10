@@ -6,6 +6,7 @@ use App\Models\ServicesModel;
 use App\Events\NewFarmerReport;
 use App\Models\farmer\FarmerReportsModel;
 use App\Models\technician\TechiniciansReportsModel;
+use App\Models\Notification;
 use App\Models\farmer\FarmModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
@@ -34,6 +35,73 @@ class ServicesController extends Controller
         return view('user.others.submit_report', compact('farm'));
     }
 
+    // public function farmerReport(Request $request) {
+    //     try {
+    //         $validated = $request->validate([
+    //             'farm_id' => 'required|exists:farms,id',
+    //             'farmer_name' => 'required|string|max:255',
+    //             'contact_no' => 'required|string|max:255',
+    //             'farm_location' => 'required|string|max:255',
+    //             'farm_size' => 'required|numeric',
+    //             'coconut_trees' => 'required|integer',
+    //             'coconut_variety' => 'required|string|max:255',
+    //             'symptoms' => 'nullable|array',
+    //             'disease' => 'required|string|max:255',
+    //             'image_proof' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|min:0', 
+    //         ]);
+    //         $imagePath = null;
+    //         if ($request->hasFile('image_proof')) {
+    //             $imagePath = $request->file('image_proof')->store('images', 'public');
+    //         }
+    //         $farmer_id = auth()->id();
+    //         // $municipal = FarmModel::pluck('municipal')->unique()->toArray();
+    //         $municipal = FarmModel::where('id', $validated['farm_id'])->value('municipal');
+    //         $technician_id = User::where('user_type', 2)
+    //             ->whereRaw("FIND_IN_SET(?, REPLACE(municipal, ', ', ','))", [$municipal])
+    //             ->value('id');
+    //         // dd($technician_id);
+    //         $report = FarmerReportsModel::with('farm')->create([
+    //             'farmer_id' => $farmer_id,
+    //             'farm_id' => $validated['farm_id'],
+    //             'technician_id' => $technician_id,
+    //             'farmer_name' => $validated['farmer_name'],
+    //             'contact_no' => $validated['contact_no'],
+    //             'farm_location' => $validated['farm_location'],
+    //             'farm_size' => $validated['farm_size'],
+    //             'coconut_trees' => $validated['coconut_trees'],
+    //             'coconut_variety' => $validated['coconut_variety'],
+    //             'symptoms' => json_encode($validated['symptoms'] ?? []),
+    //             'disease' => $validated['disease'],
+    //             'image_path' => $imagePath, 
+    //         ]);
+
+    //         $farmerReport = FarmerReportsModel::find(1);
+    //         $notification = $farmerReport->notifications()->create([
+    //             'user_id' => $farmer_id,
+    //             'farm_id' => $farmerReport->farm_id,
+    //             'disease' => $farmerReport->disease,
+    //             'status' => 'unread'
+    //         ]);
+
+    //         // Notification::create([
+    //         //     'farmer_report_id' => $report->id,
+    //         //     '' => $report->id,
+    //         //     'user_id' => $farmer_id,
+    //         //     'farm_id' => $validated['farm_id'],
+    //         //     'disease' => $validated['disease'],
+    //         // ]);
+
+    //         // Broadcast the event
+    //         broadcast(new NewFarmerReport($report))->toOthers();
+    //         // Broadcast the event
+    //         // event(new NewFarmerReport($report));
+    //         return response()->json(['success' => true, 'message' => 'Report saved successfully']);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+    //     }
+    //     return redirect()->back()->with('success', 'Report saved successfully');
+    // }
+
     public function farmerReport(Request $request) {
         try {
             $validated = $request->validate([
@@ -48,20 +116,24 @@ class ServicesController extends Controller
                 'disease' => 'required|string|max:255',
                 'image_proof' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|min:0', 
             ]);
+    
+            // Handle image upload
             $imagePath = null;
             if ($request->hasFile('image_proof')) {
                 $imagePath = $request->file('image_proof')->store('images', 'public');
             }
+    
             $farmer_id = auth()->id();
-            $municipal = FarmModel::pluck('municipal')->unique()->toArray();
-            $technician_id = User::where('user_type', 2)->whereIn('municipal', $municipal)->value('id');
-            // dd($technician_id);
-            $all_technician_id = User::where('user_type', 2)->value('id');
-            $new_id = $technician_id ?? $all_technician_id;
-            $report = FarmerReportsModel::with('farm')->create([
+            $municipal = FarmModel::where('id', $validated['farm_id'])->value('municipal');
+            $technician_id = User::where('user_type', 2)
+                ->whereRaw("FIND_IN_SET(?, REPLACE(municipal, ', ', ','))", [$municipal])
+                ->value('id');
+    
+            // Create the report
+            $report = FarmerReportsModel::create([
                 'farmer_id' => $farmer_id,
                 'farm_id' => $validated['farm_id'],
-                'technician_id' => $new_id,
+                'technician_id' => $technician_id,
                 'farmer_name' => $validated['farmer_name'],
                 'contact_no' => $validated['contact_no'],
                 'farm_location' => $validated['farm_location'],
@@ -72,16 +144,36 @@ class ServicesController extends Controller
                 'disease' => $validated['disease'],
                 'image_path' => $imagePath, 
             ]);
-            // Broadcast the event
-            broadcast(new NewFarmerReport($report))->toOthers();
-            // Broadcast the event
-            // event(new NewFarmerReport($report));
-            return response()->json(['success' => true, 'message' => 'Report saved successfully']);
+    
+            // Create notification using the newly created report (not hardcoded ID)
+            if ($report) {
+                $notification = $report->notifications()->create([
+                    'user_id' => $farmer_id,
+                    'farm_id' => $report->farm_id,
+                    'disease' => $report->disease,
+                    'status' => 'unread'
+                ]);
+                
+                // Broadcast the event
+                broadcast(new NewFarmerReport($report))->toOthers();
+    
+                return response()->json([
+                    'success' => true, 
+                    'message' => 'Report saved successfully',
+                    'report_id' => $report->id
+                ]);
+            } else {
+                throw new \Exception('Failed to create farmer report');
+            }
+    
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+            return response()->json([
+                'success' => false, 
+                'message' => $e->getMessage()
+            ], 500);
         }
-        return redirect()->back()->with('success', 'Report saved successfully');
     }
+
     public function viewSubmmittedReport($id)
     {
         $reported = FarmerReportsModel::with('farms')->where('farm_id', $id)->first();

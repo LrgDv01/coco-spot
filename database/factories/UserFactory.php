@@ -32,7 +32,8 @@ class UserFactory extends Factory
             'contact' => $this->faker->unique()->e164PhoneNumber(), 
             'email' => $this->faker->unique()->safeEmail(), 
             'password' => Hash::make('1234'), 
-            'user_type' => $this->faker->randomElement([1, 2]),
+            // 'user_type' => $this->faker->randomElement([1, 2]),
+            'user_type' => 1, 
             'remember_token' => Str::random(10), 
         ];
     }

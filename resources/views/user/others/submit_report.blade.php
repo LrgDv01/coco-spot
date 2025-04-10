@@ -104,8 +104,8 @@
 
 <main id="main" class="main">
     <section class="section reports">
-
-        <h2 class="py-2 mt-2 text-center"><strong>Diagnostic Report</strong></h2>
+        <a href="{{url()->previous()}}" class="btn btn-outline-secondary "><i class="fas fa-arrow-left"></i></a>
+        <h2 class="py-2 mt-2 text-center text-muted"><strong>Diagnostic Report</strong></h2>
         @if (session('success'))
             <div class="alert alert-success mt-3">{{ session('success') }}</div>
         @endif
@@ -120,7 +120,7 @@
         @endif
         <div class="card mb-2 p-0" style="background-color: #f0f8f0; border: 1px solid #28a745;">
     <div class="card-body">
-        <p class="card-text text-truncate">
+        <p class="card-text text-truncate text-muted">
             <strong>Farm Location :</strong> {{ $farm->address }}<br>
             <strong>District :</strong> {{ $farm->district }}<br>
             <strong>Farm Size :</strong> {{ $farm->hectares }}<br>
@@ -195,12 +195,10 @@
                     <input type="file" class="form-control" id="image_proof_{{ $farm->id }}" name="image_proof" accept="image/*" required>
                 </div>
                 <button type="submit" id="identify-btn-{{ $farm->id }}" 
-                        class="btn btn-success m-3 identify-btn" 
+                        class="btn btn-outline-success m-3 identify-btn" 
                         data-farm-id="{{ $farm->id }}" disabled>
                     <i class="fas fa-search"></i> Identify
                 </button>
-                {{--  <button type="submit" id="identify-btn-{{ $farm->id }}" class="btn btn-success m-3 identify-btn" 
-                    data-farm-id="{{ $farm->id }}" disabled><i></i> Identify</button></div>  --}}
         </form>
     </div>
 </div>

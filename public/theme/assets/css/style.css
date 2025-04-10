@@ -11,6 +11,7 @@
 --------------------------------------------------------------*/
 :root {
   scroll-behavior: smooth;
+  background: #f9ecdb;
 }
 
 body {
@@ -69,10 +70,6 @@ h6 {
   background-color: #f9ecdb;
   height: auto;
 }
-.section {
-  height: 93vh;
-  overflow-y: auto;
-}
 
 @media (max-width: 1199px) {
   #main {
@@ -105,7 +102,7 @@ h6 {
   right: 15px;
   bottom: 15px;
   z-index: 99999;
-  background: #4154f1;
+  background: #134125;
   width: 40px;
   height: 40px;
   border-radius: 4px;

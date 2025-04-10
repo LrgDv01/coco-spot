@@ -324,6 +324,7 @@
                 $('#actionModal').modal('hide');
                 $('#successModal').modal('show');
                 document.getElementById('successMessage').innerText = data.message || 'Report submitted successfully!';
+                location.reload();
             } else {
                 $('#actionModal').modal('hide');
                 alert('Error: ' + (data.message || 'Submission failed'));

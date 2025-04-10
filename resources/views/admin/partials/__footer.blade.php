@@ -41,6 +41,9 @@
     integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" 
     crossorigin="anonymous"></script>
 
+    <script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
+
+
  <!-- Mapbox Latest-->
 
   <script src="{{ URL::asset('js/admin/geomap.js')}}"></script> 

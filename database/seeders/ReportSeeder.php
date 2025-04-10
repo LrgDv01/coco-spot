@@ -73,7 +73,6 @@ class ReportSeeder extends Seeder
                      'Small brown, black or yellow spots on leaves'],
                 'disease' => 'Lethal Yellowing',
                 'image_path' => 'images/example-disease.jpg',
-                'status' => 'unread',
             ]
         ];
 
@@ -92,7 +91,6 @@ class ReportSeeder extends Seeder
                 'symptoms' => json_encode($report['symptoms']),
                 'disease' =>  $report['disease'],
                 'image_path' => $report['image_path'],
-                'status' => $report['status']
             ]);
         }
     }

@@ -1,6 +1,6 @@
 @include('partials.__header')
-  <main class="custombg min-vh-100 loginpagebg">
-    @include('partials.__nav')
+<main class="custombg min-vh-100 loginpagebg">
+@include('partials.__nav')
     <div class="container d-flex justify-content-center align-items-center py-3" style="height: 80vh">
         <div class="card logincardbg bg-transparent d-flex align-items-center b-none" style="width: 100vw; border:none">
             <div class="card-body">
@@ -22,8 +22,13 @@
                             </div>
                             <div class="form-group mb-4">
                                 <label class="form-label fw-bold" for="password">PASSWORD</label>
-                                <input type="password" name="password" class="form-control py-3" id="password" placeholder="Enter your password" 
+                                <div class="position-relative">
+                                    <input type="password" name="password" class="form-control py-3" id="password" placeholder="Enter your password" 
                                         required autocomplete="current-password">
+                                    <button type="button" class="btn btn-link position-absolute top-50 end-0 translate-middle-y me-5 toggle-password" data-target="#password">
+                                        <i class="fa fa-eye-slash"></i>
+                                    </button>
+                                </div>
                             </div>
                             <div class="form-group d-flex justify-content-between align-items-center mb-4">
                                 <!-- Remember Me -->
@@ -67,6 +72,41 @@
             </div>
         </div>
     </div>
-  </main>
+</main>
+<style>
+    .toggle-password {
+        z-index: 5; 
+        border: none !important;
+        background: transparent !important;
+        color: #6c757d !important; 
+        padding: 0 !important;
+    }
+    .toggle-password:hover {
+        color: #495057 !important;
+    }
+    .form-control.pe-5 {
+        padding-right: 3rem !important;
+    }
+</style>
+
 @include('partials.__footer')
-  
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.toggle-password').forEach(button => {
+            button.addEventListener('click', function() {
+                const icon = this.querySelector('svg.svg-inline--fa');
+                const target = document.querySelector(this.dataset.target);
+                if (!target || !icon) {
+                    console.error('Elements missing:', {target, icon});
+                    return;
+                }
+                const isVisible = target.type === 'text';
+                target.type = isVisible ? 'password' : 'text';
+                icon.classList.toggle('fa-eye-slash', isVisible);
+                icon.classList.toggle('fa-eye', !isVisible);
+            });
+        });
+    });
+ </script>

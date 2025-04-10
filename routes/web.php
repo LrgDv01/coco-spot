@@ -38,14 +38,25 @@ Route::get('/home', function () {
 
 Route::middleware(['redirect.nonlogin', 'guest'])->group(function () { 
     Route::view('/login', 'auth.login')->name('login')->middleware('device.ismobile');
+    Route::get('/', function () {
+        $identifyUser = new deviceIdentifierController();
+        $device = $identifyUser->index();
+        return view('welcome', compact('device'));
+    })->name('welcome');
+
+    Route::get('/check-email', [AuthController::class, 'checkEmail']);
     Route::view('/register', 'auth.register')->name('register'); 
-    Route::post('/loginsubmit', [AuthController::class, 'login']);
-    Route::post('/registersubmit', [AuthController::class, 'register']);
     Route::get('/forgot-password', [AuthController::class,'showRequestForm'])->name('request-form');
-    Route::post('/request/reset-link', [AuthController::class, 'requestResetLink'])->name('request.reset-link');
     Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
-    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
     Route::view('/contact', 'frontpage.contact')->name('contact');
+
+    Route::middleware(['web'])->group(function () { 
+        Route::post('/loginsubmit', [AuthController::class, 'login']);
+        Route::post('/registersubmit', [AuthController::class, 'register']);
+        Route::post('/request/reset-link', [AuthController::class, 'requestResetLink'])->name('request.reset-link');
+        Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
+    });
+    
 });
  
 Route::middleware(['auth'])->group(function () {
@@ -76,7 +87,6 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/admin/verified-report', [ServicesController::class, 'adminVerified'])->name('admin.verified-report');
         });
     })->middleware('redirect.nonadmin');
-    
 
     Route::middleware(['farmer'])->group(function () {
         Route::get('/user/farm', [FarmController::class, 'index'])->name('user.farm');
@@ -86,13 +96,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/user/submit-report/{id}/diagnosis', [ServicesController::class, 'viewReport'])->name('user.submit-report'); 
         Route::get('/user/submitted-report/{id}/diagnosis', [ServicesController::class, 'viewSubmmittedReport'])->name('user.submitted-report');
         Route::get('/user/farmer/settings', [ProfileController::class, 'index'])->name('user.settings');
-        
         Route::middleware(['web'])->group(function () {
             Route::post('/user/add_farm', [FarmController::class, 'store'])->name('farm.store');
             Route::post('/user/farmer-report', [ServicesController::class, 'farmerReport'])->name('user.farmer-report');
-            Route::post('/user/update-field', [ProfileController::class, 'updateField'])->name('user.update-profile');
-            Route::post('/user/update-profile', [ProfileController::class, 'updateProfile'])->name('user.update-profile');
-            Route::post('/user/update-profile-image', [ProfileController::class, 'updateProfileImage'])->name('user.update-profile-image');
+            Route::post('/user/farmer/update-field', [ProfileController::class, 'updateField'])->name('user.farmer.updateField-profile');
+            Route::post('/user/farmer/update-profile', [ProfileController::class, 'updateProfile'])->name('user.farmer.update-profile');
+            Route::post('/user/farmer/update-profile-image', [ProfileController::class, 'updateProfileImage'])->name('user.farmer.update-profile-image');
         });
     });
 
@@ -100,7 +109,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/user/technician', [NotificationController::class, 'technicianNotif'])->name('user.notif'); 
         Route::get('/user/api/notifications', [NotificationController::class, 'getTechNotifications'])->name('user.notifications.get');
         // Route::get('/admin/notifications/{id}/read', [NotificationController::class, 'markAsReadTechNotif'])->name('admin.notifications.read');
-
         Route::get('/user/notifications', [NotificationController::class, 'technicianNotif'])->name('user.notifications');
         Route::get('/user/notifications/{id}/request-details', [NotificationController::class, 'viewDetails'])->name('user.viewDetails');
         Route::get('/user/reports', [ReportsController::class, 'index'])->name('user.reports');
@@ -108,9 +116,9 @@ Route::middleware(['auth'])->group(function () {
         Route::middleware(['web'])->group(function () {
             Route::post('/user/notifications/{id}/{status}/request-details', [ServicesController::class, 'updateStatus'])->name('update.status');
             Route::post('/user/technician-report', [ReportsController::class, 'technicianReport'])->name('user.technician-report');
-            Route::post('/user/update-field', [ProfileController::class, 'updateField'])->name('user.update-profile');
-            Route::post('/user/update-profile', [ProfileController::class, 'updateProfile'])->name('user.update-profile');
-            Route::post('/user/update-profile-image', [ProfileController::class, 'updateProfileImage'])->name('user.update-profile-image');
+            Route::post('/user/technician/update-field', [ProfileController::class, 'updateField'])->name('user.technician.updateField-profile');
+            Route::post('/user/technician/update-profile', [ProfileController::class, 'updateProfile'])->name('user.technician.update-profile');
+            Route::post('/user/technician/update-profile-image', [ProfileController::class, 'updateProfileImage'])->name('user.technician.update-profile-image');
         });
     });
 

@@ -68,26 +68,50 @@ class AuthController extends Controller
     
   }
 
+  public function checkEmail(Request $request)
+  {
+      $validated = $request->validate([
+          'email' => 'required|email'
+      ]);
+
+      $exists = User::where('email', $validated['email'])->exists();
+      return response()->json(['available' => !$exists]);
+  }
+
   public function register(Request $request)
   {
     $csrfValidation = $this->validateCsrfToken($request);
     if ($csrfValidation) {
       return $csrfValidation;
     }
-
+ 
     try {
-        $validated = $request->validate([
-          'user_name' => 'required|string|max:255',
-          'full_name' => 'required|string|max:255',
-          'address' => 'required|string|max:255',
-          'municipal' => 'required|string|max:255',
-          'contact' => 'required|string|max:255|unique:users',
-          'email' => 'required|string|email|max:255|unique:users',
-          // 'password' => 'required|string|min:3|confirmed',
-          'password' => 'required|string|min:3',
-          'user_type' => 'required|integer|in:1,2', 
-        ]);
-        $password = Str::random(12); 
+
+      $validated = $request->validate([
+        'user_name' => 'required|string|max:255',
+        'full_name' => 'required|string|max:255',
+        'address' => 'required|string|max:255',
+        'municipal' => 'required|string|max:255',
+        'contact' => [
+            'required',
+            'string',
+            'regex:/^(09|\+639)\d{9}$/',
+            'unique:users',
+        ],
+        'email' => 'required|string|email|max:255|unique:users',
+    'password' => [
+      'required',
+      'string',
+      'min:8',
+      'confirmed',
+      'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*(),.?":{}|<>\/])[A-Za-z\\d!@#$%^&*(),.?":{}|<>\/]{8,}$/'
+  ],
+        'user_type' => 'required|integer|in:1,2',
+    ], [
+        'password.regex' => 'The password must contain at least: 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character (!@#$%^&*(),.?":{}|<>/).',
+        'contact.regex' => 'Please enter a valid Philippine mobile number (09 or +639 format).'
+    ]);
+
         // Create a new user
         $user = User::create([
           'user_name' => $validated['user_name'],
@@ -101,10 +125,23 @@ class AuthController extends Controller
         ]);
         
         return response()->json(['success' => true, 'message' => 'User registered successfully'], 200);
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Validation failed',
+            'errors' => $e->errors()
+        ], 422);
     } catch (\Exception $e) {
         return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
     }
   }
+
+  // protected function messages()
+  // {
+  //     return [
+  //         'password.required' => 'Password is required.',
+  //     ];
+  // }
 
   public function showRequestForm() {
     return view('auth.request_link_verification');
@@ -175,6 +212,7 @@ class AuthController extends Controller
     Auth::logout();
     $request->session()->invalidate();
     $request->session()->regenerateToken();
-    return redirect()->route('home');
+    // return redirect()->route('home');
+    return redirect('/');
   }
 }

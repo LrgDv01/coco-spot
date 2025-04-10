@@ -21,9 +21,13 @@
             <label for="new_email" class="form-label">Email</label>
             <input type="new_email" class="form-control" id="new_email" name="new_email" placeholder="Enter new email">
           </div> 
+          <div class="mb-3">
+            <label for="new_email" class="form-label">Address</label>
+            <input type="new_address" class="form-control" id="new_address" name="new_address" placeholder="Enter new address">
+          </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
           <button type="submit" class="btn btn-success">Save</button>
         </div>
       </form>

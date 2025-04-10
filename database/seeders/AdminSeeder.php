@@ -3,8 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use App\Models\admin\PCA;
-use App\Models\admin\DOA;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -28,7 +26,5 @@ class AdminSeeder extends Seeder
             'user_type' => 0,
             'remember_token' => Str::random(10), 
         ]);
-        PCA::factory(3)->create();
-        DOA::factory(3)->create();
     }
 }

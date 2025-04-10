@@ -19,12 +19,13 @@ $(document).on('submit', '#registerform', function (e) {
         },
         error: function (xhr) {
             hideLoading();
-            let response = JSON.parse(xhr.responseText);
-            let errorMessage = 'An error occurred';  
-            if (response.errors) {
-                errorMessage = '';
-                for (let errorKey in response.errors) {
-                    errorMessage += response.errors[errorKey][0] + '\n';
+            let response = xhr.responseJSON;
+            let errorMessage = 'An error occurred';
+            if (response && response.errors) {
+                errorMessage = Object.values(response.errors).flat().join('\n');
+                // Show inline alerts for specific fields
+                if (response.errors.email) {
+                    $('#email-alert').text(response.errors.email[0]).removeClass('d-none');
                 }
             }
             global_showalert(errorMessage, 'Failed !', 'red');

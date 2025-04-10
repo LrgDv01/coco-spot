@@ -95,7 +95,6 @@ function updateChart(displayYearly, displayMonthly, selectedYear, diseaseData, s
     };
     const ctx = $("#diseases_chart")[0].getContext("2d");
     diseases_chart = new Chart(ctx, config);
-    
 }
 
 function displayDiseaseChart(year = null) {

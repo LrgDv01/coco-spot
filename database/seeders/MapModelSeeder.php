@@ -16,31 +16,27 @@ class MapModelSeeder extends Seeder
         $mapLocation = [
             // District 3 > Municipality 
             [ 'name' => 'San Pablo',
-              // 'coordinates' => [121.444, 14.419],
-              'coordinates' => [   121.32470843088436,
-              14.069835537119275],
-
+              'coordinates' => [121.444, 14.419],
+              // 'coordinates' => [   121.32470843088436,
+              // 14.069835537119275],
               'color' => 'red',
               'lot_area' => 24817.52,
               'trees' => 1604310,
               'meters' => 8,],
 
             [ 'name' => 'Alaminos',
-              // 'coordinates' => [121.409, 14.281],
-              'coordinates' => [121.24771143310534,
-              14.061841802756987],
-
+              'coordinates' => [121.409, 14.281],
+              // 'coordinates' => [121.24771143310534,
+              // 14.061841802756987],
               'color' => 'yellow',
               'lot_area' => 5591.70,
               'trees' => 286862,
               'meters' => 8,],
 
             [ 'name' => 'Calauan',
-              // 'coordinates' => [121.409, 14.281],
-              'coordinates' => [121.31442663145629,
-              14.14568932389669],
-
-  
+              'coordinates' => [121.409, 14.281],
+              // 'coordinates' => [121.31442663145629,
+              // 14.14568932389669],
               'color' => 'yellow',
               'lot_area' => 6749.77,
               'trees' => 284582,
@@ -60,7 +56,6 @@ class MapModelSeeder extends Seeder
               'trees' => 890600,
               'meters' => 8,],
 
-
             [ 'name' => 'Rizal',
               'coordinates' => [121.409, 14.281],
               'color' => 'yellow',
@@ -75,9 +70,7 @@ class MapModelSeeder extends Seeder
               'trees' => 21159,
               'meters' => 8,],
 
-
             // District 4 > Municipality 
-
               [ 'name' => 'Cavinti',
               'coordinates' => [121.409, 14.281],
               'color' => 'yellow',

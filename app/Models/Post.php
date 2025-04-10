@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Storage;
 class Post extends Model
 {
     use HasFactory;
-
     protected static function boot()
     {
         parent::boot();
@@ -25,31 +24,35 @@ class Post extends Model
             $post->reactions()->delete();
         });
     }
-    
     protected $fillable = ['user_id', 'caption', 'image_path'];
-
     public function user()
     {
         return $this->belongsTo(User::class);
     }
-
     public function comments()
     {
         return $this->hasMany(Comment::class);
     }
-
     public function reactions()
     {
         return $this->hasMany(Reaction::class);
     }
-
     public function likesCount()
     {
         return $this->reactions()->where('type', 'like')->count();
     }
-
     public function dislikesCount()
     {
         return $this->reactions()->where('type', 'dislike')->count();
+    }
+    public function userReaction()
+    {
+        if (!auth()->check()) {
+            return null;
+        }
+
+        return $this->reactions()
+            ->where('user_id', auth()->id())
+            ->value('type');
     }
 }

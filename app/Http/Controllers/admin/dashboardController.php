@@ -50,7 +50,8 @@ class dashboardController extends Controller
         $count_healthy_farms = FarmModel::whereDoesntHave('farmerReports')->count();
         $count_infected_farms = FarmerReportsModel::all()->count();
         $count_infected_farms = $count_infected_farms - ($count_correct_diagnosis + $count_incorrect_diagnosis);
-        $affected_rate = ($count_infected_farms / $count_farms ) * 100;
+        // $affected_rate = round(($count_infected_farms / $count_farms) * 100, 2);
+        $affected_rate = round(($count_infected_farms / $count_farms) * 100);
         $count_treated_farms = TechiniciansReportsModel::all()->count();
 
         $year = $request->input('year');

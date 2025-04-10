@@ -102,14 +102,14 @@
     margin: 0; /* Remove default centering margins */
     width: 500px;
     height: 70vh;
-    max-width: 400px; /* Optional: Adjust width as needed */
+    max-width: 500px; /* Optional: Adjust width as needed */
   }
  
   @media (max-width: 576px) {
     .modal-dialog-notif {
       top: 10px;
       right: 10px;
-      max-width: 90%; /* Responsive width */
+      max-width: 100%; /* Responsive width */
     }
   }
 </style>
@@ -204,32 +204,44 @@
                 <div class="list-group list-group-flush bg-transparent" id="notification-list">
                     @if ($notif->isNotEmpty())
                         @foreach ($notif as $n)
-                        @if ($n->status === 'unread')
-                          <div class="rounded rounded-4 mb-3">
-                            <a href="{{route('admin.notifications.read', $n->id)}}"
-                               class="list-group-item list-group-item-action flex-column align-items-start"
-                               style= "background-color: #f9ecdb;"
-                               data-id="{{ $n->id }}">
-                                    <span class="badge bg-danger mb-3">New Disease Alert</span>
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h5 class="mb-1 text-danger"><strong>{{ $n->disease }}</strong></h5>
-                                    <small class="text-muted"><strong>{{ $n->created_at->format('M/d/Y H:i') }}</strong> </small>
-                                </div>
-                            </a>
-                            </div>
-                            @else ()
-                              <div class="rounded rounded-4 mb-3">
+                          @php
+                            $prof_img = $n->user->profile_img ? URL::asset('storage/' . $n->user->profile_img) 
+                                        : ($n->user->user_type === '1' ?  URL::asset('img/farmer.png') :  URL::asset('img/technician.png') ) ;
+                          @endphp
+                          @if ($n->status === 'unread')
+                            <div class="rounded rounded-4 mb-3">
                               <a href="{{route('admin.notifications.read', $n->id)}}"
                                 class="list-group-item list-group-item-action flex-column align-items-start"
-                                style="background-color: white;"
+                                style= "background-color: #f9ecdb;"
                                 data-id="{{ $n->id }}">
-                                  <div class="d-flex w-100 justify-content-between">
-                                      <h5 class="mb-1 text-secondary"><strong>{{ $n->disease }}</strong></h5>
+                                <span class="badge bg-danger mb-3">A newly reported disease from {{ $n->user->user_type === '1' ? 'Farmer' : 'Technician' }} </span>
+                                  <div class="d-flex flex-row">
+                                    <img src="{{ $prof_img }}" alt="user_photo" class="img-fluid rounded-circle" style="width: 40px; height: 40px;">  
+                                    <p class="ms-2"><span class="fw-bold">{{ $n->user->full_name}}</span> - reported a disease. </p>
+                                  </div>
+                                  <div class="d-flex w-100 justify-content-between mt-3">
+                                      <h5 class="mb-1 text-danger"><strong>{{ $n->disease }}</strong></h5>
                                       <small class="text-muted"><strong>{{ $n->created_at->format('M/d/Y H:i') }}</strong> </small>
                                   </div>
                               </a>
                               </div>
-                            @endif 
+                          @else ()
+                              <div class="rounded rounded-4 mb-3">
+                                <a href="{{route('admin.notifications.read', $n->id)}}"
+                                  class="list-group-item list-group-item-action flex-column align-items-start"
+                                  style="background-color: white;"
+                                  data-id="{{ $n->id }}">
+                                    <div class="d-flex flex-row">
+                                      <img src="{{ $prof_img }}" alt="user_photo" class="img-fluid rounded-circle" style="width: 40px; height: 40px;">  
+                                      <p class="ms-2"><span class="fw-bold">{{ $n->user->full_name}}</span> - reported a disease. </p>
+                                    </div>
+                                    <div class="d-flex w-100 justify-content-between mt-3">
+                                        <h5 class="mb-1 text-secondary"><strong>{{ $n->disease }}</strong></h5>
+                                        <small class="text-muted"><strong>{{ $n->created_at->format('M/d/Y H:i') }}</strong> </small>
+                                    </div>
+                                </a>
+                              </div>
+                          @endif 
                         @endforeach
                     @else
                         <div class="text-center">No Notifications</div>

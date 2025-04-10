@@ -26,12 +26,15 @@
                                     </div>
                                     <div class="form-group mb-4">
                                         <label class="form-label fw-bold" for="password">PASSWORD</label>
-                                        <input type="password" name="password" class="form-control py-3" id="password" placeholder="Enter your password" 
-                                                required autocomplete="current-password">
+                                        <div class="position-relative">
+                                            <input type="password" name="password" class="form-control py-3" id="password" placeholder="Enter your password" 
+                                            required autocomplete="current-password">
+                                            <button type="button" class="btn btn-link position-absolute top-50 end-0 translate-middle-y me-5 toggle-password" data-target="#password">
+                                                <i class="fa fa-eye-slash"></i>
+                                            </button>
+                                        </div>
                                     </div>
-
                                     <div class="form-group d-flex justify-content-between align-items-center mb-4">
-                                        <!-- Remember Me -->
                                         <div class="form-check">
                                             <input type="hidden" name="remember" value="0">
                                             <input class="form-check-input" type="checkbox" name="remember" id="remember"  value="1" 
@@ -39,11 +42,10 @@
                                             <label class="form-check-label text-white" for="remember">Remember Me</label>
                                         </div>
                                         @if ($device) 
-                                        <!-- Forgot Password -->
-                                        <div>
-                                            <a href="{{ route('request-form') }}" class="text-white text-decoration-none" 
-                                                ><u>Forgot Password?</u></a>
-                                        </div>
+                                            <div>
+                                                <a href="{{ route('request-form') }}" class="text-white text-decoration-none" 
+                                                    ><u>Forgot Password?</u></a>
+                                            </div>
                                         @endif
                                     </div>
                                     @csrf
@@ -66,5 +68,46 @@
             </div> 
         </div>
     </section><!-- /Hero Section -->
+</main>
+
+<style>
+    .toggle-password {
+    z-index: 5; /* Ensure it's above the input */
+    border: none !important;
+    background: transparent !important;
+    color: #6c757d !important; /* Match Bootstrap's secondary color */
+    padding: 0 !important;
+}
+
+.toggle-password:hover {
+    color: #495057 !important; /* Darker color on hover */
+}
+.form-control.pe-5 {
+    padding-right: 3rem !important;
+}
+
+</style>
+
  @include('partials.__footer')
+
+ <script>
+
+document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.toggle-password').forEach(button => {
+            button.addEventListener('click', function() {
+                const icon = this.querySelector('svg.svg-inline--fa');
+                const target = document.querySelector(this.dataset.target);
+                if (!target || !icon) {
+                    console.error('Elements missing:', {target, icon});
+                    return;
+                }
+                const isVisible = target.type === 'text';
+                target.type = isVisible ? 'password' : 'text';
+                icon.classList.toggle('fa-eye-slash', isVisible);
+                icon.classList.toggle('fa-eye', !isVisible);
+            });
+        });
+    });
+
+ </script>
 

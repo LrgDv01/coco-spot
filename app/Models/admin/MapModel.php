@@ -9,7 +9,6 @@ class MapModel extends Model
 {
     use HasFactory;
     public $table = 'map_locations';
-    
     protected $fillable = [
         'name',
         'coordinates',

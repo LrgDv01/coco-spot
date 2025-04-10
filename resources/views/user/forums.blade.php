@@ -2,7 +2,7 @@
 @include('user.partials.__nav')
 
 <main id="main" class="main">
-    <div class="pagetitle position-fixed d-flex align-items-end justify-content-center" 
+    <div class="pagetitle position-fixed d-flex align-items-end justify-content-center rounded-3" 
         style="top:5%; right:0; left:0; z-index: 995; height: 80px; width: 100%; background-color: #134125;">
         <h2 class="py-2 mt-2 text-white"><strong>Forums</strong></h2>
     </div>
@@ -73,7 +73,7 @@
                                     </div>
                                 </div>
                                 <div class="d-flex flex-row justify-content-between mx-3 my-0 py-0">
-                                    <div class="d-flex flex-row">
+                                    {{--             <div class="d-flex flex-row">
                                         <!-- Like Form -->
                                         <form method="POST" action="{{ route('forum.react', $post->id) }}" class="react-form" data-post-id="{{ $post->id }}">
                                             @csrf
@@ -93,8 +93,31 @@
                                             <button class="btn btn-outline-primary text-white border-white" onclick="toggleComments({{ $post->id }})">
                                                 <i class="bi bi-chat-fill"></i> <span id="comment-count-{{ $post->id }}">{{ $post->comments->count() }}</span> | Comment
                                             </button>
-                                    </div>
-                        
+                                    </div> --}}
+
+                                    <div class="d-flex flex-row">
+                                        <form method="POST" action="{{ route('forum.react', $post->id) }}" class="react-form" data-post-id="{{ $post->id }}">
+                                            @csrf
+                                            <input type="hidden" name="type" value="like">
+                                            <button type="submit" class="btn {{ $post->userReaction() === 'like' ? 'btn-success' : 'btn-outline-success' }} me-2 text-white border-white like-button" data-post-id="{{ $post->id }}">
+                                                <i class="bi bi-hand-thumbs-up-fill"></i> <span id="like-count-{{ $post->id }}">{{ $post->likesCount() }}</span>
+                                            </button>
+                                        </form>
+                                        
+                                        <!-- Dislike Form -->
+                                        <form method="POST" action="{{ route('forum.react', $post->id) }}" class="react-form" data-post-id="{{ $post->id }}">
+                                            @csrf
+                                            <input type="hidden" name="type" value="dislike">
+                                            <button type="submit" class="btn {{ $post->userReaction() === 'dislike' ? 'btn-secondary' : 'btn-outline-secondary' }} me-2 text-white border-white dislike-button" data-post-id="{{ $post->id }}">
+                                                <i class="bi bi-hand-thumbs-down-fill"></i> <span id="dislike-count-{{ $post->id }}">{{ $post->dislikesCount() }}</span>
+                                            </button>
+                                        </form>
+                                        
+                                        <button class="btn btn-outline-primary text-white border-white" onclick="toggleComments({{ $post->id }})">
+                                            <i class="bi bi-chat-fill"></i> <span id="comment-count-{{ $post->id }}">{{ $post->comments->count() }}</span> | Comment
+                                        </button>
+                                    </div> 
+
                                     <!-- Added -->
                                     <div class="d-flex flex-row">
                                         @if ($post->user_id == Auth::id())
@@ -316,6 +339,26 @@
         });
 
         // Handle like and dislike submissions (unchanged)
+        // $('form.react-form').on('submit', function(e) {
+        //     e.preventDefault();
+        //     var form = $(this);
+        //     $.ajax({
+        //         type: 'POST',
+        //         url: form.attr('action'),
+        //         data: form.serialize(),
+        //         success: function(response) {
+        //             if (response.success) {
+        //                 var postId = form.data('post-id');
+        //                 $('#like-count-' + postId).text(response.likes);
+        //                 $('#dislike-count-' + postId).text(response.dislikes);
+        //             }
+        //         },
+        //         error: function(xhr) {
+        //             console.error('Error:', xhr.responseText);
+        //         }
+        //     });
+        // });
+
         $('form.react-form').on('submit', function(e) {
             e.preventDefault();
             var form = $(this);
@@ -328,6 +371,21 @@
                         var postId = form.data('post-id');
                         $('#like-count-' + postId).text(response.likes);
                         $('#dislike-count-' + postId).text(response.dislikes);
+
+                        // Update button classes
+                        var likeButton = $('.like-button[data-post-id="' + postId + '"]');
+                        var dislikeButton = $('.dislike-button[data-post-id="' + postId + '"]');
+
+                        // Reset to outline styles
+                        likeButton.removeClass('btn-success').addClass('btn-outline-success');
+                        dislikeButton.removeClass('btn-secondary').addClass('btn-outline-secondary');
+
+                        // Apply filled style based on reaction
+                        if (response.userReaction === 'like') {
+                            likeButton.removeClass('btn-outline-success').addClass('btn-success');
+                        } else if (response.userReaction === 'dislike') {
+                            dislikeButton.removeClass('btn-outline-secondary').addClass('btn-secondary');
+                        }
                     }
                 },
                 error: function(xhr) {
@@ -449,11 +507,11 @@
         });
         // Handle edit comment form submission
         $(document).on('submit', '.edit-comment-form', function(e) {
-            e.preventDefault(); // Stop default form submission
+            e.preventDefault(); 
             var $form = $(this);
             var commentId = $form.data('comment-id');
             $.ajax({
-                type: 'POST', // Laravel interprets as PUT due to _method
+                type: 'POST', 
                 url: $form.attr('action'),
                 data: $form.serialize(),
                 dataType: 'json',
@@ -461,7 +519,6 @@
                     if (response.success) {
                         var modal = $('#editCommentModal' + commentId);
                         modal.on('hidden.bs.modal', function () {
-                            // Update comment text in the DOM
                             $('#comment-' + commentId + ' p.text-bottom').text(response.comment.text);
                             // Close the modal
                             $('.modal-backdrop').remove();
@@ -479,12 +536,12 @@
 
         // Handle delete comment form submission
         $(document).on('submit', '.delete-comment-form', function(e) {
-            e.preventDefault(); // Stop default form submission
+            e.preventDefault(); 
             var $form = $(this);
             var postId = $form.data('post-id');
             var commentId = $form.data('comment-id');
             $.ajax({
-                type: 'POST', // Laravel interprets as DELETE due to _method
+                type: 'POST', 
                 url: $form.attr('action'),
                 data: $form.serialize(),
                 dataType: 'json',

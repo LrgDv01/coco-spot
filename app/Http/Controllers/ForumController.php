@@ -25,7 +25,7 @@ class ForumController extends Controller
         $posts = Post::with(['user', 'comments.user', 'reactions'])->latest()->get();
         // $userImg = User::where('id', $posts->user_id)->pluck('profile_img')->toArray();
         // dd($posts->user->profile_img);
-        return view($user->user_type === '0' ? 'admin.pages.forums' : 'user.pages.forums', compact('user', 'username', 'usertype', 'posts'));
+        return view($user->user_type === '0' ? 'admin.pages.forums' : 'user.forums', compact('user', 'username', 'usertype', 'posts'));
                     // ? 'user.pages.forums' : 'user.technician.pagesforums' ), compact('user', 'username', 'usertype', 'posts'));
     }
 
@@ -91,23 +91,7 @@ class ForumController extends Controller
             'prof_img' => $prof_img,
         ]);
     }
-
-    // public function storeComment(Request $request, $postId)
-    // {
-    //     $request->validate(['text' => 'required|string']);
-    //     $comment = Comment::create([
-    //         'post_id' => $postId,
-    //         'user_id' => Auth::id(),
-    //         'text' => $request->text,
-    //     ]);
-    //     return response()->json([
-    //         'success' => true,
-    //         'comment' => $comment,
-    //         'prof_img' => Auth::user()->profile_image // Adjust based on your user model
-    //     ]);
-    // }
-
-
+   
     // public function react(Request $request, $postId)
     // {
     //     $request->validate([
@@ -121,7 +105,7 @@ class ForumController extends Controller
     //         if ($reaction->type === $request->type) {
     //             $reaction->delete(); // Remove reaction if same type
     //         } else {
-    //             $reaction->type = $request->type; // Update to new type
+    //             $reaction->type = $request->type; // Switch to new type
     //             $reaction->save();
     //         }
     //     } else {
@@ -132,7 +116,12 @@ class ForumController extends Controller
     //         ]);
     //     }
 
-    //     return redirect()->route('admin.forums');
+    //     $post = Post::findOrFail($postId);
+    //     return response()->json([
+    //         'success' => true,
+    //         'likes' => $post->likesCount(),
+    //         'dislikes' => $post->dislikesCount(),
+    //     ]);
     // }
 
     public function react(Request $request, $postId)
@@ -146,9 +135,9 @@ class ForumController extends Controller
 
         if ($reaction) {
             if ($reaction->type === $request->type) {
-                $reaction->delete(); // Remove reaction if same type
+                $reaction->delete();
             } else {
-                $reaction->type = $request->type; // Switch to new type
+                $reaction->type = $request->type;
                 $reaction->save();
             }
         } else {
@@ -160,15 +149,18 @@ class ForumController extends Controller
         }
 
         $post = Post::findOrFail($postId);
+        $userReaction = Reaction::where('post_id', $postId)
+            ->where('user_id', $userId)
+            ->value('type');
+
         return response()->json([
             'success' => true,
             'likes' => $post->likesCount(),
             'dislikes' => $post->dislikesCount(),
+            'userReaction' => $userReaction,
         ]);
     }
-
-
-
+    
     public function updatePost(Request $request, $postId)
     {
         $post = Post::findOrFail($postId);

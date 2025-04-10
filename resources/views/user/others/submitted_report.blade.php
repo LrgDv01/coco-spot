@@ -3,7 +3,7 @@
 
 <main id="main" class="main">
     <div class="pagetitle mb-3 text-center">
-        <h1><strong>Farm Status</strong></h1> 
+        <h1 class="text-muted"><strong>Report Status</strong></h1> 
     </div>
     <section class="section notications">
          <div class="d-flex flex-row justify-content-between align-items-center mb-2">
@@ -14,7 +14,7 @@
                     </div>
                 @elseif ($assigned)
                     <label class="rounded p-2 text-muted fw-bold">
-                        Technician Assigned . . 
+                        A technician was assigned . . 
                     </label>
                 @else
                     <label class="rounded p-2 text-muted fw-bold">
@@ -24,8 +24,8 @@
         </div>
         <div class="card mb-2 p-0 {{ $assigned ? '' : 'd-none' }}" style="background-color:rgb(170, 202, 221);">
             <div class="card-body">
-                <h5 class="card-title p-0"><strong>Assigned Technician</strong></h5><hr>
-                <p class="card-text">
+                <h5 class="card-title p-0 text-muted"><strong>Assigned Technician</strong></h5><hr>
+                <p class="card-text text-muted">
                     <strong>Name :</strong> {{ $reported->technician->full_name}}<br>
                     <strong>Address :</strong> {{ $reported->technician->address }}<br>
                     <strong>Contact No. :</strong> {{ $reported->technician->contact }}<br> 
@@ -34,7 +34,7 @@
         </div>
         <div class="card mb-2 p-0 {{ $assigned ? '' : 'd-none' }}" style="background-color:rgb(170, 202, 221);">
             <div class="card-body">
-                <h5 class="card-title p-0"><strong>Treatment Recommendations</strong></h5><hr>
+                <h5 class="card-title p-0 text-muted"><strong>Treatment Recommendations</strong></h5><hr>
                 <p class="card-text text-muted ps-3">
                   {{ $treatmentRecommendation }}
                 </p>
@@ -42,18 +42,18 @@
         </div>
         <div class="card mb-2 p-0" style="background-color:rgb(218, 180, 182);">
             <div class="card-body">
-                <h5 class="card-title p-0">
+                <h5 class="card-title p-0 text-muted">
                     <strong>System Status</strong> </h5><hr> 
                     <p class="text-muted">Initial disease indenfication complete. A technician has been automatically assigned for verification.</p>
-                    <p class="card-text mb-0">
+                    <p class="card-text mb-0 text-muted">
                     <strong>Detected Disease: </strong><span class="text-danger"><strong>{{$reported->disease}}</strong></span></p>
             </div>
         </div>
         <div class="card mb-2 p-0" style="background-color:rgb(178, 214, 178);">
             <div class="card-body">
-                <h5 class="card-title p-0">
+                <h5 class="card-title p-0 text-muted">
                     <strong>{{ $reported->farms->name}}</strong> </h5><hr>
-                    <p class="card-text">
+                    <p class="card-text text-muted">
                     <strong>Farm Location :</strong> {{ $reported->farm_location }}<br>
                     <strong>Farm Size :</strong> {{ $reported->farm_size }}<br>
                     <strong>No. of Coconut Trees :</strong> {{ $reported->coconut_trees }}<br>
@@ -78,9 +78,9 @@
                         'stem_decay' => 'Decay of the internal stem. - (Pagkabulok ng panloob na tangkay.)'
                     ];
                 @endphp 
-                <h5 class="card-title p-0"><strong>Observed Symptoms</strong></h5><hr>
+                <h5 class="card-title p-0 text-muted"><strong>Observed Symptoms</strong></h5><hr>
                 @if ($reported->symptoms)
-                    <ul>
+                    <ul class="text-muted">
                         @foreach (is_array($reported->symptoms) ? $reported->symptoms : json_decode($reported->symptoms, true) as $symptom)
                             <li>{{ $symptomsMap[$symptom] ?? $symptom }}</li>
                         @endforeach

@@ -59,10 +59,7 @@
         outline: 1px solid rgba(220, 53, 69, 0.6); 
         transition: outline-color 0.3s ease; 
     }
-</style>
 
-
-<style>
     .input-group {
         flex-wrap: nowrap;
     }
@@ -92,6 +89,8 @@
     }
 </style>
 
+
+
 <main id="main" class="main">
     <!-- Flash Messages -->
     @if (session('accepted'))
@@ -116,78 +115,75 @@
     @endif
 
     @if (auth()->user()->isFarmer())
-        <div class="position-fixed d-flex flex-column align-items-center justify-content-end" 
-                style="top:6%; right:0; left:0; z-index: 995; height: 120px; width: 100%; background-color: #134125;">
-            <h1 class="fs-3 mt-3 text-white"><strong>My Farm</strong></h1>
-            <div class="d-flex flex-start px-4 mb-3 align-self-start">
-                <button type="button" class="btn btn-outline-success rounded rounded-3 text-white border-white" data-bs-toggle="modal" data-bs-target="#addFarmModal">
-                    <strong>Add Farm</strong>
-                </button>
+        <section class="section farms">
+            <div class="position-fixed d-flex flex-column align-items-center justify-content-end rounded-3" 
+                    style="top:6%; right:0; left:0; z-index: 995; height: 120px; width: 100%; background-color: #134125;">
+                <h1 class="fs-3 mt-3 text-white"><strong>My Farm</strong></h1>
+                <div class="d-flex flex-start px-4 mb-3 align-self-start">
+                    <button type="button" class="btn btn-outline-success rounded rounded-3 text-white border-white" data-bs-toggle="modal" data-bs-target="#addFarmModal">
+                        <strong>Add Farm</strong>
+                    </button>
+                </div>
             </div>
-        </div>
-        <div style="margin-top: 130px;"></div>
-        <section class="section farm d-flex flex-column align-items-center">
-            <div class="container">
-                @foreach($farms as $farm)
-                    <div class="card mb-2">
-                        <div class="card-body">
-                            <h5 class="card-title p-0">
-                                <strong>{{ $farm->name }}</strong> 
-                            </h5>
-                            <hr>
-                            <p class="card-text text-truncate">
-                                <strong>Address :</strong> {{ $farm->address }}<br>
-                                <strong>Variety :</strong> {{ $farm->variety }}<br>
-                                <strong>Hectares :</strong> {{ $farm->hectares }}<br>
-                                <strong>Tree Age :</strong> {{ $farm->tree_age }}<br>
-                                <strong>Planted Coconut :</strong> {{ $farm->planted_coconut }}<br>
-                            </p>
+            <div style="margin-top: 130px;"></div>
+            @foreach($farms as $farm)
+                <div class="card mb-2">
+                    <div class="card-body" style="max-height: 100vh; overflow-y: auto;">
+                        <h5 class="card-title p-0">
+                            <strong>{{ $farm->name }}</strong> 
+                        </h5>
+                        <hr>
+                        <div class="card-text text-muted">
+                            <p class="d-flex flex-row mb-0 pb-0"> <span class="fw-bold me-2">Address:</span>  {{ $farm->address }}</p>
+                            <p class="d-flex flex-row mb-0 pb-0">  <span class="fw-bold me-2">Variety:</span>   {{ $farm->variety }}</p>
+                            <p class="d-flex flex-row mb-0 pb-0"> <span class="fw-bold me-2">Hectares:</span>   {{ $farm->hectares }}</p>
+                            <p class="d-flex flex-row mb-0 pb-0">  <span class="fw-bold me-2">Tree Age:</span>   {{ $farm->tree_age }}</p>
+                            <p class="d-flex flex-row mb-0 pb-0">   <span class=" fw-bold me-2">Planted Coconut:</span> {{ $farm->planted_coconut }}</p>
                         </div>
                     </div>
-                @endforeach
-            </div>
+                </div>
+            @endforeach
             @include('user.others.add_farm') 
         </section>
     @endif
 
     @if (auth()->user()->isTechnician())
-        <div class="position-fixed d-flex flex-column align-items-center justify-content-end" 
-                style="top:6%; right:0; left:0; z-index: 995; height: 70px; width: 100%; background-color: #134125;">
-            <h1 class="fs-3 mt-3 text-white"><strong>Notifications</strong></h1>
-        </div>
-        <div style="margin-top: 70px;"></div>
         <section class="section notifications">
-            <div class="container">
-                @if($notifications->isEmpty())
-                    <div class="alert alert-secondary text-center" role="alert">
-                        <p class="text-secondary text-muted"> - No new notifications at the moment -</p>
-                    </div>
-                @else
-                    <div class="card bg-transparent border border-0 shadow-none">
-                        <div class="card-body text-truncate p-0" style="height: 100%; overflow-y: auto;">
-                            <ul class="list-group">
-                                @foreach ($notifications as $notifs)
-                                    <li class="list-group-item d-flex flex-column align-items-start shadow-sm p-3 mb-2" 
-                                        style="border: 1px solid #188754; border-radius: 8px;">
-                                        <div class="mb-2">
-                                            <h5 class="mb-1">New Farm Assigned you to Visit</h5>
-                                            <p class="mb-1">
-                                                <strong>Request ID:</strong> {{ $notifs->request_id }}<br>
-                                                <strong>Date/Time:</strong> {{ $notifs->created_at->format('F d, Y | h:i A') }}
-                                            </p>
-                                        </div>
-                                        <div class="mt-3 align-self-end">
-                                            <a href="{{ route('user.viewDetails', $notifs->id) }}" class="btn btn-outline-success fw-bold">
-                                                View Details
-                                            </a>
-                                        </div>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    </div>  
-                @endif
+            <div class="position-fixed d-flex flex-column align-items-center justify-content-end rounded-3" 
+                    style="top:6%; right:0; left:0; z-index: 995; height: 70px; width: 100%; background-color: #134125;">
+                <h1 class="fs-3 mt-3 text-white"><strong>Notifications</strong></h1>
             </div>
+            <div style="margin-top: 70px;"></div>
+            @if($notifications->isEmpty())
+                <div class="alert alert-secondary text-center" role="alert">
+                    <p class="text-secondary text-muted"> - No new notifications at the moment -</p>
+                </div>
+            @else
+                <div class="card bg-transparent border border-0 shadow-none">
+                    <div class="card-body text-truncate p-0" style="height: 100%; overflow-y: auto;">
+                        <ul class="list-group">
+                            @foreach ($notifications as $notifs)
+                                <li class="list-group-item d-flex flex-column align-items-start shadow-sm p-3 mb-2" 
+                                    style="border: 1px solid #188754; border-radius: 8px;">
+                                    <div class="mb-2">
+                                        <h5 class="mb-1 fw-bold">New Farm Assigned you to Visit</h5>
+                                        <p class="mb-1">
+                                            <strong>Request ID:</strong> {{ $notifs->request_id }}<br>
+                                            <strong>Date/Time:</strong> {{ $notifs->created_at->format('F d, Y | h:i A') }}
+                                        </p>
+                                    </div>
+                                    <div class="mt-3 align-self-end">
+                                        <a href="{{ route('user.viewDetails', $notifs->id) }}" 
+                                            class="btn fw-bold {{ $notifs->status === 'Acknowledge' ? 'btn-outline-secondary disabled' : 'btn-outline-success' }}">
+                                           {{ $notifs->status === 'Acknowledge' ? 'Acknowledged' : 'View Details' }} 
+                                        </a>
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>  
+            @endif
         </section>
     @endif
 </main>
@@ -206,87 +202,4 @@
 </script>
 
 
-<script>
-    // mapboxgl.accessToken = 'pk.eyJ1Ijoicm9uNTcxNDM1IiwiYSI6ImNtM2g3dmcxbzBjajIycnB5NWtwaG1xazMifQ.mhRMxfZ2WfgoAECkTXAXug';
-    // let map = null;
-    // let marker = null;
 
-    // async function getAddressFromCoordinates(lng, lat) {
-    //     const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${mapboxgl.accessToken}`;
-    //     try {
-    //         const response = await fetch(url);
-    //         const data = await response.json();
-    //         if (data.features && data.features.length > 0) {
-    //             const address = data.features[0].place_name;
-    //             document.getElementById('address').textContent = `Address: ${address}`;
-    //             document.getElementById('address_input').value = address; 
-    //         } else {
-    //             document.getElementById('address').textContent = 'Address: Not found';
-    //             document.getElementById('address_input').value = '';
-    //         }
-    //     } catch (error) {
-    //         console.error('Error fetching address:', error);
-    //         document.getElementById('address').textContent = 'Address: Unable to retrieve';
-    //         document.getElementById('address_input').value = '';
-    //     }
-    // }
-
-    // function initializeMap(lng, lat) {
-    //     if (!map) {
-    //         map = new mapboxgl.Map({
-    //             container: 'map',
-    //             style: 'mapbox://styles/mapbox/satellite-streets-v12',
-    //             center: [lng, lat],
-    //             zoom: 7,
-    //             interactive: true
-    //         });
-    //         map.addControl(new mapboxgl.NavigationControl());
-    //         map.on('click', (e) => {
-    //             const coordinates = e.lngLat;
-    //             const longitude = coordinates.lng.toFixed(6);
-    //             const latitude = coordinates.lat.toFixed(6);
-    //             document.getElementById('location').value = `${latitude}, ${longitude}`;
-    //             if (marker) {
-    //                 marker.setLngLat([longitude, latitude]);
-    //             } else {
-    //                 marker = new mapboxgl.Marker()
-    //                     .setLngLat([longitude, latitude])
-    //                     .addTo(map);
-    //             }
-    //             getAddressFromCoordinates(longitude, latitude);
-    //         });
-
-    //         setTimeout(() => {
-    //             document.getElementById('map').classList.add('visible');
-    //         }, 100);
-    //     } else {
-    //         map.setCenter([lng, lat]);
-    //     }
-    // }
-
-    function openMapApp() {
-        const isAndroid = /android/i.test(navigator.userAgent);
-        const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-
-        if (isIOS) {
-            // Opens Apple Maps on iOS
-            window.location.href = 'maps://';
-        } 
-        else if (isAndroid) {
-            // Opens Google Maps on Android
-            window.location.href = 'geo:0,0'; // Opens at user's current location
-        } 
-        else {
-            // Fallback for other devices
-            window.open('https://maps.google.com', '_blank');
-        }
-    }
-
-    function getUserLocation() {
-        openMapApp();
-    }
-    
-    // window.addEventListener('resize', () => {
-    //     if (map) map.resize();
-    // });
-</script>
