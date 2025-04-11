@@ -15,7 +15,7 @@
             <div class="d-flex flex-row">
                 <img src="{{ $prof_img }}" alt="Logo" class="img-fluid rounded-circle" style="width: 50px; height: 50px;">
                 <div class="ms-2">
-                    <h4 class="p-0 m-0 fw-bold"> {{ $username }}  </h4>
+                    <h4 class="p-0 m-0 fw-bold"> {{ $username }} </h4>
                     <p> {{ $usertype }} </p>
                 </div>
             </div>
@@ -55,14 +55,16 @@
                                         $userTypePost = $post->user->user_type === '0' ? 'Administrator' 
                                                         : ($post->user->user_type === '1' ? 'Farmer' : 'Technician');  
                                     @endphp
-                                    <h4 class="p-0 m-0 fw-bold"> {{ $post->user->full_name }}</h4> <!-- Adjust field name -->
-                                    <p>{{ $userTypePost }}</p> <!-- Adjust field name -->
+                                    <h4 class="p-0 m-0 fw-bold"> {{ $post->user->full_name }}</h4> 
+                                    <p>{{ $userTypePost }}</p> 
                                 </div>
                             </div>
                             <div class="mx-2 my-0">
                                 @if ($post->image_path)
                                     <img class="align-self-center p-1 rounded rounded-3 border border-1 border-secondary"
-                                        src="{{ URL::asset('storage/' . $post->image_path) }}" width="100%" height="auto" alt="post-image">
+                                        src="{{ URL::asset('storage/' . $post->image_path) }}" width="100%" height="auto" alt="post-image"> 
+                                  {{--    src="{{ asset('storage/' . $post->image_path) }}" width="100%" height="auto" alt="post-image">  --}}
+                                    
                                 @endif
                                 <div class="px-3 m-0 py-3">
                                     <p class="text-white"><strong>`{{ $post->caption }}.</strong> </p>
@@ -70,28 +72,24 @@
                             </div>
                             <div class="d-flex flex-row justify-content-between mx-3 my-0 py-0">
                                 <div class="d-flex flex-row">
-                                    <!-- Like Form -->
-                            <form method="POST" action="{{ route('forum.react', $post->id) }}" class="react-form" data-post-id="{{ $post->id }}">
-                                @csrf
-                                <input type="hidden" name="type" value="like">
-                                <button type="submit" class="btn btn-outline-success me-2 text-white border-white">
-                                    <i class="bi bi-hand-thumbs-up-fill"></i> <span id="like-count-{{ $post->id }}">{{ $post->likesCount() }}</span>
-                                </button>
-                            </form>
-                                                                    <!-- Dislike Form -->
-                                <form method="POST" action="{{ route('forum.react', $post->id) }}" class="react-form" data-post-id="{{ $post->id }}">
-                                    @csrf
-                                    <input type="hidden" name="type" value="dislike">
-                                    <button type="submit" class="btn btn-outline-secondary me-2 text-white border-white">
-                                        <i class="bi bi-hand-thumbs-down-fill"></i> <span id="dislike-count-{{ $post->id }}">{{ $post->dislikesCount() }}</span>
-                                    </button>
-                                </form>
+                                    <form method="POST" action="{{ route('forum.react', $post->id) }}" class="react-form" data-post-id="{{ $post->id }}">
+                                        @csrf
+                                        <input type="hidden" name="type" value="like">
+                                        <button type="submit" class="btn btn-outline-success me-2 text-white border-white">
+                                            <i class="bi bi-hand-thumbs-up-fill"></i> <span id="like-count-{{ $post->id }}">{{ $post->likesCount() }}</span>
+                                        </button>
+                                    </form>
+                                    <form method="POST" action="{{ route('forum.react', $post->id) }}" class="react-form" data-post-id="{{ $post->id }}">
+                                        @csrf
+                                        <input type="hidden" name="type" value="dislike">
+                                        <button type="submit" class="btn btn-outline-secondary me-2 text-white border-white">
+                                            <i class="bi bi-hand-thumbs-down-fill"></i> <span id="dislike-count-{{ $post->id }}">{{ $post->dislikesCount() }}</span>
+                                        </button>
+                                    </form>
                                     <button class="btn btn-outline-primary text-white border-white" onclick="toggleComments({{ $post->id }})">
                                         <i class="bi bi-chat-fill"></i> <span id="comment-count-{{ $post->id }}">{{ $post->comments->count() }}</span> | Comment
                                     </button>
                                 </div>
-                    
-                                <!-- Added -->
                                 <div class="d-flex flex-row">
                                     @if ($post->user_id == Auth::id())
                                         <button class="btn btn-outline-primary btn-md me-2 text-white border-white" data-bs-toggle="modal" data-bs-target="#editPostModal{{ $post->id }}">
