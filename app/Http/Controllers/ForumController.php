@@ -51,38 +51,38 @@ class ForumController extends Controller
 
 
 
-public function storePost(Request $request)
-{
-    $request->validate([
-        'caption' => 'required|string',
-        'image_proof' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-    ]);
+    public function storePost(Request $request)
+    {
+        $request->validate([
+            'caption' => 'required|string',
+            'image_proof' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
 
-    $post = new Post();
-    $post->user_id = Auth::id();
-    $post->caption = $request->caption;
+        $post = new Post();
+        $post->user_id = Auth::id();
+        $post->caption = $request->caption;
 
-    if ($request->hasFile('image_proof')) {
-        // Store in storage/app/public/posts
-        $path = $request->file('image_proof')->store('posts', 'public');
-        $post->image_path = $path;
+        if ($request->hasFile('image_proof')) {
+            // Store in storage/app/public/posts
+            $path = $request->file('image_proof')->store('posts', 'public');
+            $post->image_path = $path;
 
-        // Manually copy to public/storage/posts
-        $filename = basename($path); // Extracts 'filename.ext' from full path
-        $storagePath = storage_path('app/public/posts/' . $filename);
-        $publicPath = public_path('storage/posts/' . $filename);
+            // Manually copy to public/storage/posts
+            $filename = basename($path); // Extracts 'filename.ext' from full path
+            $storagePath = storage_path('app/public/posts/' . $filename);
+            $publicPath = public_path('storage/posts/' . $filename);
 
-        // Ensure the directory exists
-        if (!File::exists(dirname($publicPath))) {
-            File::makeDirectory(dirname($publicPath), 0755, true);
+            // Ensure the directory exists
+            if (!File::exists(dirname($publicPath))) {
+                File::makeDirectory(dirname($publicPath), 0755, true);
+            }
+
+            File::copy($storagePath, $publicPath);
         }
 
-        File::copy($storagePath, $publicPath);
+        $post->save();
+        return redirect()->route('admin.forums')->with('success', 'Post created successfully.');
     }
-
-    $post->save();
-    return redirect()->route('admin.forums')->with('success', 'Post created successfully.');
-}
 
     public function storeComment(Request $request, $postId)
     {
@@ -145,62 +145,60 @@ public function storePost(Request $request)
         ]);
     }
 
+    public function updatePost(Request $request, $postId)
+    {
+        $post = Post::findOrFail($postId);
 
+        // Check if the user owns the post
+        if ($post->user_id !== Auth::id()) {
+            return redirect()->route('admin.forums')->with('error', 'You are not authorized to edit this post.');
+        }
 
-public function updatePost(Request $request, $postId)
-{
-    $post = Post::findOrFail($postId);
+        // Validate the request
+        $request->validate([
+            'caption' => 'required|string',
+            'image_proof' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
 
-    // Check if the user owns the post
-    if ($post->user_id !== Auth::id()) {
-        return redirect()->route('admin.forums')->with('error', 'You are not authorized to edit this post.');
-    }
+        // Update caption
+        $post->caption = $request->caption;
 
-    // Validate the request
-    $request->validate([
-        'caption' => 'required|string',
-        'image_proof' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-    ]);
-
-    // Update caption
-    $post->caption = $request->caption;
-
-    // Handle image update if provided
-    if ($request->hasFile('image_proof')) {
-        // Delete old image from both locations
-        if ($post->image_path) {
-            // Delete from storage/app/public/posts
-            Storage::disk('public')->delete($post->image_path);
-            
-            // Delete from public/storage/posts
-            $oldFilename = basename($post->image_path);
-            $oldPublicPath = public_path('storage/posts/' . $oldFilename);
-            if (File::exists($oldPublicPath)) {
-                File::delete($oldPublicPath);
+        // Handle image update if provided
+        if ($request->hasFile('image_proof')) {
+            // Delete old image from both locations
+            if ($post->image_path) {
+                // Delete from storage/app/public/posts
+                Storage::disk('public')->delete($post->image_path);
+                
+                // Delete from public/storage/posts
+                $oldFilename = basename($post->image_path);
+                $oldPublicPath = public_path('storage/posts/' . $oldFilename);
+                if (File::exists($oldPublicPath)) {
+                    File::delete($oldPublicPath);
+                }
             }
+
+            // Store new image in storage/app/public/posts
+            $path = $request->file('image_proof')->store('posts', 'public');
+            $post->image_path = $path;
+
+            // Manually copy to public/storage/posts
+            $filename = basename($path);
+            $storagePath = storage_path('app/public/posts/' . $filename);
+            $publicPath = public_path('storage/posts/' . $filename);
+
+            // Ensure the directory exists
+            if (!File::exists(dirname($publicPath))) {
+                File::makeDirectory(dirname($publicPath), 0755, true);
+            }
+
+            File::copy($storagePath, $publicPath);
         }
 
-        // Store new image in storage/app/public/posts
-        $path = $request->file('image_proof')->store('posts', 'public');
-        $post->image_path = $path;
+        $post->save();
 
-        // Manually copy to public/storage/posts
-        $filename = basename($path);
-        $storagePath = storage_path('app/public/posts/' . $filename);
-        $publicPath = public_path('storage/posts/' . $filename);
-
-        // Ensure the directory exists
-        if (!File::exists(dirname($publicPath))) {
-            File::makeDirectory(dirname($publicPath), 0755, true);
-        }
-
-        File::copy($storagePath, $publicPath);
+        return redirect()->route('admin.forums')->with('success', 'Post updated successfully.');
     }
-
-    $post->save();
-
-    return redirect()->route('admin.forums')->with('success', 'Post updated successfully.');
-}
     
     // public function updatePost(Request $request, $postId)
     // {

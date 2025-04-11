@@ -255,8 +255,6 @@
         </section> 
 
     @endif
-
-
     {{-- dd($notif->user); --}}
 </main>
 @include('admin.partials.__footer')

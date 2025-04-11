@@ -60,13 +60,12 @@ class AuthController extends Controller
       return response()->json(['errors' => 'Invalid credentials'], 401);
     }
   }
-
+  
   public function checkEmail(Request $request)
   {
       $validated = $request->validate([
           'email' => 'required|email'
       ]);
-
       $exists = User::where('email', $validated['email'])->exists();
       return response()->json(['available' => !$exists]);
   }
@@ -77,9 +76,7 @@ class AuthController extends Controller
     if ($csrfValidation) {
       return $csrfValidation;
     }
- 
     try {
-
       $validated = $request->validate([
         'user_name' => 'required|string|max:255',
         'full_name' => 'required|string|max:255',
@@ -92,31 +89,28 @@ class AuthController extends Controller
             'unique:users',
         ],
         'email' => 'required|string|email|max:255|unique:users',
-    'password' => [
-      'required',
-      'string',
-      'min:8',
-      'confirmed',
-      'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*(),.?":{}|<>\/])[A-Za-z\\d!@#$%^&*(),.?":{}|<>\/]{8,}$/'
-  ],
+        'password' => [
+          'required',
+          'string',
+          'min:8',
+          'confirmed',
+          'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*(),.?":{}|<>\/])[A-Za-z\\d!@#$%^&*(),.?":{}|<>\/]{8,}$/'
+       ],
         'user_type' => 'required|integer|in:1,2',
-    ], [
-        'password.regex' => 'The password must contain at least: 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character (!@#$%^&*(),.?":{}|<>/).',
-        'contact.regex' => 'Please enter a valid Philippine mobile number (09 or +639 format).'
-    ]);
-
-        // Create a new user
-        $user = User::create([
-          'user_name' => $validated['user_name'],
-          'full_name' => $validated['full_name'],
-          'address' => $validated['address'],
-          'municipal' => $validated['municipal'],
-          'contact' => $validated['contact'],
-          'email' =>$validated['email'],
-          'password' => Hash::make($validated['password']),
-          'user_type' => $validated['user_type'],
-        ]);
-        
+      ], [
+          'password.regex' => 'The password must contain at least: 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character (!@#$%^&*(),.?":{}|<>/).',
+          'contact.regex' => 'Please enter a valid Philippine mobile number (09 or +639 format).'
+      ]);
+      $user = User::create([
+        'user_name' => $validated['user_name'],
+        'full_name' => $validated['full_name'],
+        'address' => $validated['address'],
+        'municipal' => $validated['municipal'],
+        'contact' => $validated['contact'],
+        'email' =>$validated['email'],
+        'password' => Hash::make($validated['password']),
+        'user_type' => $validated['user_type'],
+      ]);
         return response()->json(['success' => true, 'message' => 'User registered successfully'], 200);
     } catch (\Illuminate\Validation\ValidationException $e) {
         return response()->json([
@@ -128,13 +122,6 @@ class AuthController extends Controller
         return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
     }
   }
-
-  // protected function messages()
-  // {
-  //     return [
-  //         'password.required' => 'Password is required.',
-  //     ];
-  // }
 
   public function showRequestForm() {
     return view('auth.request_link_verification');
@@ -161,15 +148,13 @@ class AuthController extends Controller
     $email = request('email');
     return view('auth.reset_password', ['token' => $token, 'email' => $email]);
   }
-
+  
   public function resetPassword(Request $request) {
-
     $request->validate([
       'token' => 'required',
       'email' => 'required|email|exists:users,email',
       'password' => 'required|confirmed|min:3',
     ]);
-
     $status = Password::reset(
       $request->only('email', 'password', 'password_confirmation', 'token'),
       function ($user, $password) {
@@ -180,7 +165,6 @@ class AuthController extends Controller
         Auth::login($user);
       }
     );
-
     if ($status === Password::PASSWORD_RESET) {
       $user = Auth::user();
       $redirectRoute = $user->isAdmin() 
@@ -192,8 +176,8 @@ class AuthController extends Controller
         'message' => 'Password has been reset and you are now logged in.', 
         'user' => $user, 'redirect' => $redirectRoute], 200);
     } 
-        // If reset fails, redirect back with an error
-        return back()->withErrors(['success' => false, 'email' => __($status)]);
+    // If reset fails, redirect back with an error
+    return back()->withErrors(['success' => false, 'email' => __($status)]);
     // return response()->json([
     //   'success' => false,
     //   'message' => __($status),
