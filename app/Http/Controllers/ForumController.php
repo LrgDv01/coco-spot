@@ -7,6 +7,7 @@ use App\Models\Comment;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 
 class ForumController extends Controller
@@ -29,22 +30,59 @@ class ForumController extends Controller
                     // ? 'user.pages.forums' : 'user.technician.pagesforums' ), compact('user', 'username', 'usertype', 'posts'));
     }
 
-    public function storePost(Request $request)
-    {
-        $request->validate([
-            'caption' => 'required|string',
-            'image_proof' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-        $post = new Post();
-        $post->user_id = Auth::id();
-        $post->caption = $request->caption;
-        if ($request->hasFile('image_proof')) {
-            $path = $request->file('image_proof')->store('posts', 'public');
-            $post->image_path = $path;
+    // public function storePost(Request $request)
+    // {
+    //     $request->validate([
+    //         'caption' => 'required|string',
+    //         'image_proof' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    //     ]);
+    //     $post = new Post();
+    //     $post->user_id = Auth::id();
+    //     $post->caption = $request->caption;
+
+    //     if ($request->hasFile('image_proof')) {
+    //         $path = $request->file('image_proof')->store('posts', 'public');
+    //         $post->image_path = $path;
+    //     }
+    //     $post->save();
+
+    //     return redirect()->route('admin.forums')->with('success', 'Post created successfully.');
+    // }
+
+
+
+public function storePost(Request $request)
+{
+    $request->validate([
+        'caption' => 'required|string',
+        'image_proof' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
+
+    $post = new Post();
+    $post->user_id = Auth::id();
+    $post->caption = $request->caption;
+
+    if ($request->hasFile('image_proof')) {
+        // Store in storage/app/public/posts
+        $path = $request->file('image_proof')->store('posts', 'public');
+        $post->image_path = $path;
+
+        // Manually copy to public/storage/posts
+        $filename = basename($path); // Extracts 'filename.ext' from full path
+        $storagePath = storage_path('app/public/posts/' . $filename);
+        $publicPath = public_path('storage/posts/' . $filename);
+
+        // Ensure the directory exists
+        if (!File::exists(dirname($publicPath))) {
+            File::makeDirectory(dirname($publicPath), 0755, true);
         }
-        $post->save();
-        return redirect()->route('admin.forums')->with('success', 'Post created successfully.');
+
+        File::copy($storagePath, $publicPath);
     }
+
+    $post->save();
+    return redirect()->route('admin.forums')->with('success', 'Post created successfully.');
+}
 
     public function storeComment(Request $request, $postId)
     {
@@ -106,60 +144,95 @@ class ForumController extends Controller
             'userReaction' => $userReaction,
         ]);
     }
-    
-    public function updatePost(Request $request, $postId)
-    {
-        $post = Post::findOrFail($postId);
 
-        // Check if the user owns the post
-        if ($post->user_id !== Auth::id()) {
-            return redirect()->route('admin.forums')->with('error', 'You are not authorized to edit this post.');
-        }
 
-        // Validate the request
-        $request->validate([
-            'caption' => 'required|string',
-            'image_proof' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
 
-        // Update caption
-        $post->caption = $request->caption;
+public function updatePost(Request $request, $postId)
+{
+    $post = Post::findOrFail($postId);
 
-        // Handle image update if provided
-        if ($request->hasFile('image_proof')) {
-            if ($post->image_path) {
-                Storage::disk('public')->delete($post->image_path); // Delete old image
-            }
-            $path = $request->file('image_proof')->store('posts', 'public');
-            $post->image_path = $path;
-        }
-
-        $post->save();
-
-        return redirect()->route('admin.forums')->with('success', 'Post updated successfully.');
+    // Check if the user owns the post
+    if ($post->user_id !== Auth::id()) {
+        return redirect()->route('admin.forums')->with('error', 'You are not authorized to edit this post.');
     }
 
-    // public function updateComment(Request $request, $commentId)
-    // {
-    //     $comment = Comment::findOrFail($commentId);
+    // Validate the request
+    $request->validate([
+        'caption' => 'required|string',
+        'image_proof' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
 
-    //     // Check if the user owns the comment
-    //     if ($comment->user_id !== Auth::id()) {
-    //         return redirect()->route('admin.forums')->with('error', 'You are not authorized to edit this comment.');
+    // Update caption
+    $post->caption = $request->caption;
+
+    // Handle image update if provided
+    if ($request->hasFile('image_proof')) {
+        // Delete old image from both locations
+        if ($post->image_path) {
+            // Delete from storage/app/public/posts
+            Storage::disk('public')->delete($post->image_path);
+            
+            // Delete from public/storage/posts
+            $oldFilename = basename($post->image_path);
+            $oldPublicPath = public_path('storage/posts/' . $oldFilename);
+            if (File::exists($oldPublicPath)) {
+                File::delete($oldPublicPath);
+            }
+        }
+
+        // Store new image in storage/app/public/posts
+        $path = $request->file('image_proof')->store('posts', 'public');
+        $post->image_path = $path;
+
+        // Manually copy to public/storage/posts
+        $filename = basename($path);
+        $storagePath = storage_path('app/public/posts/' . $filename);
+        $publicPath = public_path('storage/posts/' . $filename);
+
+        // Ensure the directory exists
+        if (!File::exists(dirname($publicPath))) {
+            File::makeDirectory(dirname($publicPath), 0755, true);
+        }
+
+        File::copy($storagePath, $publicPath);
+    }
+
+    $post->save();
+
+    return redirect()->route('admin.forums')->with('success', 'Post updated successfully.');
+}
+    
+    // public function updatePost(Request $request, $postId)
+    // {
+    //     $post = Post::findOrFail($postId);
+
+    //     // Check if the user owns the post
+    //     if ($post->user_id !== Auth::id()) {
+    //         return redirect()->route('admin.forums')->with('error', 'You are not authorized to edit this post.');
     //     }
 
     //     // Validate the request
     //     $request->validate([
-    //         'text' => 'required|string',
+    //         'caption' => 'required|string',
+    //         'image_proof' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
     //     ]);
 
-    //     // Update comment text
-    //     $comment->text = $request->text;
-    //     $comment->save();
+    //     // Update caption
+    //     $post->caption = $request->caption;
 
-    //     return redirect()->route('admin.forums')->with('success', 'Comment updated successfully.');
+    //     // Handle image update if provided
+    //     if ($request->hasFile('image_proof')) {
+    //         if ($post->image_path) {
+    //             Storage::disk('public')->delete($post->image_path); // Delete old image
+    //         }
+    //         $path = $request->file('image_proof')->store('posts', 'public');
+    //         $post->image_path = $path;
+    //     }
+
+    //     $post->save();
+
+    //     return redirect()->route('admin.forums')->with('success', 'Post updated successfully.');
     // }
-
 
     public function deletePost($postId)
     {
@@ -192,25 +265,4 @@ class ForumController extends Controller
         $comment->delete();
         return response()->json(['success' => true]);
     }
-
-    // public function deleteComment($commentId)
-    // {
-    //     $comment = Comment::findOrFail($commentId);
-    //     if ($comment->user_id !== Auth::id()) {
-    //         return redirect()->route('admin.forums')->with('error', 'You are not authorized to delete this comment.');
-    //     }
-    //     $comment->delete();
-    //     return redirect()->route('admin.forums')->with('success', 'Comment deleted successfully.');
-    // }
-
-    // public function deleteComment($commentId)
-    // {
-    //     $comment = Comment::findOrFail($commentId);
-    //     if ($comment->user_id !== Auth::id()) {
-    //         return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
-    //     }
-    //     $comment->delete();
-    //     return response()->json(['success' => true]);
-    // }
-
 }

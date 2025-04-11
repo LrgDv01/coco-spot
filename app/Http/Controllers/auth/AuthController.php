@@ -30,27 +30,22 @@ class AuthController extends Controller
     if ($csrfValidation) {
       return $csrfValidation;
     }
-
     $validator = Validator::make($request->all(), [
       'email' => 'required|email',
       'password' => 'required|string',
       'remember' => 'nullable|boolean', 
     ]);
-
     if ($validator->fails()) {
       $email = $request->input('email');
       return response()->json(['errors' => 'Validation failed', 'errors' => $validator->errors()], 422);
     }
-    // Attempt to log in the user
     $credentials = $request->only('email', 'password');
     $remember = $request->boolean('remember'); 
 
     $checkData = User::where('email', $request->email)->first();
     if($checkData) {
         if (Auth::attempt($credentials, $remember)) {
-          // Store "Remember Me" preference in session
-          $request->session()->put('remember_me', $remember); // Save in session
-          // Authentication successful
+          $request->session()->put('remember_me', $remember);
           $user = Auth::user();
           $redirectRoute = $user->isAdmin()
             ? route('admin.dashboard'): ($user->isFarmer() 
@@ -58,14 +53,12 @@ class AuthController extends Controller
             : route('user.notifications'));
           return response()->json(['message' => 'Login successful', 'user' => $user, 'redirect' => $redirectRoute], 200);
         } else {
-          // Authentication failed
           $request->session()->flash('email', $request->input('email'));
           return response()->json(['errors' => 'Invalid credentials'], 401);
         }
     } else {
       return response()->json(['errors' => 'Invalid credentials'], 401);
     }
-    
   }
 
   public function checkEmail(Request $request)
