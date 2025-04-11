@@ -19,7 +19,6 @@ class UserSeeder extends Seeder
     {
         $this->faker = Faker::create();
     }
-
     /**
      * Run the database seeds.
      */

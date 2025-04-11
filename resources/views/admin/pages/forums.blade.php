@@ -62,7 +62,7 @@
                             <div class="mx-2 my-0">
                                 @if ($post->image_path)
                                     <img class="align-self-center p-1 rounded rounded-3 border border-1 border-secondary"
-                                        src="{{ URL::asset('storage/' . $post->image_path) }}" width="100%" height="auto" alt="post-image">
+                                        src="{{ URL::asset('storage/app/public/' . $post->image_path) }}" width="100%" height="auto" alt="post-image">
                                 @endif
                                 <div class="px-3 m-0 py-3">
                                     <p class="text-white"><strong>`{{ $post->caption }}.</strong> </p>
