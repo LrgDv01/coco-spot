@@ -35,48 +35,27 @@ class ForumController extends Controller
             'caption' => 'required|string',
             'image_proof' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-
         $post = new Post();
         $post->user_id = Auth::id();
         $post->caption = $request->caption;
-
         if ($request->hasFile('image_proof')) {
             $path = $request->file('image_proof')->store('posts', 'public');
             $post->image_path = $path;
         }
-
         $post->save();
-
         return redirect()->route('admin.forums')->with('success', 'Post created successfully.');
     }
-
-    // public function storeComment(Request $request, $postId)
-    // {
-    //     $request->validate([
-    //         'text' => 'required|string',
-    //     ]);
-
-    //     $comment = new Comment();
-    //     $comment->post_id = $postId;
-    //     $comment->user_id = Auth::id();
-    //     $comment->text = $request->text;
-    //     $comment->save();
-    //     return redirect()->route('admin.forums')->with('success', 'Comment added successfully.');
-    // }
-
 
     public function storeComment(Request $request, $postId)
     {
         $request->validate([
             'text' => 'required|string',
         ]);
-
         $comment = new Comment();
         $comment->post_id = $postId;
         $comment->user_id = Auth::id();
         $comment->text = $request->text;
         $comment->save();
-
         // Load user for profile image
         $comment->load('user');
         // $prof_img = $comment->user->profile_img ? asset('storage/' . $comment->user->profile_img) : asset('img/default.png');
@@ -84,7 +63,6 @@ class ForumController extends Controller
                     : ($comment->user->user_type === '0' ? asset('img/admin.png') 
                     : ($comment->user->user_type === '1' ? asset('img/farmer.png') 
                     : asset('img/technician.png')));
-
         return response()->json([
             'success' => true,
             'comment' => $comment,
@@ -92,38 +70,6 @@ class ForumController extends Controller
         ]);
     }
    
-    // public function react(Request $request, $postId)
-    // {
-    //     $request->validate([
-    //         'type' => 'required|in:like,dislike',
-    //     ]);
-
-    //     $userId = Auth::id();
-    //     $reaction = Reaction::where('post_id', $postId)->where('user_id', $userId)->first();
-
-    //     if ($reaction) {
-    //         if ($reaction->type === $request->type) {
-    //             $reaction->delete(); // Remove reaction if same type
-    //         } else {
-    //             $reaction->type = $request->type; // Switch to new type
-    //             $reaction->save();
-    //         }
-    //     } else {
-    //         Reaction::create([
-    //             'post_id' => $postId,
-    //             'user_id' => $userId,
-    //             'type' => $request->type,
-    //         ]);
-    //     }
-
-    //     $post = Post::findOrFail($postId);
-    //     return response()->json([
-    //         'success' => true,
-    //         'likes' => $post->likesCount(),
-    //         'dislikes' => $post->dislikesCount(),
-    //     ]);
-    // }
-
     public function react(Request $request, $postId)
     {
         $request->validate([
