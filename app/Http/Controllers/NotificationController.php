@@ -24,7 +24,6 @@ class NotificationController extends Controller
             
             // Count unread from both
             $unreadCount = $notif->where('status', 'unread')->count();
-            
             $view->with('notif', $notif)->with('unreadCount', $unreadCount);
         });
         view()->composer('user.partials.__nav', function ($view) {

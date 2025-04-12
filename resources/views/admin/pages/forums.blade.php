@@ -75,14 +75,14 @@
                                     <form method="POST" action="{{ route('forum.react', $post->id) }}" class="react-form" data-post-id="{{ $post->id }}">
                                         @csrf
                                         <input type="hidden" name="type" value="like">
-                                        <button type="submit" class="btn btn-outline-success me-2 text-white border-white">
+                                        <button type="submit" class="btn {{ $post->userReaction() === 'like' ? 'btn-success' : 'btn-outline-success' }} me-2 text-white border-white like-button" data-post-id="{{ $post->id }}">
                                             <i class="bi bi-hand-thumbs-up-fill"></i> <span id="like-count-{{ $post->id }}">{{ $post->likesCount() }}</span>
                                         </button>
                                     </form>
                                     <form method="POST" action="{{ route('forum.react', $post->id) }}" class="react-form" data-post-id="{{ $post->id }}">
                                         @csrf
                                         <input type="hidden" name="type" value="dislike">
-                                        <button type="submit" class="btn btn-outline-secondary me-2 text-white border-white">
+                                        <button type="submit" class="btn {{ $post->userReaction() === 'dislike' ? 'btn-secondary' : 'btn-outline-secondary' }} me-2 text-white border-white dislike-button" data-post-id="{{ $post->id }}">
                                             <i class="bi bi-hand-thumbs-down-fill"></i> <span id="dislike-count-{{ $post->id }}">{{ $post->dislikesCount() }}</span>
                                         </button>
                                     </form>
@@ -309,6 +309,21 @@
                         var postId = form.data('post-id');
                         $('#like-count-' + postId).text(response.likes);
                         $('#dislike-count-' + postId).text(response.dislikes);
+
+                        // Update button classes
+                        var likeButton = $('.like-button[data-post-id="' + postId + '"]');
+                        var dislikeButton = $('.dislike-button[data-post-id="' + postId + '"]');
+
+                        // Reset to outline styles
+                        likeButton.removeClass('btn-success').addClass('btn-outline-success');
+                        dislikeButton.removeClass('btn-secondary').addClass('btn-outline-secondary');
+
+                        // Apply filled style based on reaction
+                        if (response.userReaction === 'like') {
+                            likeButton.removeClass('btn-outline-success').addClass('btn-success');
+                        } else if (response.userReaction === 'dislike') {
+                            dislikeButton.removeClass('btn-outline-secondary').addClass('btn-secondary');
+                        }
                     }
                 },
                 error: function(xhr) {

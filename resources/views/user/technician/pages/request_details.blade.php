@@ -30,8 +30,8 @@
                 </div>
                 <div class="d-flex justify-content-center gap-5">
                     <button type="button" class="btn btn-outline-success fw-bold px-3 w-35 btn-block rounded-pill" 
-                            data-status="Acknowledge"
-                            data-message="Acknowledge"
+                            data-status="Acknowledged"
+                            data-message="Acknowledged"
                             data-bs-toggle="modal" 
                             data-bs-target="#actionModal">
                         <i class="bi bi-check-circle"></i> Acknowledge & Proceed

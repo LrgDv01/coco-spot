@@ -338,27 +338,6 @@
             }
         });
 
-        // Handle like and dislike submissions (unchanged)
-        // $('form.react-form').on('submit', function(e) {
-        //     e.preventDefault();
-        //     var form = $(this);
-        //     $.ajax({
-        //         type: 'POST',
-        //         url: form.attr('action'),
-        //         data: form.serialize(),
-        //         success: function(response) {
-        //             if (response.success) {
-        //                 var postId = form.data('post-id');
-        //                 $('#like-count-' + postId).text(response.likes);
-        //                 $('#dislike-count-' + postId).text(response.dislikes);
-        //             }
-        //         },
-        //         error: function(xhr) {
-        //             console.error('Error:', xhr.responseText);
-        //         }
-        //     });
-        // });
-
         $('form.react-form').on('submit', function(e) {
             e.preventDefault();
             var form = $(this);

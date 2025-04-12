@@ -174,8 +174,8 @@
                                     </div>
                                     <div class="mt-3 align-self-end">
                                         <a href="{{ route('user.viewDetails', $notifs->id) }}" 
-                                            class="btn fw-bold {{ $notifs->status === 'Acknowledge' ? 'btn-outline-secondary disabled' : 'btn-outline-success' }}">
-                                           {{ $notifs->status === 'Acknowledge' ? 'Acknowledged' : 'View Details' }} 
+                                            class="btn fw-bold {{ $notifs->status === 'Acknowledged' || $notifs->status === 'Verified' ? 'btn-outline-secondary disabled' : 'btn-outline-success'}}">
+                                           {{ $notifs->status === 'Acknowledged' || $notifs->status === 'Verified' ? $notifs->status : 'View Details' }} 
                                         </a>
                                     </div>
                                 </li>

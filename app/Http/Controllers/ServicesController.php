@@ -121,7 +121,7 @@ public function farmerReport(Request $request) {
             'coconut_variety' => 'required|string|max:255',
             'symptoms' => 'nullable|array',
             'disease' => 'required|string|max:255',
-            'image_proof' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|min:0', 
+            'image_proof' => 'required|image|mimes:jpeg,png,jpg,gif,svg|min:0', 
         ]);
 
         // Handle image upload

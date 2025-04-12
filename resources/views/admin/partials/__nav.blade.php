@@ -221,7 +221,7 @@
                                   </div>
                                   <div class="d-flex w-100 justify-content-between mt-3">
                                       <h5 class="mb-1 text-danger"><strong>{{ $n->disease }}</strong></h5>
-                                      <small class="text-muted"><strong>{{ $n->created_at->format('M/d/Y H:i') }}</strong> </small>
+                                      <small class="text-muted"><strong>{{  $n->created_at->timezone('Asia/Manila')->format('F d, Y | h:i A') }}</strong> </small>
                                   </div>
                               </a>
                               </div>
@@ -237,7 +237,7 @@
                                     </div>
                                     <div class="d-flex w-100 justify-content-between mt-3">
                                         <h5 class="mb-1 text-secondary"><strong>{{ $n->disease }}</strong></h5>
-                                        <small class="text-muted"><strong>{{ $n->created_at->format('M/d/Y H:i') }}</strong> </small>
+                                        <small class="text-muted"><strong>{{  $n->created_at->timezone('Asia/Manila')->format('F d, Y | h:i A') }}</strong> </small>
                                     </div>
                                 </a>
                               </div>

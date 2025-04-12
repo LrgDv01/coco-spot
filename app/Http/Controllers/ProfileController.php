@@ -36,16 +36,13 @@ class ProfileController extends Controller
 
     public function updateProfileImage(Request $request) {
         $request->validate([
-            'profile_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048', 
+            'profile_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|min:0', 
         ]);
-        
         $user = Auth::user();
-        
         // Delete the old profile image from both locations if it exists
         if ($user->profile_img) {
             // Delete from storage/app/public
             Storage::disk('public')->delete($user->profile_img);
-            
             // Delete from public/storage
             $oldFilename = basename($user->profile_img);
             $oldPublicPath = public_path('storage/images/' . $oldFilename);
@@ -53,26 +50,18 @@ class ProfileController extends Controller
                 File::delete($oldPublicPath);
             }
         }
-        
-        // Store the new profile image in storage/app/public/images
         $imagePath = $request->file('profile_image')->store('images', 'public'); 
-        
-        // Manually copy to public/storage/images
         $filename = basename($imagePath);
         $storagePath = storage_path('app/public/images/' . $filename);
         $publicPath = public_path('storage/images/' . $filename);
-        
         // Ensure the directory exists
         if (!File::exists(dirname($publicPath))) {
             File::makeDirectory(dirname($publicPath), 0755, true);
         }
-        
         File::copy($storagePath, $publicPath);
-        
         // Update user details
         $user->profile_img = $imagePath;
         $user->save();
-        
         return redirect()->back()->with('success', 'Profile image updated successfully.');
     }
 
@@ -97,7 +86,6 @@ class ProfileController extends Controller
             'email' => 'required|email|unique:users,email,' . Auth::id(),
             'address' => 'required|string|max:255',
         ]);
-    
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
@@ -105,7 +93,6 @@ class ProfileController extends Controller
                 'errors' => $validator->errors()
             ], 422);
         }
-    
         $user = Auth::user();
         // Update user details
         $user->full_name = $request->input('full_name');
@@ -116,7 +103,6 @@ class ProfileController extends Controller
         if ($user->save()) {
             return response()->json(['success' => true, 'message' => 'Profile updated successfully.'], 200);
         }
-    
         return response()->json([
             'success' => false,
             'message' => 'Failed to update profile. Please try again later.'

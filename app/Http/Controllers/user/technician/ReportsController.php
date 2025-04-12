@@ -24,7 +24,7 @@ class ReportsController extends Controller
         $report = ServicesModel::with(['user', 'userFarms', 'farmerReports']) 
             ->where(function ($query) use ($technicianId) {
                 $query->where('technician_id', $technicianId)
-                    ->whereIn('status', ['Acknowledge', 'end']);
+                    ->whereIn('status', ['Acknowledged', 'end']);
             })->first();
         
         return view('user.technician.pages.reports',
@@ -161,37 +161,28 @@ public function technicianReport(Request $request)
             'coconut_variety' => 'required|string|max:255',
             'diagnosis_disease' => 'required|string|max:255',
             'treatment_recommendation' => 'required|string',
-            'image_proof' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'image_proof' => 'required|image|mimes:jpeg,png,jpg,gif,svg|min:0', 
             'status' => 'required|string',
             'no_of_infected' => 'required|integer|min:1',
             'locations' => 'required|array',
             'locations.*' => 'required|string|regex:/^[-]?[0-9]{1,3}\.[0-9]+,[-]?[0-9]{1,3}\.[0-9]+$/',
         ]);
 
-        // Validate locations count matches infected trees
         if (count($validated['locations']) !== (int)$validated['no_of_infected']) {
             throw \Illuminate\Validation\ValidationException::withMessages([
                 'locations' => ['The number of locations must match the number of infected trees.'],
             ]);
         }
-
         $technician_id = auth()->id();
-        
-        // Handle image upload
         $imagePath = $request->file('image_proof')->store('images', 'public');
-        
-        // Manually copy to public/storage/images
         $filename = basename($imagePath);
         $storagePath = storage_path('app/public/images/' . $filename);
         $publicPath = public_path('storage/images/' . $filename);
-
         // Ensure the directory exists
         if (!File::exists(dirname($publicPath))) {
             File::makeDirectory(dirname($publicPath), 0755, true);
         }
-
         File::copy($storagePath, $publicPath);
-
         // Create the technician report
         $report = TechiniciansReportsModel::create([
             'technician_id' => $technician_id,
@@ -211,7 +202,6 @@ public function technicianReport(Request $request)
             'no_of_infected' => $validated['no_of_infected'],
             'coordinates' => $validated['locations'],
         ]);
-
         if (!$report) {
             // Clean up the uploaded files if report creation fails
             Storage::disk('public')->delete($imagePath);
@@ -221,7 +211,6 @@ public function technicianReport(Request $request)
             
             throw new \Exception('Failed to create technician report');
         }
-
         // Create notification
         $notification = $report->notifications()->create([
             'user_id' => $technician_id,
@@ -229,10 +218,8 @@ public function technicianReport(Request $request)
             'disease' => $report->diagnosis_disease,
             'status' => 'unread'
         ]);
-
         // Update farm status
         $this->updateStatus($report->farm_id, $report->status);
-
         return response()->json([
             'success' => true, 
             'message' => 'Report submitted successfully',

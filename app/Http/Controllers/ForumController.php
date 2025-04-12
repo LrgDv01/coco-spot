@@ -55,7 +55,7 @@ class ForumController extends Controller
     {
         $request->validate([
             'caption' => 'required|string',
-            'image_proof' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image_proof' => 'required|image|mimes:jpeg,png,jpg,gif,svg|min:0', 
         ]);
 
         $post = new Post();

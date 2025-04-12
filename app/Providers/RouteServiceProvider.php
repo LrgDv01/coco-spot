@@ -62,16 +62,33 @@ class RouteServiceProvider extends ServiceProvider
      */
     public static function redirectTo()
     {
-        if (Auth::check()) {
-            if (Auth::user()->isAdmin() || Auth::user()->isFarmer()) {
-                return '/admin'; // Redirect admin to admin dashboard
-            } elseif(Auth::user()->isTechnician()) {
-                return '/user/home'; // Redirect non-admin users to home page
-            }
-        } else {
-            return '/';
+        $user = Auth::user();
+
+        if ($user->isAdmin()) {
+            return '/admin';
+        } elseif ($user->isFarmer()) {
+            return '/user/farm';
+        } elseif ($user->isTechnician()) {
+            return '/user/notifications';
         }
+
+        return '/welcome'; // Fallback for authenticated users without roles
     }
+
+    // public static function redirectTo()
+    // {
+    //     if (Auth::check()) {
+    //         if (Auth::user()->isAdmin()) {
+    //             return '/admin'; // Redirect admin to admin dashboard
+    //         } elseif (Auth::user()->isFarmer()) {
+    //             return '/user/farm'; // Redirect farmer to farm page
+    //         } elseif(Auth::user()->isTechnician()) {
+    //             return '/user/notifications'; // Redirect technicins notifications page
+    //         }
+    //     } else {
+    //         return '/welcome';
+    //     }
+    // }
 
     /**
      * Configure the rate limiters for the application.
