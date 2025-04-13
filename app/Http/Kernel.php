@@ -66,7 +66,7 @@ class Kernel extends HttpKernel
         'farmer' => \App\Http\Middleware\FarmerMiddlerware::class,
         'technician' => \App\Http\Middleware\TechnicianMiddleware::class,
         // 'redirect.nonadmin' => \App\Http\Middleware\RedirectIfNotAdmin::class,
-        // 'redirect.nonlogin' => \App\Http\Middleware\RedirectIfNotLogin::class,
+        'redirect.nonlogin' => \App\Http\Middleware\RedirectIfNotLogin::class,
         'device.ismobile' => \App\Http\Middleware\DeviceMiddleware::class,
     ];
 }

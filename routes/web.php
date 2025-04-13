@@ -23,17 +23,17 @@ use App\Http\Controllers\ForumController;
 |
 */
 
-Route::get('/', function () {
-    $identifyUser = new deviceIdentifierController();
-    $device = $identifyUser->index();
-    return view('welcome', compact('device'));
-})->name('welcome'); // Removed 'redirect.nonlogin' middleware
-
 // Route::get('/', function () {
 //     $identifyUser = new deviceIdentifierController();
 //     $device = $identifyUser->index();
 //     return view('welcome', compact('device'));
-// })->name('welcome')->middleware('redirect.nonlogin');
+// })->name('welcome'); // Removed 'redirect.nonlogin' middleware
+
+Route::get('/', function () {
+    $identifyUser = new deviceIdentifierController();
+    $device = $identifyUser->index();
+    return view('welcome', compact('device'));
+})->name('welcome')->middleware('redirect.nonlogin');
 
 
 // Route::get('/home', function () {
@@ -41,15 +41,15 @@ Route::get('/', function () {
 // })->middleware('redirect.nonlogin');
 
 
-// Route::middleware(['redirect.nonlogin', 'guest'])->group(function () { 
-Route::middleware(['guest'])->group(function () { 
-    Route::view('/login', 'auth.login')->name('login')->middleware('device.ismobile');
+Route::middleware(['redirect.nonlogin', 'guest'])->group(function () { 
+// Route::middleware(['guest'])->group(function () { 
     // Route::get('/', function () {
     //     $identifyUser = new deviceIdentifierController();
     //     $device = $identifyUser->index();
     //     return view('welcome', compact('device'));
     // })->name('welcome');
 
+    Route::view('/login', 'auth.login')->name('login')->middleware('device.ismobile');
     Route::get('/check-email', [AuthController::class, 'checkEmail']);
     Route::view('/register', 'auth.register')->name('register'); 
     Route::get('/forgot-password', [AuthController::class,'showRequestForm'])->name('request-form');
@@ -63,9 +63,10 @@ Route::middleware(['guest'])->group(function () {
         Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
     });
 });
+
  
 Route::middleware(['auth'])->group(function () {
-    Route::get('/admin/forums', [ForumController::class, 'index'])->name('admin.forums');
+    Route::get('/forums', [ForumController::class, 'index'])->name('admin.forums');
     Route::post('/forum/post', [ForumController::class, 'storePost'])->name('forum.storePost');
     Route::post('/forum/post/{postId}/comment', [ForumController::class, 'storeComment'])->name('forum.storeComment');
     Route::post('/forum/react/{postId}', [ForumController::class, 'react'])->name('forum.react');
@@ -75,10 +76,10 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/forum/comment/{commentId}', [ForumController::class, 'updateComment'])->name('forum.updateComment');
 
     Route::middleware(['admin'])->group(function () {
-        Route::get('/admin', [NotificationController::class, 'adminNotif'])->name('admin.dashboard'); 
+        Route::get('/admin', [dashboardController::class, 'display_dashboard'])->name('admin.dashboard');
+        Route::get('/admin/notifications', [NotificationController::class, 'adminNotif'])->name('admin.notifications'); 
         Route::get('/admin/api/notifications', [NotificationController::class, 'getNotifications'])->name('admin.notifications.get');
         Route::get('/admin/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('admin.notifications.read');
-        Route::get('/admin', [dashboardController::class, 'display_dashboard'])->name('admin.dashboard');
         Route::view('/admin/map', 'admin.pages.map_locations')->name('admin.map'); 
         Route::view('/admin/map_simulation', 'admin.pages.map_simulation')->name('admin.map_simulation'); 
         Route::get('/admin/get_map_locations', [MapController::class, 'get_map_locations'])->name('admin.map_locations');

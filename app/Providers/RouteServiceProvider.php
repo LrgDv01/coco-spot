@@ -60,35 +60,53 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    public static function redirectTo()
-    {
-        $user = Auth::user();
-
-        if ($user->isAdmin()) {
-            return '/admin';
-        } elseif ($user->isFarmer()) {
-            return '/user/farm';
-        } elseif ($user->isTechnician()) {
-            return '/user/notifications';
-        }
-
-        return '/welcome'; // Fallback for authenticated users without roles
-    }
-
     // public static function redirectTo()
     // {
-    //     if (Auth::check()) {
-    //         if (Auth::user()->isAdmin()) {
-    //             return '/admin'; // Redirect admin to admin dashboard
-    //         } elseif (Auth::user()->isFarmer()) {
-    //             return '/user/farm'; // Redirect farmer to farm page
-    //         } elseif(Auth::user()->isTechnician()) {
-    //             return '/user/notifications'; // Redirect technicins notifications page
-    //         }
-    //     } else {
+    //     $user = Auth::user();
+
+    //     // if ($user->isAdmin()) {
+    //     //     return '/admin';
+    //     // } elseif ($user->isFarmer()) {
+    //     //     return '/user/farm';
+    //     // } elseif ($user->isTechnician()) {
+    //     //     return '/user/notifications';
+    //     // }
+
+    //     if (!$user) {
     //         return '/welcome';
     //     }
+    
+    //     if ($user->isAdmin()) {
+    //         return route('admin.dashboard'); // Use named route
+    //     } 
+        
+    //     if ($user->isFarmer()) {
+    //         return route('user.farm');
+    //     } 
+        
+    //     if ($user->isTechnician()) {
+    //         return route('user.notifications');
+    //     }
+    
+
+    //     return '/welcome'; // Fallback for authenticated users without roles
     // }
+    
+
+    public static function redirectTo()
+    {
+        if (Auth::check()) {
+            if (Auth::user()->isAdmin()) {
+                return '/admin'; // Redirect admin to admin dashboard
+            } elseif (Auth::user()->isFarmer()) {
+                return '/user/farm'; // Redirect farmer to farm page
+            } elseif(Auth::user()->isTechnician()) {
+                return '/user/notifications'; // Redirect technicins notifications page
+            }
+        } else {
+            return '/welcome';
+        }
+    }
 
     /**
      * Configure the rate limiters for the application.

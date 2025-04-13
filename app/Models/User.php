@@ -21,8 +21,6 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        // 'gender',
-        // 'address',
         'profile_img',
         'user_name',
         'full_name',
@@ -55,14 +53,26 @@ class User extends Authenticatable
     public function isAdmin()
     {
         return $this->user_type == 0;
+        // return [
+        //     'is_admin' => $this->user_type == 0,
+        //     'role' => $this->role === 'admin',
+        // ];
     }
     public function isFarmer()
     {
         return $this->user_type == 1;
+        // return [
+        //     'is_farmer' => $this->user_type == 1,
+        //     'role' => $this->role === 'farmer',
+        // ];
     }
     public function isTechnician()
     {
         return $this->user_type == 2;
+        // return [
+        //     'is_technician' => $this->user_type == 2,
+        //     'role' => $this->role === 'technician',
+        // ];
     }
     public function services()
     {

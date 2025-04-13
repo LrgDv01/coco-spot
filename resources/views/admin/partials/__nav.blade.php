@@ -151,7 +151,7 @@
         </a>
       </li>  
       <li class="nav-item">
-        <a class="nav-link border border-0 {{ Request::is('admin/forums') ? 'active' : 'inactive' }}" href="{{ url('/admin/forums') }}">
+        <a class="nav-link border border-0 {{ Request::is('admin/forums') ? 'active' : 'inactive' }}" href="{{ url('/forums') }}">
 
           <i class="bi bi-chat-dots-fill"></i><span>Forums</span>
         </a>
@@ -225,7 +225,7 @@
                                   </div>
                               </a>
                               </div>
-                          @else ()
+                          @else
                               <div class="rounded rounded-4 mb-3">
                                 <a href="{{route('admin.notifications.read', $n->id)}}"
                                   class="list-group-item list-group-item-action flex-column align-items-start"

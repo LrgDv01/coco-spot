@@ -102,7 +102,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link border border-0 {{ Request::is('admin/forums') ? 'active' : 'inactive' }}" href="{{ url('/admin/forums') }}">
+        <a class="nav-link border border-0 {{ Request::is('admin/forums') ? 'active' : 'inactive' }}" href="{{ url('/forums') }}">
 
           <i class="bi bi-chat-dots-fill"></i><span>Forums</span>
         </a>
@@ -135,7 +135,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link border border-0 {{ Request::is('admin/forums') ? 'active' : 'inactive' }}" href="{{ url('/admin/forums') }}">
+        <a class="nav-link border border-0 {{ Request::is('admin/forums') ? 'active' : 'inactive' }}" href="{{ url('/forums') }}">
           <i class="bi bi-chat-dots-fill"></i><span>Forums</span>
         </a>
       </li>

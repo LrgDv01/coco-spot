@@ -5,10 +5,8 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\farmer\FarmModel;
-use App\Models\admin\PCA;
 use App\Models\technician\TechiniciansReportsModel;
 use App\Models\farmer\FarmerReportsModel;
-use App\Models\admin\DOA;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,27 +16,6 @@ class dashboardController extends Controller
     public function display_dashboard() {
         return view('admin.dashboard');
     }
-
-    // private function varietyYearFilter($varietyYearData, $coconut_variety, $count_variety, $district) {
-
-    //     foreach ($varietyYearData as $key => $item) {
-    //         $month = Carbon::parse($item->created_at)->format('n'); 
-    //         $year = Carbon::parse($item->created_at)->format('Y'); 
-
-    //         if (!isset($count_variety[$year][$month])) {
-    //             $count_variety[$year][$month] = array_fill_keys(array_keys($coconut_variety), 0);
-    //             $district[$year][$month] = $item->district; // ✅ Add district info
-    //         }
-    //         $reported_coco = $item->variety ?? [];
-
-    //         foreach ($coconut_variety as $key => $coco) {
-    //             if ($coco === $reported_coco) {
-    //                 $count_variety[$year][$month][$key]++;
-    //             }
-    //         }
-    //     }
-    //     return [$varietyYearData, $coconut_variety, $count_variety, $district];
-    // }
 
     public function get_dashboard_info(Request $request)
     { 
