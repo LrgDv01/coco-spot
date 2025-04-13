@@ -102,13 +102,13 @@
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link border border-0 {{ Request::is('admin/forums') ? 'active' : 'inactive' }}" href="{{ url('/forums') }}">
+        <a class="nav-link border border-0 {{ Request::is('forums') ? 'active' : 'inactive' }}" href="{{ url('/forums') }}">
 
           <i class="bi bi-chat-dots-fill"></i><span>Forums</span>
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link border border-0 {{ Request::is('user/services') ? 'active' : 'inactive' }}" href="{{ url('/user/services') }}">
+        <a class="nav-link border border-0 {{ Request::is('user/farmer/reports') ? 'active' : 'inactive' }}" href="{{ url('/user/farmer/reports') }}">
         <i class="bi bi-clipboard-data"></i>  
           <span>Reports</span>
         </a>
@@ -135,7 +135,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link border border-0 {{ Request::is('admin/forums') ? 'active' : 'inactive' }}" href="{{ url('/forums') }}">
+        <a class="nav-link border border-0 {{ Request::is('forums') ? 'active' : 'inactive' }}" href="{{ url('/forums') }}">
           <i class="bi bi-chat-dots-fill"></i><span>Forums</span>
         </a>
       </li>

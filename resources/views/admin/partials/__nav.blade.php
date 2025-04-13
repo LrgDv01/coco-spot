@@ -151,8 +151,7 @@
         </a>
       </li>  
       <li class="nav-item">
-        <a class="nav-link border border-0 {{ Request::is('admin/forums') ? 'active' : 'inactive' }}" href="{{ url('/forums') }}">
-
+        <a class="nav-link border border-0 {{ Request::is('forums') ? 'active' : 'inactive' }}" href="{{ url('/forums') }}">
           <i class="bi bi-chat-dots-fill"></i><span>Forums</span>
         </a>
       </li>
@@ -166,7 +165,7 @@
           <i class="bi bi-geo-fill"></i> <span>Simulation</span>
         </a>
       </li>
-    @endif
+    @endif 
   </ul>
 
 

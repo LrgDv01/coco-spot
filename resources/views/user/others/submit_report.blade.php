@@ -226,7 +226,7 @@
                             onclick="submitDiagnosis(event, {{ $farm->id }})">Report</button>
                 </div>
                 <div class="d-flex flex-row justify-content-center">
-                    <a class="farm-status d-none btn btn-secondary border-0 bg-transparent text-secondary fw-bold" href="{{route('user.services')}}">
+                    <a class="farm-status d-none btn btn-secondary border-0 bg-transparent text-secondary fw-bold" href="{{route('user.farmer.reports')}}">
                         <i class="fas fa-arrow-left"></i> <u>See farm status</u></a>
                 </div>
             </div>
