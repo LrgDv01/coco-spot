@@ -15,7 +15,7 @@
               @php
                 $prof_img = Auth::user()->profile_img ? URL::asset('storage/' . Auth::user()->profile_img) 
                             : (Auth::user()->user_type === '1' ? URL::asset('img/farmer.png') 
-                            : URL::asset('img/technician.png')) ;
+                            : URL::asset('img/technician.png'));
               @endphp
             <a class="nav-link bg-transparent border border-0 text-dark nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
               <img src="{{ $prof_img }}" alt="Profile" class="img-fluid rounded-circle" style="width: 37px; height: 40px;">
@@ -97,25 +97,37 @@
     @if (auth()->user()->isFarmer())
       <li class="nav-item"> 
         <a class="nav-link border border-0 {{ Request::is('user/farm') ? 'active' : 'inactive' }}" href="{{ url('/user/farm') }}">
-          <i class="bi bi-house"></i>  
+          <i class="bi bi-house-fill"></i>  
           <span>My Farm</span>
         </a>
       </li>
       <li class="nav-item">
         <a class="nav-link border border-0 {{ Request::is('forums') ? 'active' : 'inactive' }}" href="{{ url('/forums') }}">
-
-          <i class="bi bi-chat-dots-fill"></i><span>Forums</span>
+          <i class="bi bi-chat-dots-fill"></i>
+          <span>Forums</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link border border-0 {{ Request::is('user/farmer/map') ? 'active' : 'inactive' }}" href="{{ url('/user/farmer/map') }}">
+        <i class="bi bi-map-fill"></i>  
+          <span>Map</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link border border-0 {{ Request::is('user/farmer/simulation') ? 'active' : 'inactive' }}" href="{{ url('/user/farmer/simulation') }}">
+        <i class="bi bi-geo-fill"></i> 
+          <span>Simulation</span>
         </a>
       </li>
       <li class="nav-item">
         <a class="nav-link border border-0 {{ Request::is('user/farmer/reports') ? 'active' : 'inactive' }}" href="{{ url('/user/farmer/reports') }}">
-        <i class="bi bi-clipboard-data"></i>  
+        <i class="bi bi-clipboard-data-fill"></i>  
           <span>Reports</span>
         </a>
       </li>
       <li class="nav-item">
         <a class="nav-link border border-0 {{ Request::is('user/farmer/settings') ? 'active' : 'inactive' }}" href="{{ url('/user/farmer/settings') }}">
-          <i class="bi bi-gear"></i>  
+          <i class="bi bi-gear-fill"></i>  
           <span>Settings</span>
         </a>
       </li>
@@ -123,7 +135,7 @@
     @if (auth()->user()->isTechnician())
       <li class="nav-item">
         <a class="nav-link border border-0 {{ Request::is('user/notifications') ? 'active' : 'inactive' }}" href="{{ url('/user/notifications') }}">
-          <i class="bi bi-bell"></i>
+          <i class="bi bi-bell-fill"></i>
           @if ($unreadCount > 0)
               <span id="notification-count" 
                 class="position-absolute text-white text-center translate-middle bg-danger border border-light"
@@ -136,18 +148,38 @@
       </li>
       <li class="nav-item">
         <a class="nav-link border border-0 {{ Request::is('forums') ? 'active' : 'inactive' }}" href="{{ url('/forums') }}">
-          <i class="bi bi-chat-dots-fill"></i><span>Forums</span>
+          <i class="bi bi-chat-dots-fill"></i>
+          <span>Forums</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link border border-0 {{ Request::is('user/map') ? 'active' : 'inactive' }}" href="{{ url('/user/map') }}">
+        <i class="bi bi-map-fill"></i>  
+          <span>Map</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link border border-0 {{ Request::is('user/simulation') ? 'active' : 'inactive' }}" href="{{ url('/user/simulation') }}">
+        <i class="bi bi-geo-fill"></i> 
+          <span>Simulation</span>
         </a>
       </li>
       <li class="nav-item">
         <a class="nav-link border border-0 {{ Request::is('user/reports') ? 'active' : 'inactive' }}" href="{{ url('/user/reports') }}">
-          <i class="bi bi-clipboard-data"></i>  
+          <i class="bi bi-clipboard-data-fill"></i>  
           <span>Reports</span>
         </a>
       </li>
       <li class="nav-item">
+        <a class="nav-link border border-0 {{ Request::is('user/monitor') ? 'active' : 'inactive' }}" href="{{ url('/user/monitor') }}">
+        <i class="bi bi-display-fill"></i>  
+          <span>Monitoring</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
         <a class="nav-link border border-0 {{ Request::is('user/technician/settings') ? 'active' : 'inactive' }}" href="{{ url('/user/technician/settings') }}">
-          <i class="bi bi-gear"></i>  
+          <i class="bi bi-gear-fill"></i>  
           <span>Settings</span>
         </a>
       </li>

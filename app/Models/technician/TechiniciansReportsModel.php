@@ -28,7 +28,7 @@ class TechiniciansReportsModel extends Model
         'coconut_trees',
         'coconut_variety',
         'diagnosis_disease',
-        'treatment_recommendation',
+        // 'treatment_recommendation',
         'image_proof',
         'status',
         'no_of_infected',

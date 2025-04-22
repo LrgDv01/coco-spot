@@ -16,18 +16,17 @@ class NotificationController extends Controller
         view()->composer('admin.partials.__nav', function ($view) {
             // $farmerNotif = FarmerReportsModel::latest()->get(); 
             // $techNotif = TechiniciansReportsModel::latest()->get();
-
             $notif = Notification::latest()->get();
-            
             // Combine both collections
             // $allNotif = $farmerNotif->merge($techNotif);
-            
             // Count unread from both
             $unreadCount = $notif->where('status', 'unread')->count();
             $view->with('notif', $notif)->with('unreadCount', $unreadCount);
         });
         view()->composer('user.partials.__nav', function ($view) {
-            $notif = ServicesModel::latest()->get(); 
+            $technicianId = auth()->id();
+            // $notifications = ServicesModel::where('technician_id', $technicianId);
+            $notif = ServicesModel::where('technician_id', $technicianId)->latest()->get(); 
             $unreadCount = $notif->where('status', 'Assigned')->count();
             $view->with('notif', $notif)->with('unreadCount', $unreadCount);
         });
@@ -134,7 +133,10 @@ class NotificationController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        $notif = ServicesModel::latest()->get(); 
+            // $technicianId = auth()->id();
+            // $notifications = ServicesModel::where('technician_id', $technicianId);
+
+        $notif = ServicesModel::where('technician_id', $technicianId)->latest()->get(); 
         $unreadCount = $notif->where('status', 'Assigned')->count();
         // return view('admin.dashboard', compact('notif', 'unreadCount'));
 
@@ -164,7 +166,6 @@ class NotificationController extends Controller
     {
         $notification = ServicesModel::findOrFail($id);
         $notification->update(['status' => 'Viewed']);
-
         $requestDetails = ServicesModel::with('farmers', 'user' ,'farmerReports')->findOrFail($id);
         return view('user.technician.pages.request_details', compact('requestDetails'));
     }

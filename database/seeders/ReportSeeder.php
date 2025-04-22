@@ -31,7 +31,7 @@ class ReportSeeder extends Seeder
                 'coconut_trees' => 500,
                 'coconut_variety' => 'Tall Variety',
                 'diagnosis_disease' => 'Leaf Spot',
-                'treatment_recommendation' => 'Initial inspection completed.',
+                // 'treatment_recommendation' => 'Initial inspection completed.',
                 'image_proof' => 'images/example-disease.jpg',
                 'status' => 'Verified',
             ],
@@ -51,7 +51,7 @@ class ReportSeeder extends Seeder
                 'coconut_trees' => $report['coconut_trees'],
                 'coconut_variety' => $report['coconut_variety'],
                 'diagnosis_disease' => $report['diagnosis_disease'],
-                'treatment_recommendation' => $report['treatment_recommendation'],
+                // 'treatment_recommendation' => $report['treatment_recommendation'],
                 'image_proof' => $report['image_proof'],
                 'status' => $report['status'],
             ]);

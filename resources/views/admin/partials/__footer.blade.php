@@ -45,7 +45,7 @@
 
 
  <!-- Mapbox Latest-->
-
+ <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
   <script src="{{ URL::asset('js/admin/geomap.js')}}"></script> 
 {{--  @endif  --}}
   <!-- Charts -->

@@ -27,7 +27,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Schema::defaultStringLength(191);
-
         // View::composer('admin.partials.__nav', function ($view) { 
         //     $notif = FarmerReportsModel::latest()->get(); 
         //     $notif = TechiniciansReportsModel::latest()->get(); 
@@ -38,18 +37,16 @@ class AppServiceProvider extends ServiceProvider
             // $farmerNotif = FarmerReportsModel::latest()->get(); 
             // $techNotif = TechiniciansReportsModel::latest()->get();
             $notif = Notification::latest()->get();
-            
             // Combine both collections
             // $allNotif = $farmerNotif->merge($techNotif);
-            
             // Count unread from both
             $unreadCount = $notif->where('status', 'unread')->count();
-            
             $view->with('notif', $notif)->with('unreadCount', $unreadCount);
         });
 
         View::composer('user.partials.__nav', function ($view) {
-            $notif = ServicesModel::latest()->get();
+            $technicianId = auth()->id();
+            $notif = ServicesModel::where('technician_id', $technicianId)->latest()->get();
             $unreadCount = $notif->where('status', 'Assigned')->count();
             $view->with('notif', $notif)->with('unreadCount', $unreadCount);
         });

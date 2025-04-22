@@ -22,7 +22,7 @@ class AdminSeeder extends Seeder
             'contact' => fake()->unique()->e164PhoneNumber(),
             'address' => 'At Coco-Spot Headquarters',
             'email' => 'admin@coco-spot.com',
-            'password' => Hash::make('1234'),
+            'password' => Hash::make('Admin@Cocospot25'),
             'user_type' => 0,
             'remember_token' => Str::random(10), 
         ]);

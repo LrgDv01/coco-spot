@@ -649,7 +649,7 @@ async function mapSimulation(simulate, mapboxgl) {
                         const zoomFactor = Math.pow(2, (9 - zoom)) * 1.5;
                         const geofence = simulateGenerateRandomPolygon(centroid, 9, baseRadius);
                         technicianGeofences.push({
-                            ...scalePolygon(geofence, 1.5, zoomFactor),
+                            ...scalePolygon(geofence, 1, zoomFactor),
                             properties: {
                                 farmId: farm.id,
                                 disease: farm.technician_reports[0]?.diagnosis_disease || 'Unknown',
@@ -720,168 +720,81 @@ async function mapSimulation(simulate, mapboxgl) {
             return { farmPolygons, orderedDays };
         }
 
-        // function animatePolygons(farmPolygons) {
-        //     let isAnimating = false;
-        //     const duration = 7000; // 7 seconds
-        //     const maxScale = 1.5;
-
-        //     if (isAnimating) return;
-        //     isAnimating = true;
-        //     const startTime = Date.now();
-        //     let currentPolygons = farmPolygons.map(p => ({ ...p }));
-
-        //     function step() {
-        //         const elapsedTime = Date.now() - startTime;
-        //         const animationProgress = Math.min(elapsedTime / duration, 1);
-        //         const zoom = map_simulation.getZoom();
-        //         const zoomFactor = Math.pow(2, (9 - zoom)) * 1.5;
-
-        //         // Animate farm polygons
-        //         currentPolygons = farmPolygons.map(polygon => {
-        //             const farm = simulate.find(f => f.id === polygon.properties.farmId);
-        //             const { isTreated, progress: farmProgress } = getFarmState(farm);
-        //             if (isTreated && farmProgress === 1) {
-        //                 polygon.properties.color = 'rgb(0, 255, 0)';
-        //                 return polygon;
-        //             }
-        //             let scale, color;
-        //             if (isTreated) {
-        //                 scale = 1 - animationProgress;
-        //                 if (isTreated && (farmProgress > 0.6 || farmProgress > 0.2)) {
-        //                     const newAnimationProgress = Math.min(elapsedTime / duration, 0.5);
-        //                     const rgb = interpolateColor(farmProgress + newAnimationProgress, [[255, 0, 0], [0, 255, 0]]);
-        //                     color = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
-        //                 } else {
-        //                     const rgb = interpolateColor(farmProgress + animationProgress, [[255, 0, 0], [0, 255, 0]]);
-        //                     color = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
-        //                 }
-        //             } else {
-        //                 scale = 1 + animationProgress * (maxScale - 1);
-        //                 const rgb = interpolateColor(farmProgress + animationProgress, [[255, 255, 0], [255, 0, 0]]);
-        //                 color = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
-        //             }
-        //             const farmFeatures = map_simulation.getSource('farms')._data.features;
-        //             const matchingFarm = farmFeatures.find(f =>
-        //                 f.geometry.coordinates[0] === polygon.properties.center[0] &&
-        //                 f.geometry.coordinates[1] === polygon.properties.center[1]
-        //             );
-        //             if (matchingFarm) {
-        //                 matchingFarm.properties.pointColor = animationProgress >= 1 && isTreated ? '#00FF00' : color;
-        //             }
-        //             return scale > 0 ? scalePolygon(polygon, scale, zoomFactor) : null;
-        //         }).filter(p => p !== null);
-
-        //         // Fade out technician geofences
-        //         const fadeProgress = animationProgress; // 0 to 1 over 7 seconds
-        //         const newFillOpacity = 0.3 * (1 - fadeProgress); // Fade from 0.3 to 0
-        //         const newLineOpacity = 1 * (1 - fadeProgress);  // Fade from 1 to 0
-        //         map_simulation.setPaintProperty('technician-geofences-fill', 'fill-opacity', newFillOpacity);
-        //         map_simulation.setPaintProperty('technician-geofences-outline', 'line-opacity', newLineOpacity);
-
-        //         // Update farm polygons and points
-        //         map_simulation.getSource('farm-polygons').setData({
-        //             type: 'FeatureCollection',
-        //             features: currentPolygons
-        //         });
-        //         map_simulation.getSource('farms').setData({
-        //             type: 'FeatureCollection',
-        //             features: map_simulation.getSource('farms')._data.features
-        //         });
-
-        //         // Remove geofences when fully faded
-        //         if (animationProgress >= 1) {
-        //             map_simulation.getSource('technician-geofences').setData({
-        //                 type: 'FeatureCollection',
-        //                 features: []
-        //             });
-        //             isAnimating = false;
-        //         } else {
-        //             requestAnimationFrame(step);
-        //         }
-        //     }
-        //     requestAnimationFrame(step);
-        // }
-
         function animatePolygons(farmPolygons) {
             let isAnimating = false;
-            const duration = 7000; // 7 seconds
+            const duration = 7000;
             const maxScale = 1.5;
-    
+        
             if (isAnimating) return;
             isAnimating = true;
             const startTime = Date.now();
-            let currentPolygons = farmPolygons.map(p => ({ ...p }));
-            // Store the initial geofence data before animation
+            
+            // Store initial states
+            const initialPolygons = farmPolygons.map(p => ({ ...p }));
             const initialGeofences = map_simulation.getSource('technician-geofences')._data.features.map(g => ({ ...g }));
-    
+        
             function step() {
                 const elapsedTime = Date.now() - startTime;
                 const animationProgress = Math.min(elapsedTime / duration, 1);
                 const zoom = map_simulation.getZoom();
                 const zoomFactor = Math.pow(2, (9 - zoom)) * 1.5;
-    
-                // Animate farm polygons
-                currentPolygons = farmPolygons.map(polygon => {
-                    const farm = simulate.find(f => f.id === polygon.properties.farmId);
+        
+                // Process both polygons and geofences
+                const processedData = [...initialPolygons, ...initialGeofences].map(feature => {
+                    const farm = simulate.find(f => f.id === feature.properties.farmId);
                     const { isTreated, progress: farmProgress } = getFarmState(farm);
-                    if (isTreated && farmProgress === 1) {
-                        polygon.properties.color = 'rgb(0, 255, 0)';
-                        return polygon;
-                    }
-                    let scale, color;
+                    const isGeofence = feature.source === 'technician-geofences';
+        
+                    let progress, color, scale;
                     if (isTreated) {
+                        progress = farmProgress + (animationProgress * (1 - farmProgress));
+                        color = interpolateColor(progress, [[255, 0, 0], [0, 255, 0]]);
                         scale = 1 - animationProgress;
-                        if (isTreated && (farmProgress > 0.6 || farmProgress > 0.2)) {
-                            const newAnimationProgress = Math.min(elapsedTime / duration, 0.5);
-                            const rgb = interpolateColor(farmProgress + newAnimationProgress, [[255, 0, 0], [0, 255, 0]]);
-                            color = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
-                        } else {
-                            const rgb = interpolateColor(farmProgress + animationProgress, [[255, 0, 0], [0, 255, 0]]);
-                            color = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
-                        }
                     } else {
+                        progress = farmProgress + (animationProgress * (1 - farmProgress));
+                        color = interpolateColor(progress, [[255, 255, 0], [255, 0, 0]]);
                         scale = 1 + animationProgress * (maxScale - 1);
-                        const rgb = interpolateColor(farmProgress + animationProgress, [[255, 255, 0], [255, 0, 0]]);
-                        color = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
                     }
-                    const farmFeatures = map_simulation.getSource('farms')._data.features;
-                    const matchingFarm = farmFeatures.find(f =>
-                        f.geometry.coordinates[0] === polygon.properties.center[0] &&
-                        f.geometry.coordinates[1] === polygon.properties.center[1]
-                    );
-                    if (matchingFarm) {
-                        matchingFarm.properties.pointColor = animationProgress >= 1 && isTreated ? '#00FF00' : color;
-                    }
-                    return scale > 0 ? scalePolygon(polygon, scale, zoomFactor) : null;
-                }).filter(p => p !== null);
-    
-                // Fade out technician geofences
-                const fadeProgress = animationProgress; // 0 to 1 over 7 seconds
-                const newFillOpacity = 0.3 * (1 - fadeProgress); // Fade from 0.3 to 0
-                const newLineOpacity = 1 * (1 - fadeProgress);  // Fade from 1 to 0
-                map_simulation.setPaintProperty('technician-geofences-fill', 'fill-opacity', newFillOpacity);
-                map_simulation.setPaintProperty('technician-geofences-outline', 'line-opacity', newLineOpacity);
-    
-                // Update farm polygons and points
+        
+                    const scaledFeature = scalePolygon(feature, scale, zoomFactor);
+                    
+                    return {
+                        ...scaledFeature,
+                        properties: {
+                            ...scaledFeature.properties,
+                            color: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
+                            sourceType: isGeofence ? 'geofence' : 'polygon'
+                        }
+                    };
+                });
+        
+                // Split processed data back into polygons and geofences
+                const currentPolygons = processedData.filter(f => f.properties.sourceType === 'polygon');
+                const currentGeofences = processedData.filter(f => f.properties.sourceType === 'geofence');
+        
+                // Update all sources
                 map_simulation.getSource('farm-polygons').setData({
                     type: 'FeatureCollection',
                     features: currentPolygons
                 });
+                
+                map_simulation.getSource('technician-geofences').setData({
+                    type: 'FeatureCollection',
+                    features: currentGeofences
+                });
+        
+                // Update farm points colors
+                const farmFeatures = map_simulation.getSource('farms')._data.features.map(f => {
+                    const polygon = currentPolygons.find(p => p.properties.farmId === f.properties.farmId);
+                    return polygon ? { ...f, properties: { ...f.properties, pointColor: polygon.properties.color } } : f;
+                });
+        
                 map_simulation.getSource('farms').setData({
                     type: 'FeatureCollection',
-                    features: map_simulation.getSource('farms')._data.features
+                    features: farmFeatures
                 });
-    
-                // Reset geofences when animation completes
+        
                 if (animationProgress >= 1) {
-                    // Restore initial opacity
-                    map_simulation.setPaintProperty('technician-geofences-fill', 'fill-opacity', 0.3);
-                    map_simulation.setPaintProperty('technician-geofences-outline', 'line-opacity', 1);
-                    // Restore initial geofence features
-                    map_simulation.getSource('technician-geofences').setData({
-                        type: 'FeatureCollection',
-                        features: initialGeofences
-                    });
                     isAnimating = false;
                 } else {
                     requestAnimationFrame(step);
@@ -889,6 +802,7 @@ async function mapSimulation(simulate, mapboxgl) {
             }
             requestAnimationFrame(step);
         }
+   
 
         const treatments = {
             'Stem Bleeding': `
@@ -952,7 +866,7 @@ async function mapSimulation(simulate, mapboxgl) {
             }
         });
 
-        document.getElementById('silumate-button').addEventListener('click', () => {
+        document.getElementById('simulate-button').addEventListener('click', () => {
             const selectedDisease = document.getElementById('disease').value;
             const { farmPolygons } = selectedDisease === 'All'
                 ? { farmPolygons: initialFarmPolygons }
@@ -964,7 +878,7 @@ async function mapSimulation(simulate, mapboxgl) {
                 progressBar.style.width = '0%';
 
                 void progressBar.offsetWidth;
-                $('#silumate-button').text('Simulating . .').prop('disabled', true);
+                $('#simulate-button').text('Simulating . .').prop('disabled', true);
                 // setTimeout(() => {
                     progressBar.style.transition = 'width 7s linear';
                     progressBar.style.width = '100%';
@@ -978,7 +892,7 @@ async function mapSimulation(simulate, mapboxgl) {
                     // progressBar.style.transition = 'none'; 
                     progressBar.style.transition = 'width 1s linear';
                     progressBar.style.width = '0%';
-                    $('#silumate-button').text('Simulate').prop('disabled', false);
+                    $('#simulate-button').text('Simulate').prop('disabled', false);
                 }
             }, { once: false }); 
         

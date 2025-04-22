@@ -24,7 +24,7 @@ return new class extends Migration
             $table->bigInteger('coconut_trees'); 
             $table->string('coconut_variety');
             $table->string('diagnosis_disease'); 
-            $table->text('treatment_recommendation'); 
+            // $table->text('treatment_recommendation'); 
             $table->string('image_proof'); 
             $table->string('status'); 
             $table->integer('no_of_infected')->unsigned()->nullable(false); 

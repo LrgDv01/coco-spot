@@ -168,7 +168,7 @@
                                     <div class="mb-2">
                                         <h5 class="mb-1 fw-bold">New Farm Assigned you to Visit</h5>
                                         <p class="mb-1">
-                                            <strong>Request ID:</strong> {{ $notifs->request_id }}<br>
+                                            <strong>Assigned ID:</strong> {{ $notifs->request_id }}<br>
                                             <strong>Date/Time:</strong> {{ $notifs->created_at->format('F d, Y | h:i A') }}
                                         </p>
                                     </div>

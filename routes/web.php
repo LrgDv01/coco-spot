@@ -82,16 +82,21 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/admin/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('admin.notifications.read');
         Route::view('/admin/map', 'admin.pages.map_locations')->name('admin.map'); 
         Route::view('/admin/map_simulation', 'admin.pages.map_simulation')->name('admin.map_simulation'); 
-        Route::get('/admin/get_map_locations', [MapController::class, 'get_map_locations'])->name('admin.map_locations');
+        // Route::get('/admin/get_map_locations', [MapController::class, 'get_map_locations'])->name('admin.map_locations');
         Route::get('/admin/get_dashboard_info', [dashboardController::class, 'get_dashboard_info'])->name('get_dashboard_info');
         Route::middleware(['web'])->group(function () {
             Route::post('/admin/verified-report', [ServicesController::class, 'adminVerified'])->name('admin.verified-report');
         });
     })->middleware('redirect.nonadmin');
+    Route::get('/admin/get_map_locations', [MapController::class, 'get_map_locations'])->name('admin.map_locations');
+    Route::view('/user/map', 'user.map_locations')->name('user.map'); 
+    Route::view('/user/simulation', 'user.map_simulation')->name('.user.map_simulation'); 
 
     Route::middleware(['farmer'])->group(function () {
         Route::get('/user/farm', [FarmController::class, 'index'])->name('user.farm');
         Route::get('/technician/{id}', [ServicesController::class, 'show'])->name('technician.info');
+        // Route::view('/user/farmer/map', 'admin.pages.map_locations')->name('user.farmer.map'); 
+        // Route::view('/user/farmer/simulation', 'admin.pages.map_simulation')->name('.user.farmer.map_simulation'); 
         Route::get('/user/farmer/reports', [ServicesController::class, 'index'])->name('user.farmer.reports');
         Route::get('/user/submit-report/{id}/diagnosis', [ServicesController::class, 'viewReport'])->name('user.submit-report'); 
         Route::get('/user/submitted-report/{id}/diagnosis', [ServicesController::class, 'viewSubmmittedReport'])->name('user.submitted-report');
@@ -111,7 +116,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/user/api/notifications', [NotificationController::class, 'getTechNotifications'])->name('user.notifications.get');
         // Route::get('/admin/notifications/{id}/read', [NotificationController::class, 'markAsReadTechNotif'])->name('admin.notifications.read');
         Route::get('/user/notifications/{id}/request-details', [NotificationController::class, 'viewDetails'])->name('user.viewDetails');
-        Route::get('/user/reports', [ReportsController::class, 'index'])->name('user.reports');
+        Route::get('/user/reports', [ReportsController::class, 'index'])->name('user.reports'); 
+        Route::get('/user/monitor', [ReportsController::class, 'monitorList'])->name('user.monitor'); 
+        Route::get('/user/monitor/{id}/report-details', [ReportsController::class, 'viewDetails'])->name('user.viewReportDetails');
         Route::get('/user/technician/settings', [ProfileController::class, 'index'])->name('user.settings');
         Route::middleware(['web'])->group(function () {
             Route::post('/user/notifications/{id}/{status}/request-details', [ServicesController::class, 'updateStatus'])->name('update.status');
@@ -121,6 +128,6 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/user/technician/update-profile-image', [ProfileController::class, 'updateProfileImage'])->name('user.technician.update-profile-image');
         });
     });
-
 });
+
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

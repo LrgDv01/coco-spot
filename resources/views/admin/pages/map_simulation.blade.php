@@ -8,6 +8,21 @@
     <section class="section Simulation mt-4">
         <div class="container">
             <!-- Control Card -->
+            <div class="card position-absolute p-3 m-3 rounded rounded-3 bg-success bg-opacity-25 text-white" style="right:4%; width: 15rem; height: 9rem; z-index:10">
+                <h5 class="text-center">LEGEND</h5>
+                <div class="d-flex align-items-center mb-1">
+                    <span class="rounded rounded-5" style="display: inline-block; width: 20px; height: 20px; background-color: green; margin-right: 5px;"></span>
+                    <span>Healthy Farm </span>
+                </div>
+                <div class="d-flex align-items-center mb-1">
+                    <span class="rounded rounded-5 " style="display: inline-block; width: 20px; height: 20px; background-color: yellow; margin-right: 5px;"></span>
+                    <span>Recovering Farm </span>
+                </div>
+                <div class="d-flex align-items-center">
+                    <span class="rounded rounded-5" style="display: inline-block; width: 20px; height: 20px; background-color: red; margin-right: 5px;"></span>
+                    <span>Infected Farm </span>
+                </div>
+            </div>
             <div class="card shadow-sm position-absolute rounded rounded-3" style="width: 25rem; height: 20rem; z-index: 1">
                 <div class="card-body bg-success">
                     <div class="form-group mt-3">
@@ -27,10 +42,9 @@
                     </div>
                 </div>
                 <div class="card-footer text-end">
-                    <button id="silumate-button" class="btn btn-outline-danger fw-bold">Simulate</button>
+                    <button id="simulate-button" class="btn btn-outline-danger fw-bold">Simulate</button>
                 </div>
             </div>
-                
             <div class="card position-absolute" style="bottom: 0%; left:35%;  width: 50rem; height: 5rem; z-index:10">
                 <div class="week-display mt-3 mb-3 d-flex justify-content-between" style="width: 100%; max-width: 700px; margin: 0 auto;">
                 </div>
@@ -40,6 +54,7 @@
             </div>
             <!-- Map Container -->
             <div id="map_simulation" style="width: 100%; height: 700px;"></div>
+
         </div>
     </section>
 </main>
