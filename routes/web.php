@@ -75,6 +75,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/forum/post/{postId}', [ForumController::class, 'updatePost'])->name('forum.updatePost');
     Route::put('/forum/comment/{commentId}', [ForumController::class, 'updateComment'])->name('forum.updateComment');
 
+
     Route::middleware(['admin'])->group(function () {
         Route::get('/admin', [dashboardController::class, 'display_dashboard'])->name('admin.dashboard');
         Route::get('/admin/notifications', [NotificationController::class, 'adminNotif'])->name('admin.notifications'); 
@@ -82,21 +83,21 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/admin/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('admin.notifications.read');
         Route::view('/admin/map', 'admin.pages.map_locations')->name('admin.map'); 
         Route::view('/admin/map_simulation', 'admin.pages.map_simulation')->name('admin.map_simulation'); 
-        // Route::get('/admin/get_map_locations', [MapController::class, 'get_map_locations'])->name('admin.map_locations');
+        Route::get('/admin/get_map_locations', [MapController::class, 'get_map_locations'])->name('admin.map_locations');
         Route::get('/admin/get_dashboard_info', [dashboardController::class, 'get_dashboard_info'])->name('get_dashboard_info');
         Route::middleware(['web'])->group(function () {
             Route::post('/admin/verified-report', [ServicesController::class, 'adminVerified'])->name('admin.verified-report');
         });
     })->middleware('redirect.nonadmin');
+    
     Route::get('/admin/get_map_locations', [MapController::class, 'get_map_locations'])->name('admin.map_locations');
     Route::view('/user/map', 'user.map_locations')->name('user.map'); 
     Route::view('/user/simulation', 'user.map_simulation')->name('.user.map_simulation'); 
 
+
     Route::middleware(['farmer'])->group(function () {
         Route::get('/user/farm', [FarmController::class, 'index'])->name('user.farm');
         Route::get('/technician/{id}', [ServicesController::class, 'show'])->name('technician.info');
-        // Route::view('/user/farmer/map', 'admin.pages.map_locations')->name('user.farmer.map'); 
-        // Route::view('/user/farmer/simulation', 'admin.pages.map_simulation')->name('.user.farmer.map_simulation'); 
         Route::get('/user/farmer/reports', [ServicesController::class, 'index'])->name('user.farmer.reports');
         Route::get('/user/submit-report/{id}/diagnosis', [ServicesController::class, 'viewReport'])->name('user.submit-report'); 
         Route::get('/user/submitted-report/{id}/diagnosis', [ServicesController::class, 'viewSubmmittedReport'])->name('user.submitted-report');
