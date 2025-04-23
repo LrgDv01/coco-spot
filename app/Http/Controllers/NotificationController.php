@@ -125,7 +125,6 @@ class NotificationController extends Controller
         ]);
     }
 
-
     public function technicianNotif() {
         $technicianId = auth()->id();
         $notifications = ServicesModel::where('technician_id', $technicianId)
@@ -160,7 +159,6 @@ class NotificationController extends Controller
         return view('admin.pages.notification', compact('notification', 'exist'));
         // return response()->json(['success' => true]);
     } 
-
 
     public function viewDetails($id)
     {

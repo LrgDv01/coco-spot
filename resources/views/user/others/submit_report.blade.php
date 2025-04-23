@@ -455,8 +455,7 @@
                     topDisease = sortedDiseases[0];
                     topProbability = Math.round(diseaseProbabilities[topDisease]);
                     diagnosisHtml = `<h1><strong>${topDisease} DETECTED</strong> (${topProbability}%)</h1>`;
-                    diagnosisHtml += `<p>Based on the symptoms you provided, there is an 
-                                    <strong>${topProbability}%</strong> chance this matches <strong>${topDisease}</strong> disease.</p>`;
+                    diagnosisHtml += `<p>Based on the symptoms you provided, there is a <strong>${topProbability}%</strong> chance this matches <strong>${topDisease}</strong> disease.</p>`;
                     for (const disease of sortedDiseases) {
                         const probability = Math.round(diseaseProbabilities[disease]);
                         if (probability > 0) {

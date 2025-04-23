@@ -35,160 +35,84 @@ class ServicesController extends Controller
         return view('user.others.submit_report', compact('farm'));
     }
 
-    // public function farmerReport(Request $request) {
-    //     try {
-    //         $validated = $request->validate([
-    //             'farm_id' => 'required|exists:farms,id',
-    //             'farmer_name' => 'required|string|max:255',
-    //             'contact_no' => 'required|string|max:255',
-    //             'farm_location' => 'required|string|max:255',
-    //             'farm_size' => 'required|numeric',
-    //             'coconut_trees' => 'required|integer',
-    //             'coconut_variety' => 'required|string|max:255',
-    //             'symptoms' => 'nullable|array',
-    //             'disease' => 'required|string|max:255',
-    //             'image_proof' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|min:0', 
-    //         ]); 
-    
-    //         // Handle image upload
-    //         $imagePath = null;
-    //         if ($request->hasFile('image_proof')) {
-    //             $imagePath = $request->file('image_proof')->store('images', 'public');
-    //         }
-    
-    //         $farmer_id = auth()->id();
-    //         $municipal = FarmModel::where('id', $validated['farm_id'])->value('municipal');
-    //         $technician_id = User::where('user_type', 2)
-    //             ->whereRaw("FIND_IN_SET(?, REPLACE(municipal, ', ', ','))", [$municipal])
-    //             ->value('id');
-    
-    //         // Create the report
-    //         $report = FarmerReportsModel::create([
-    //             'farmer_id' => $farmer_id,
-    //             'farm_id' => $validated['farm_id'],
-    //             'technician_id' => $technician_id,
-    //             'farmer_name' => $validated['farmer_name'],
-    //             'contact_no' => $validated['contact_no'],
-    //             'farm_location' => $validated['farm_location'],
-    //             'farm_size' => $validated['farm_size'],
-    //             'coconut_trees' => $validated['coconut_trees'],
-    //             'coconut_variety' => $validated['coconut_variety'],
-    //             'symptoms' => json_encode($validated['symptoms'] ?? []),
-    //             'disease' => $validated['disease'],
-    //             'image_path' => $imagePath, 
-    //         ]);
-    
-    //         // Create notification using the newly created report (not hardcoded ID)
-    //         if ($report) {
-    //             $notification = $report->notifications()->create([
-    //                 'user_id' => $farmer_id,
-    //                 'farm_id' => $report->farm_id,
-    //                 'disease' => $report->disease,
-    //                 'status' => 'unread'
-    //             ]);
-                
-    //             // Broadcast the event
-    //             broadcast(new NewFarmerReport($report))->toOthers();
-    
-    //             return response()->json([
-    //                 'success' => true, 
-    //                 'message' => 'Report saved successfully',
-    //                 'report_id' => $report->id
-    //             ]);
-    //         } else {
-    //             throw new \Exception('Failed to create farmer report');
-    //         }
-    
-    //     } catch (\Exception $e) {
-    //         return response()->json([
-    //             'success' => false, 
-    //             'message' => $e->getMessage()
-    //         ], 500);
-    //     }
-    // }
+    public function farmerReport(Request $request) {
+        try {
+            $validated = $request->validate([
+                'farm_id' => 'required|exists:farms,id',
+                'farmer_name' => 'required|string|max:255',
+                'contact_no' => 'required|string|max:255',
+                'farm_location' => 'required|string|max:255',
+                'farm_size' => 'required|numeric',
+                'coconut_trees' => 'required|integer',
+                'coconut_variety' => 'required|string|max:255',
+                'symptoms' => 'nullable|array',
+                'disease' => 'required|string|max:255',
+                'image_proof' => 'required|image|mimes:jpeg,png,jpg,gif,svg|min:0', 
+            ]);
 
-
-
-public function farmerReport(Request $request) {
-    try {
-        $validated = $request->validate([
-            'farm_id' => 'required|exists:farms,id',
-            'farmer_name' => 'required|string|max:255',
-            'contact_no' => 'required|string|max:255',
-            'farm_location' => 'required|string|max:255',
-            'farm_size' => 'required|numeric',
-            'coconut_trees' => 'required|integer',
-            'coconut_variety' => 'required|string|max:255',
-            'symptoms' => 'nullable|array',
-            'disease' => 'required|string|max:255',
-            'image_proof' => 'required|image|mimes:jpeg,png,jpg,gif,svg|min:0', 
-        ]);
-
-        // Handle image upload
-        $imagePath = null;
-        if ($request->hasFile('image_proof')) {
-            // Store in storage/app/public/images
-            $imagePath = $request->file('image_proof')->store('images', 'public');
-            // Manually copy to public/storage/images
-            $filename = basename($imagePath);
-            $storagePath = storage_path('app/public/images/' . $filename);
-            $publicPath = public_path('storage/images/' . $filename);
-            // Ensure the directory exists
-            if (!File::exists(dirname($publicPath))) {
-                File::makeDirectory(dirname($publicPath), 0755, true);
+            // Handle image upload
+            $imagePath = null;
+            if ($request->hasFile('image_proof')) {
+                // Store in storage/app/public/images
+                $imagePath = $request->file('image_proof')->store('images', 'public');
+                // Manually copy to public/storage/images
+                $filename = basename($imagePath);
+                $storagePath = storage_path('app/public/images/' . $filename);
+                $publicPath = public_path('storage/images/' . $filename);
+                // Ensure the directory exists
+                if (!File::exists(dirname($publicPath))) {
+                    File::makeDirectory(dirname($publicPath), 0755, true);
+                }
+                File::copy($storagePath, $publicPath);
             }
-            File::copy($storagePath, $publicPath);
-        }
-        $farmer_id = auth()->id();
-        $municipal = FarmModel::where('id', $validated['farm_id'])->value('municipal');
-        $technician_id = User::where('user_type', 2)
-            ->whereRaw("FIND_IN_SET(?, REPLACE(municipal, ', ', ','))", [$municipal])
-            ->value('id');
+            $farmer_id = auth()->id();
+            $municipal = FarmModel::where('id', $validated['farm_id'])->value('municipal');
+            $technician_id = User::where('user_type', 2)
+                ->whereRaw("FIND_IN_SET(?, REPLACE(municipal, ', ', ','))", [$municipal])
+                ->value('id');
 
-        // Create the report
-        $report = FarmerReportsModel::create([
-            'farmer_id' => $farmer_id,
-            'farm_id' => $validated['farm_id'],
-            'technician_id' => $technician_id,
-            'farmer_name' => $validated['farmer_name'],
-            'contact_no' => $validated['contact_no'],
-            'farm_location' => $validated['farm_location'],
-            'farm_size' => $validated['farm_size'],
-            'coconut_trees' => $validated['coconut_trees'],
-            'coconut_variety' => $validated['coconut_variety'],
-            'symptoms' => json_encode($validated['symptoms'] ?? []),
-            'disease' => $validated['disease'],
-            'image_path' => $imagePath, 
-        ]);
-
-        // Create notification using the newly created report
-        if ($report) {
-            $notification = $report->notifications()->create([
-                'user_id' => $farmer_id,
-                'farm_id' => $report->farm_id,
-                'disease' => $report->disease,
-                'status' => 'unread'
+            // Create the report
+            $report = FarmerReportsModel::create([
+                'farmer_id' => $farmer_id,
+                'farm_id' => $validated['farm_id'],
+                'technician_id' => $technician_id,
+                'farmer_name' => $validated['farmer_name'],
+                'contact_no' => $validated['contact_no'],
+                'farm_location' => $validated['farm_location'],
+                'farm_size' => $validated['farm_size'],
+                'coconut_trees' => $validated['coconut_trees'],
+                'coconut_variety' => $validated['coconut_variety'],
+                'symptoms' => json_encode($validated['symptoms'] ?? []),
+                'disease' => $validated['disease'],
+                'image_path' => $imagePath, 
             ]);
-            // Broadcast the event
-            broadcast(new NewFarmerReport($report))->toOthers();
+
+            // Create notification using the newly created report
+            if ($report) {
+                $notification = $report->notifications()->create([
+                    'user_id' => $farmer_id,
+                    'farm_id' => $report->farm_id,
+                    'disease' => $report->disease,
+                    'status' => 'unread'
+                ]);
+                // Broadcast the event
+                broadcast(new NewFarmerReport($report))->toOthers();
+                return response()->json([
+                    'success' => true, 
+                    'message' => 'Report saved successfully',
+                    'report_id' => $report->id
+                ]);
+            } else {
+                throw new \Exception('Failed to create farmer report');
+            }
+
+        } catch (\Exception $e) {
             return response()->json([
-                'success' => true, 
-                'message' => 'Report saved successfully',
-                'report_id' => $report->id
-            ]);
-        } else {
-            throw new \Exception('Failed to create farmer report');
+                'success' => false, 
+                'message' => $e->getMessage()
+            ], 500);
         }
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false, 
-            'message' => $e->getMessage()
-        ], 500);
     }
-}
-
-
 
     public function viewSubmmittedReport($id)
     {
@@ -197,10 +121,9 @@ public function farmerReport(Request $request) {
         $services = ServicesModel::pluck('farm_id')->toArray();
         $technicianReport = TechiniciansReportsModel::pluck('farm_id')->toArray();
         // dd($verified->diseaseVerified->farm_id);
-        $treatmentRecommendation = TechiniciansReportsModel::where('farm_id', $id)->pluck('treatment_recommendation')->first();
+        $treatmentRecommendation = TechiniciansReportsModel::where('farm_id', $id)->pluck('diagnosis_disease')->first();
         $assigned = in_array($id, $services);
         $verified = in_array($id, $technicianReport);
-      
         // $notification->update(['status' => 'read']);
         // return view('admin.pages.notification', compact('notification', 'exist'));
         return view('user.others.submitted_report', compact('reported', 'assigned', 'verified', 'treatmentRecommendation'));

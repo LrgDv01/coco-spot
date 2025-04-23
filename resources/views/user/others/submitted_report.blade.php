@@ -34,10 +34,43 @@
         </div>
         <div class="card mb-2 p-0 {{ $assigned ? '' : 'd-none' }}" style="background-color:rgb(170, 202, 221);">
             <div class="card-body">
+                @php
+                    $treatments = [
+                        'Stem Bleeding' => '
+                            <ul>
+                                <li>Carve the affected tissue and then burn it.<br>(Pag-ukit ng apektadong tissue at pagkatapos ay sunugin ito.)</li>
+                                <li>Spray using a copper-based fungicide (captan).<br>(Pagspray gamit ang copper-based na fungicide (captan).)</li>
+                                <li>Paint the treated wounds with coal tar.<br>(Pagpipinta ng ginamot na sugat gamit ang coal tar.)</li>
+                                <li>Ensure adequate drainage to prevent changes in soil moisture.<br>(Ang sapat na drainage upang maiwasan ang pagbabago sa moisture ng lupa.)</li>
+                            </ul>
+                        ',
+                        'Lethal Yellowing' => '
+                            <ul>
+                                <li>Remove and dispose of infected trees.<br>(Pag-alis at pagkakalat ng infected na puno.)</li>
+                                <li>Avoid overcrowding of coconut trees to prevent rapid disease spread.<br>(Iwasan ang overcrowding ng mga puno ng niyog upang maiwasan ang mabilis na pagkalat ng sakit.)</li>
+                                <li>Regularly inspect the trees to promptly detect early symptoms of Lethal Yellowing.<br>(Regular na inspeksyunin ang mga puno upang madaliang matukoy ang mga unang sintomas ng Lethal Yellowing.)</li>
+                                <li>Improve overall tree health.<br>(Pagpapabuti ng kalusugan ng puno.)</li>
+                                <li>Consult local agronomists or coconut experts for proper measures and technical support in managing Lethal Yellowing.<br>(Makipag-ugnayan sa mga lokal na agronomist o mga eksperto sa niyog para sa mga tamang hakbang at teknikal na suporta sa pamamahala ng Lethal Yellowing.)</li>
+                            </ul>
+                        ',
+                        'Leaf Spot' => '
+                            <ul>
+                                <li>Regularly remove affected leaves and dispose of them properly to prevent disease spread.<br>(Regular na alisin ang mga apektadong dahon at itapon ang mga ito nang maayos upang maiwasan ang pagkalat ng sakit.)</li>
+                                <li>Do not dispose of them on the plantation soil to avoid re-infection by fungi.<br>(Huwag itong itapon sa lupa ng taniman upang hindi maging sanhi ng muling pagkalat ng fungi.)</li>
+                                <li>Spray with fungicides such as copper-based fungicides.<br>(Pag-spray ng mga fungicide tulad ng copper-based fungicides.)</li>
+                                <li>Ensure that the coconut trees receive proper nutrition and care to boost their resistance against diseases.<br>(Siguraduhin na ang mga puno ng niyog ay may tamang nutrisyon at sapat na pag-aalaga upang mapalakas ang kanilang resistensya laban sa mga sakit.)</li>
+                                <li>Clean the area around the coconut trees from fallen leaves, branches, and other plant debris that may harbor fungal spores.<br>(Linisin ang paligid ng puno ng niyog mula sa mga natirang dahon, sanga, at iba pang plant debris na maaaring maglaman ng mga spora ng fungus.)</li>
+                                <li>Regularly inspect the trees to detect early symptoms of the disease.<br>(Regular na inspeksyunin ang mga puno upang makita ang mga maagang sintomas ng sakit.)</li>
+                            </ul>
+                        '
+                    ];
+                @endphp
                 <h5 class="card-title p-0 text-muted"><strong>Treatment Recommendations</strong></h5><hr>
-                <p class="card-text text-muted ps-3">
-                  {{ $treatmentRecommendation }}
-                </p>
+                @if (isset($treatments[$treatmentRecommendation]))
+                    <p class="card-text text-muted ps-3"> {!! $treatments[$treatmentRecommendation] !!} </p>
+                @else
+                    <p class="card-text text-muted ps-3">Yet there's no treatment recommendation available with this reported disease.</p>
+                @endif
             </div>
         </div>
         <div class="card mb-2 p-0" style="background-color:rgb(218, 180, 182);">

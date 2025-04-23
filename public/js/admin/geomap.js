@@ -330,8 +330,6 @@ function scalePolygon(polygon, k, zoomFactor = 1) {
 }
 
 async function mapSimulation(simulate, mapboxgl) {
-    console.log('simulate', simulate);
-
     const simulationContainer = document.getElementById('simulationContainer');
     if (simulationContainer) simulationContainer.innerHTML = "";
 
@@ -559,12 +557,34 @@ async function mapSimulation(simulate, mapboxgl) {
             const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
             const orderedDays = [...days.slice(dayIndex), ...days.slice(0, dayIndex)];
 
-            let filteredFarms = selectedDisease === 'All'
-                ? simulate
-                : simulate.filter(farm =>
+            // let filteredFarms = selectedDisease === 'All'
+            //     ? simulate
+            //     : ('no_treatment' === selectedDisease 
+            //         ? simulate.filter(farm =>
+            //             farm.farmer_reports.some(report => report.disease === selectedDisease)
+            //           )
+            //         :  simulate.filter(farm =>
+            //         farm.technician_reports.some(report => report.diagnosis_disease === selectedDisease) ||
+            //         farm.farmer_reports.some(report => report.disease === selectedDisease)
+            //       ));
+
+            let filteredFarms;
+            if (selectedDisease === 'All') {
+                filteredFarms = simulate;
+            } else if (selectedDisease === 'no_treatment') {
+                filteredFarms = simulate.filter(farm => {
+                    return farm.farmer_reports.some(farmerReport => 
+                        !farm.technician_reports.some(techReport => 
+                            techReport.farm_id === farmerReport.farm_id
+                        )
+                    );
+                });
+            } else {
+                filteredFarms = simulate.filter(farm =>
                     farm.technician_reports.some(report => report.diagnosis_disease === selectedDisease) ||
                     farm.farmer_reports.some(report => report.disease === selectedDisease)
-                  );
+                );
+            }
 
             const farmFeatures = [];
             const technicianGeofences = [];
@@ -834,8 +854,8 @@ async function mapSimulation(simulate, mapboxgl) {
             `
         };
 
-        const treatmentText = document.getElementById('treatment-text');
-        treatmentText.innerHTML = `<p class="mt-5 text-center">Please select a disease to view treatment recommendations.</p>`;
+        // const treatmentText = document.getElementById('treatment-text');
+        // treatmentText.innerHTML = `<p class="mt-5 text-center">Please select a disease to view treatment recommendations.</p>`;
         const { farmPolygons: initialFarmPolygons } = updateFarmData('All');
         let intervalId;
         function interval(simulate) {
@@ -855,12 +875,16 @@ async function mapSimulation(simulate, mapboxgl) {
   
         document.getElementById('disease').addEventListener('change', (event) => {
             const selectedDisease = event.target.value;
+            const treatmentText = document.getElementById('treatment-text');
             treatmentText.innerHTML = treatments[selectedDisease] || `<p class="mt-5 text-center">Please select a disease to view treatment recommendations.</p>`;
             const { farmPolygons } = updateFarmData(selectedDisease);
             if (farmPolygons.length > 0 && (selectedDisease !== 'All')) {
-                const coordinates = farmPolygons.map(p => p.properties.center);
-                const bounds = coordinates.reduce((bounds, coord) => bounds.extend(coord), new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
-                map_simulation.fitBounds(bounds, { padding: 50 });
+                // const coordinates = farmPolygons.map(p => p.properties.center);
+                // const bounds = coordinates.reduce((bounds, coord) => bounds.extend(coord), new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
+                // map_simulation.fitBounds(bounds, { padding: 50 });
+                if (selectedDisease === 'no_treatment') {
+                    treatmentText.innerHTML = `<p class="mt-5 text-center">All Farms that are not yet treated.</p>`;
+                } 
             } else if (selectedDisease === 'All') {
                 map_simulation.setZoom(0);
             }
@@ -876,7 +900,6 @@ async function mapSimulation(simulate, mapboxgl) {
             function startProgress() {
                 progressBar.style.transition = 'none'; 
                 progressBar.style.width = '0%';
-
                 void progressBar.offsetWidth;
                 $('#simulate-button').text('Simulating . .').prop('disabled', true);
                 // setTimeout(() => {

@@ -5,21 +5,22 @@
     <div class="pagetitle">
         <h1>Simulation</h1>
     </div>
+    {{--  --}}
     <section class="section Simulation mt-4 m-0 p-0">
             <!-- Control Card -->
-            <div class="card position-absolute p-2 m-2 rounded rounded-3 bg-secondary bg-opacity-50 text-white" style="right:3%; width: 20rem; height: 5rem; z-index:10; font-size: 11px;">
-                <h6 class="text-center">LEGEND</h6>
+            <div class="card position-absolute p-2 m-2 rounded rounded-3 bg-secondary bg-opacity-75 text-white" style="right:3%; width: 20rem; height: 5rem; z-index:10; font-size: 11px;">
+                <h6 class="text-center fw-bold">LEGEND</h6>
                 <div class="d-flex flex-row">
                     <div class="d-flex align-items-center me-2">
-                        <span class="rounded rounded-5" style="display: inline-block; width: 20px; height: 20px; background-color: green; margin-right: 5px;"></span>
-                        <span>Healthy Farm </span>
+                        <span class="rounded rounded-5" style="display: inline-block; width: 15px; height: 15px; background-color: green; margin-right: 5px;"></span>
+                        <span>Healthy Farm |</span>
                     </div>
                     <div class="d-flex align-items-center me-2">
-                        <span class="rounded rounded-5 " style="display: inline-block; width: 20px; height: 20px; background-color: yellow; margin-right: 5px;"></span>
-                        <span>Recovering Farm </span>
+                        <span class="rounded rounded-5 " style="display: inline-block; width: 15px; height: 15px; background-color: yellow; margin-right: 5px;"></span>
+                        <span>Recovering Farm |</span>
                     </div>
                     <div class="d-flex align-items-center">
-                        <span class="rounded rounded-5" style="display: inline-block; width: 20px; height: 20px; background-color: red; margin-right: 5px;"></span>
+                        <span class="rounded rounded-5" style="display: inline-block; width: 15px; height: 15px; background-color: red; margin-right: 5px;"></span>
                         <span>Infected Farm </span>
                     </div>
                 </div>
@@ -32,6 +33,7 @@
                         <label for="disease" class="form-label fw-bold text-white">Type of Disease</label>
                         <select id="disease" class="form-select">
                             <option value="All" selected>Select Disease</option>
+                            <option value="no_treatment">No Treatment</option>
                             <option value="Stem Bleeding">Stem Bleeding</option>
                             <option value="Lethal Yellowing">Lethal Yellowing</option>
                             <option value="Leaf Spot">Leaf Spot</option>
@@ -44,7 +46,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-footer text-end">
+                <div class="card-footer text-end bg-white">
                     <button id="simulate-button" class="btn btn-outline-danger fw-bold">Simulate</button>
                 </div>
             </div>
@@ -70,6 +72,7 @@
         const drawer = document.getElementById('drawer');
         const toggleButton = document.getElementById('drawer-toggle');
         const simulateButton = document.getElementById('simulate-button');
+        const diseaseSelect = document.getElementById('disease');
 
         if (drawer && toggleButton) {
             let toggleIcon = toggleButton.querySelector('i');
@@ -83,12 +86,21 @@
                 }
             });
         }
+
         if (simulateButton) {
             simulateButton.addEventListener('click', () => {
                 if (drawer.style.left === '0px') {
                     drawer.style.left = '-25rem';
                 } else {
                     drawer.style.left = '0px';
+                }
+            });
+        }
+
+        if (diseaseSelect) {
+            diseaseSelect.addEventListener('change', () => {
+                if (drawer.style.left === '0px') {
+                    drawer.style.left = '-25rem';
                 }
             });
         }

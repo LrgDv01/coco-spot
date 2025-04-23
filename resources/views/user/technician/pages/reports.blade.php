@@ -277,7 +277,7 @@
             e.preventDefault();
             // Check all required fields
             const diagnosis = document.getElementById('diagnosis_disease');
-            // const treatment = document.getElementById('treatment_recommendation');
+            const treatment = document.getElementById('treatment_recommendation');
             const image = document.getElementById('image_proof');
             const status = document.querySelector('select[name="status"]');
             const infected = document.getElementById('no_of_infected');

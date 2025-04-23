@@ -19,7 +19,7 @@
                         <div class="d-flex flex-column justify-content-between align-items-center p-0 m-0">
                             <span class="text-dark p-1 px-2 rounded align-self-end {{ $submitReport ? '' : 'd-none'}}"
                                 style="background-color:rgb(235, 187, 179); font-size: 0.8rem;">
-                                <i class="fas fa-disease"></i><i class="fas fa-search"></i> {{ $verified ? 'Disease Confirmed |' : 'Disease Initially Identified'}} 
+                                <i class="fas fa-disease"></i><i class="fas fa-search"></i> {{ $verified ? 'Disease Verified |' : 'Disease Initially Identified'}} 
                                  <i class="fas fa-check {{ $verified ? '' : 'd-none'}}"></i></span>
                             <h5 class="card-title p-0 mt-2 align-self-start">
                                 <strong>{{ $farm->name }}</strong> </h5>
