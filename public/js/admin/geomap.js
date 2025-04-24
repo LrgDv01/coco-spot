@@ -855,7 +855,7 @@ async function mapSimulation(simulate, mapboxgl) {
         };
 
         const treatmentText = document.getElementById('treatment-text');
-        treatmentText.innerHTML = `<p class="mt-5 text-center">Please select a disease to view treatment recommendations.</p>`;
+        treatmentText.innerHTML = `<p class="mt-2 text-center">Please select a disease to view treatment recommendations.</p>`;
         const { farmPolygons: initialFarmPolygons } = updateFarmData('All');
         let intervalId;
         function interval(simulate) {
@@ -875,7 +875,7 @@ async function mapSimulation(simulate, mapboxgl) {
   
         document.getElementById('disease').addEventListener('change', (event) => {
             const selectedDisease = event.target.value;
-            treatmentText.innerHTML = treatments[selectedDisease] || `<p class="mt-5 text-center">Please select a disease to view treatment recommendations.</p>`;
+            treatmentText.innerHTML = treatments[selectedDisease] || `<p class="mt-2 text-center">Please select a disease to view treatment recommendations.</p>`;
             const { farmPolygons } = updateFarmData(selectedDisease);
             if (farmPolygons.length > 0 && (selectedDisease !== 'All')) {
                 // const coordinates = farmPolygons.map(p => p.properties.center);

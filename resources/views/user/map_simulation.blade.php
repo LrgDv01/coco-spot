@@ -7,27 +7,30 @@
     </div>
     {{--  --}}
     <section class="section Simulation mt-4 m-0 p-0">
-            <!-- Control Card -->
-            <div class="card position-absolute p-2 m-2 rounded rounded-3 bg-secondary bg-opacity-75 text-white" style="right:3%; width: 20rem; height: 5rem; z-index:10; font-size: 11px;">
+            <button id="drawer-toggle" class="btn btn-success position-absolute" style="top: 20%; left: 7%; z-index: 12;">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="card position-absolute p-2 m-2 me-3 rounded rounded-3 bg-secondary bg-opacity-75 text-white" 
+                    style="right:3%; width: 17rem; height: 5rem; z-index:10; font-size: 11px;">
                 <h6 class="text-center fw-bold">LEGEND</h6>
                 <div class="d-flex flex-row">
                     <div class="d-flex align-items-center me-2">
-                        <span class="rounded rounded-5" style="display: inline-block; width: 15px; height: 15px; background-color: green; margin-right: 5px;"></span>
-                        <span>Healthy Farm |</span>
+                        <span class="rounded rounded-5" style="display: inline-block; width: 15px; height: 13px; background-color: green; margin-right: 5px;"></span>
+                        <span>Healthy Farm </span>
                     </div>
                     <div class="d-flex align-items-center me-2">
-                        <span class="rounded rounded-5 " style="display: inline-block; width: 15px; height: 15px; background-color: yellow; margin-right: 5px;"></span>
-                        <span>Recovering Farm |</span>
+                        <span class="rounded rounded-5 " style="display: inline-block; width: 15px; height: 13px; background-color: yellow; margin-right: 5px;"></span>
+                        <span>Recovering Farm </span>
                     </div>
                     <div class="d-flex align-items-center">
-                        <span class="rounded rounded-5" style="display: inline-block; width: 15px; height: 15px; background-color: red; margin-right: 5px;"></span>
+                        <span class="rounded rounded-5" style="display: inline-block; width: 15px; height: 13px; background-color: red; margin-right: 5px;"></span>
                         <span>Infected Farm </span>
                     </div>
                 </div>
             
             </div>
 
-            <div id="drawer" class="card shadow-sm position-absolute rounded rounded-3" style="width: 25rem; height: 20rem; z-index: 11; top: 25%; left: -25rem; transition: left 0.3s;">
+            <div id="drawer" class="card shadow-sm position-absolute rounded rounded-3" style="width: 15rem; height: 15rem; z-index: 12; top: 27%; left: -25rem; transition: left 0.3s;">
                 <div class="card-body bg-success">
                     <div class="form-group mt-3">
                         <label for="disease" class="form-label fw-bold text-white">Type of Disease</label>
@@ -39,7 +42,7 @@
                             <option value="Leaf Spot">Leaf Spot</option>
                         </select>
                     </div>
-                    <div id="treatment" class="card mt-4 mb-0 alert alert-info" style="height: 300px;">
+                    <div id="treatment" class="card mt-4 mb-0 alert alert-info" style="height: 250px;">
                         <label class="alert-text fw-bold">Treatment Recommendations</label>
                         <hr>
                         <div id="treatment-text" class="card-body pe-2 p-0 m-0" style="max-height: 200px; overflow-y: auto;">
@@ -50,11 +53,7 @@
                     <button id="simulate-button" class="btn btn-outline-danger fw-bold">Simulate</button>
                 </div>
             </div>
-            <button id="drawer-toggle" class="btn btn-secondary position-absolute" style="top: 17%; left: 7%; z-index: 12;">
-                <i class="fas fa-bars"></i>
-            </button>
-
-            <div class="card position-absolute" style="font-size: 10px; bottom: 0%; width: 90%; height: 5rem; z-index:12">
+            <div class="card position-absolute" style="font-size: 10px; bottom: 0%; width: 90%; height: 5rem; z-index:11">
                 <div class="week-display mt-3 mb-3 d-flex justify-content-between" style="width: 100%; max-width: 700px; margin: 0 auto;">
                 </div>
                 <div class="progress-bar-container mx-3" style="width: 90%; height: 10px; background: #ddd; position: relative; margin: 0 auto;">
@@ -62,7 +61,7 @@
                 </div>
             </div>
             <!-- Map Container -->
-            <div id="map_simulation" style="width: 100%; height: 700px;"></div>
+            <div id="map_simulation" style="width: 100%; height: 60vh;"></div>
     </section>
 </main>
 @include('user.partials.__footer')
@@ -86,7 +85,6 @@
                 }
             });
         }
-
         if (simulateButton) {
             simulateButton.addEventListener('click', () => {
                 if (drawer.style.left === '0px') {
