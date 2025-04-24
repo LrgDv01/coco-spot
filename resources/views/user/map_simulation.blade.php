@@ -66,8 +66,8 @@
     </section>
 </main>
 @include('user.partials.__footer')
-<script>
 
+<script>
     document.addEventListener('DOMContentLoaded', () => {
         const drawer = document.getElementById('drawer');
         const toggleButton = document.getElementById('drawer-toggle');

@@ -101,7 +101,7 @@ function updateChart(displayYearly, displayMonthly, selectedYear, cocoData, sele
                 intersect: false,
             },  
             scales: {
-                x: { title: { display: true, text: 'Dates', font: { style: 'italic', size: 16 } } },
+                x: { title: { display: true, text: 'Years', font: { style: 'italic', size: 16 } } },
                 y: { title: { display: true, text: 'Counts', font: { style: 'italic', size: 16 } }, beginAtZero: true }
             },
         },

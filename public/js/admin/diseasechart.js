@@ -54,7 +54,7 @@ function updateChart(displayYearly, displayMonthly, selectedYear, diseaseData, s
             labels: labels,
             datasets: [
                 {
-                    label: "Bud Rot",
+                    label: "Lethal Yellowing",
                     data: budRotData,
                     backgroundColor: "#964B00",
                 },
@@ -89,7 +89,7 @@ function updateChart(displayYearly, displayMonthly, selectedYear, diseaseData, s
             },
             scales: {
                 x: { title: { display: true, text: 'Counts', font: { style: 'italic', size: 16 } } },
-                y: { title: { display: true, text: 'Dates', font: { style: 'italic', size: 16 } }, beginAtZero: true }
+                y: { title: { display: true, text: 'Years', font: { style: 'italic', size: 16 } }, beginAtZero: true }
             },
         },
     };
