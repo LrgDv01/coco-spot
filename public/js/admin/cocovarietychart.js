@@ -55,7 +55,6 @@ function updateChart(displayYearly, displayMonthly, selectedYear, cocoData, sele
                     data: lagunaTallData,
                     backgroundColor: "#65735C", 
                     borderWidth: 3, 
-                    // fill: "-1", 
                     pointRadius: 5, 
                     pointHoverRadius: 9,
                 },
@@ -64,7 +63,6 @@ function updateChart(displayYearly, displayMonthly, selectedYear, cocoData, sele
                     data: dwarfCoconutData,
                     backgroundColor: "#2F6F3D", 
                     borderWidth: 3, 
-                    // fill: "-1",
                     pointRadius: 5, 
                     pointHoverRadius: 9,
                 },
@@ -73,7 +71,6 @@ function updateChart(displayYearly, displayMonthly, selectedYear, cocoData, sele
                     data: hybridData,
                     backgroundColor: "#228B22", 
                     borderWidth: 3, 
-                    // fill: "-1",
                     pointRadius: 5, 
                     pointHoverRadius: 9,
                 }
@@ -86,7 +83,7 @@ function updateChart(displayYearly, displayMonthly, selectedYear, cocoData, sele
                 title: {
                     display: true,
                     text: `Coconut Varities (${selectedYear})`,
-                    font: { size: 24 },
+                    font: { size: 24, weight: 'bold' },
                     color: 'black'
                 },
                 tooltip: { enabled: true, intersect: false, mode: "nearest"},
@@ -101,8 +98,24 @@ function updateChart(displayYearly, displayMonthly, selectedYear, cocoData, sele
                 intersect: false,
             },  
             scales: {
-                x: { title: { display: true, text: 'Years', font: { style: 'italic', size: 16 } } },
-                y: { title: { display: true, text: 'Counts', font: { style: 'italic', size: 16 } }, beginAtZero: true }
+                x: { 
+                    title: { 
+                        display: true, 
+                        text: 'Years', 
+                        font: { style: 'italic', size: 16, weight: 'bold' } 
+                    } 
+                },
+                y: { 
+                    title: { 
+                        display: true, 
+                        text: 'Counts', 
+                        font: { style: 'italic', size: 16, weight: 'bold' } 
+                    }, 
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1 // Ensure the y-axis increments by 1
+                    }
+                }
             },
         },
     };

@@ -24,8 +24,8 @@
                 <div class="input-group">
                     <textarea name="caption" class="form-control w-100" rows="3" placeholder="Write some thoughts . ." required></textarea>
                     <div class="d-flex flex-row mt-2">
-                            <img id="image_preview" src="#" alt="Image Preview" class="img-fluid rounded me-2" style="display: none; width: 50px; height: auto;">
-                            <label id="default_img" class="input-group-text me-2" for="image_proof"><i class="bi bi-image"></i></label>
+                        <img id="image_preview" src="#" alt="Image Preview" class="img-fluid rounded me-2" style="display: none; width: 50px; height: auto;">
+                        <label id="default_img" class="input-group-text me-2" for="image_proof"><i class="bi bi-image"></i></label>
                         <input type="file" class="form-control w-75" id="image_proof" name="image_proof" accept="image/*" onchange="previewImage(event)">
                     </div>
                 </div>

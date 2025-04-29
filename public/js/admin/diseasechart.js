@@ -78,7 +78,7 @@ function updateChart(displayYearly, displayMonthly, selectedYear, diseaseData, s
                 title: {
                     display: true,
                     text: `Coconut Diseases (${selectedYear})`,
-                    font: { size: 24 },
+                    font: { size: 24, weight: 'bold' },
                     color: 'black'
                 },
                 tooltip: { enabled: true },
@@ -88,8 +88,14 @@ function updateChart(displayYearly, displayMonthly, selectedYear, diseaseData, s
                 },
             },
             scales: {
-                x: { title: { display: true, text: 'Counts', font: { style: 'italic', size: 16 } } },
-                y: { title: { display: true, text: 'Years', font: { style: 'italic', size: 16 } }, beginAtZero: true }
+                x: { 
+                    title: { display: true, text: 'Counts', font: { style: 'italic', size: 16, weight: 'bold' } },
+                    ticks: { stepSize: 1, beginAtZero: true }
+                },
+                y: { 
+                    title: { display: true, text: 'Years', font: { style: 'italic', size: 16, weight: 'bold' } }, 
+                    beginAtZero: true 
+                }
             },
         },
     };

@@ -19,7 +19,6 @@ $(document).ready(function() {
                 const farm_loc = res.farm_loc;
                 const locations = res.locations;
                 const simulation = res.diseases;
-                // console.log('simulation', simulation);
                 if (locationContainer) {
                     locationContainer.innerHTML = "";
                     // selectLocation();
@@ -79,6 +78,7 @@ function generateRandomPolygon(center, numPoints = 6, radius = 0.01) {
 }
 
 async function displayMap(farm_loc, locations, mapboxgl) {
+    console.log('farm_loc', farm_loc);
     const map_locations = new mapboxgl.Map({
         container: 'map_locations',
         style: 'mapbox://styles/mapbox/satellite-streets-v11',
@@ -120,14 +120,33 @@ async function displayMap(farm_loc, locations, mapboxgl) {
                 'line-dasharray': [2, 2]
             }
         });
+
+        // const farmFeatures = farm_loc.map(farm => ({
+        //     type: 'Feature',
+        //     geometry: {
+        //         type: 'Point',
+        //         coordinates: [parseFloat(farm.longitude), parseFloat(farm.latitude)]
+        //     },
+        //     properties: { 
+        //         municipal: farm.municipal,
+        //         id: farm.id // Add farm ID to properties
+        //      }
+        // }));
+
+        // 1. Add feature IDs to farm points (crucial for targeting)
         const farmFeatures = farm_loc.map(farm => ({
+            id: farm.id, // ◀⚡ Add feature-level ID
             type: 'Feature',
             geometry: {
                 type: 'Point',
                 coordinates: [parseFloat(farm.longitude), parseFloat(farm.latitude)]
             },
-            properties: { municipal: farm.municipal }
+            properties: {
+                municipal: farm.municipal,
+                id: farm.id // Add farm ID to properties
+            }
         }));
+
         const farmPolygons = farmFeatures.map(farm => {
             const center = farm.geometry.coordinates;
             const polygon = generateRandomPolygon(center);
@@ -196,6 +215,75 @@ async function displayMap(farm_loc, locations, mapboxgl) {
                 ]
             }
         });
+
+        // 2. Update hover handlers with precise targeting
+        let hoveredFarmId = null;
+
+        map_locations.on('mousemove', 'farm-points', (e) => {
+            // Increase detection radius to 20px around cursor
+            const features = map_locations.queryRenderedFeatures(e.point, { 
+                layers: ['farm-points'],
+                radius: 20 // ◀⚡ Wider hover detection area
+            });
+            
+            if (features.length > 0) {
+                // Only update if new farm is hovered
+                if (hoveredFarmId !== features[0].id) {
+                    // Reset previous hover
+                    if (hoveredFarmId) {
+                        map_locations.setFeatureState(
+                            { source: 'farms', id: hoveredFarmId },
+                            { hover: false }
+                        );
+                    }
+                    // Set new hover
+                    hoveredFarmId = features[0].id;
+                    map_locations.setFeatureState(
+                        { source: 'farms', id: hoveredFarmId },
+                        { hover: true }
+                    );
+                }
+            }
+        });
+
+        map_locations.on('mouseleave', 'farm-points', () => {
+            if (hoveredFarmId) {
+                map_locations.setFeatureState(
+                    { source: 'farms', id: hoveredFarmId },
+                    { hover: false }
+                );
+                hoveredFarmId = null;
+            }
+        });
+
+        // 3. Update layer paint to use feature state
+        map_locations.setPaintProperty('farm-points', 'circle-color', [
+            'case',
+            ['boolean', ['feature-state', 'hover'], false],
+            '#FFA500', // Hovered color
+            '#FFD700'  // Default color
+        ]);
+
+        map_locations.setPaintProperty('farm-points', 'circle-radius', [
+            'case',
+            ['boolean', ['feature-state', 'hover'], false],
+            8,  // Hovered size
+            5   // Default size
+        ]);
+
+        // Add cursor pointer and hover effects to farm points
+        // map_locations.on('mouseenter', 'farm-points', () => {
+        //     map_locations.getCanvas().style.cursor = 'pointer'; // Pointer cursor on hover
+        //     map_locations.setPaintProperty('farm-points', 'circle-color', '#FFA500'); // Orange color
+        //     map_locations.setPaintProperty('farm-points', 'circle-radius', 7); // Slightly larger
+        // });
+
+        // map_locations.on('mouseleave', 'farm-points', () => {
+        //     map_locations.getCanvas().style.cursor = ''; // Default cursor
+        //     map_locations.setPaintProperty('farm-points', 'circle-color', '#FFD700'); // Gold color
+        //     map_locations.setPaintProperty('farm-points', 'circle-radius', 5); // Original size
+        // });
+
         let zoomAnimationFrame = null;
         map_locations.on('zoom', () => {
             if (zoomAnimationFrame) cancelAnimationFrame(zoomAnimationFrame);
@@ -255,38 +343,78 @@ async function displayMap(farm_loc, locations, mapboxgl) {
                 document.getElementById('details').style.display = 'none';
             }
         });
-        // Popup handling
-        let popup = null;
-        map_locations.on('mouseenter', 'laguna-points', (e) => {
-            if (e.features.length > 0 && !popup) {
-                const { coordinates } = e.features[0].geometry;
-                const loc = locations.find(l => l.name === e.features[0].properties.name);
+
+        // Add this after creating the 'farm-points' layer in displayMap():
+        map_locations.on('click', 'farm-points', (e) => {
+            if (e.features.length > 0) {
+                const farmId = e.features[0].properties.id;
+                const farm = farm_loc.find(f => f.id === farmId);
                 
-                if (loc) {
-                    popup = new mapboxgl.Popup({ closeButton: false })
-                        .setLngLat(coordinates)
-                        .setHTML(`
-                            <div class="map-popup">
-                                <strong>${loc.name}</strong><br>
-                                ${Object.entries({
-                                    'Lot Area': loc.lot_area,
-                                    'Trees': loc.trees,
-                                    'Meters': loc.meters
-                                }).map(([key, val]) => `
-                                    ${key}: ${val || 'N/A'}
-                                `).join('<br>')}
-                            </div>
-                        `)
-                        .addTo(map_locations);
+                if (farm) {
+                    document.getElementById('farm_name').textContent = farm.name || 'N/A';
+                    document.getElementById('address').textContent = farm.address || 'N/A';
+                    document.getElementById('district').textContent = farm.district || 'N/A';
+                    document.getElementById('hectares').textContent = farm.hectares || 'N/A';
+                    document.getElementById('tree_age').textContent = farm.tree_age || 'N/A';
+                    document.getElementById('planted_coconuts').textContent = farm.planted_coconut || 'N/A';
+                    document.getElementById('variety').textContent = farm.variety || 'N/A';
                 }
             }
         });
-        map_locations.on('mouseleave', 'laguna-points', () => {
-            if (popup) {
-                popup.remove();
-                popup = null;
-            }
-        });
+
+
+
+
+        // farm_loc.forEach(element => {
+        //     if (element.id === farm-points ) {
+        //         document.getElementById('farm_name').textContent = element.name || 'N/A';
+        //         document.getElementById('location').textContent = element.address || 'N/A';
+        //         document.getElementById('district').textContent = element.district || 'N/A';
+        //         document.getElementById('hectares').textContent = element.hectares || 'N/A';
+        //         document.getElementById('tree_age').textContent = element.tree_age || 'N/A';
+        //         document.getElementById('planted_coconuts').textContent = element.planted_coconut || 'N/A';
+        //         document.getElementById('variety').textContent = element.variety || 'N/A';
+        //         // document.getElementById('soil_type').style.display = 'block';
+        //     }
+          
+        // });
+        
+        // Popup handling
+
+        // let popup = null;
+        // map_locations.on('mouseenter', 'farm-points', (e) => {
+        //     if (e.features.length > 0 && !popup) {
+        //         const { coordinates } = e.features[0].geometry;
+        //         const loc = locations.find(l => l.name === e.features[0].properties.name);
+                
+        //         if (loc) {
+        //             popup = new mapboxgl.Popup({ closeButton: false })
+        //                 .setLngLat(coordinates)
+        //                 .setHTML(`
+        //                     <div class="map-popup">
+        //                         <strong>${loc.name}</strong><br>
+        //                         ${Object.entries({
+        //                             'Lot Area': loc.lot_area,
+        //                             'Trees': loc.trees,
+        //                             'Meters': loc.meters
+        //                         }).map(([key, val]) => `
+        //                             ${key}: ${val || 'N/A'}
+        //                         `).join('<br>')}
+        //                     </div>
+        //                 `)
+        //                 .addTo(map_locations);
+        //         }
+        //     }
+        // });
+        // map_locations.on('mouseleave', 'farm-points', () => {
+        //     if (popup) {
+        //         popup.remove();
+        //         popup = null;
+        //     }
+        // });
+
+
+
     });
 }
 
@@ -406,18 +534,7 @@ async function mapSimulation(simulate, mapboxgl) {
             }
         });
 
-        // map_simulation.addLayer({
-        //     id: 'technician-geofences-outline',
-        //     type: 'line',
-        //     source: 'technician-geofences',
-        //     paint: {
-        //         'line-color': '#FF0000',
-        //         'line-width': 2,
-        //         'line-dasharray': [1, 1],
-        //         'line-opacity': 1 // Initial opacity
-        //     }
-        // });
-
+     
         map_simulation.on('zoom', () => {
             const zoom = map_simulation.getZoom();
             const zoomFactor = Math.pow(2, (9 - zoom)) * 0.5;
@@ -442,22 +559,6 @@ async function mapSimulation(simulate, mapboxgl) {
                 features: scaledGeofenceFeatures
             });
         });
-
-                // Updated zoom listener
-        // map_simulation.on('zoom', () => {
-        //     const zoom = map_simulation.getZoom();
-        //     const zoomFactor = Math.pow(2, (9 - zoom)) * 0.5; // Reverse scaling
-        //     const currentData = map_simulation.getSource('farm-polygons')._data;
-            
-        //     const scaledFeatures = currentData.features.map(feature => {
-        //         return scalePolygon(feature, 1, zoomFactor);
-        //     });
-
-        //     map_simulation.getSource('farm-polygons').setData({
-        //         type: 'FeatureCollection',
-        //         features: scaledFeatures
-        //     });
-        // });
 
         // Convert RGB to HSL
         function rgbToHsl(r, g, b) {
@@ -519,7 +620,6 @@ async function mapSimulation(simulate, mapboxgl) {
         function getFarmState(farm) {
             const now = new Date();
             const sevenDays = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
-     
 
             // Get the latest reports
             const latestFarmerReport = farm.farmer_reports.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
@@ -549,24 +649,11 @@ async function mapSimulation(simulate, mapboxgl) {
             }
         }
 
-        // ... (Keep rgbToHsl, hslToRgb, interpolateColor, interpolateSize, getFarmState unchanged)
-
         function updateFarmData(selectedDisease) {
             const currentDate = new Date();
             const dayIndex = currentDate.getDay();
             const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
             const orderedDays = [...days.slice(dayIndex), ...days.slice(0, dayIndex)];
-
-            // let filteredFarms = selectedDisease === 'All'
-            //     ? simulate
-            //     : ('no_treatment' === selectedDisease 
-            //         ? simulate.filter(farm =>
-            //             farm.farmer_reports.some(report => report.disease === selectedDisease)
-            //           )
-            //         :  simulate.filter(farm =>
-            //         farm.technician_reports.some(report => report.diagnosis_disease === selectedDisease) ||
-            //         farm.farmer_reports.some(report => report.disease === selectedDisease)
-            //       ));
 
             let filteredFarms;
             if (selectedDisease === 'All') {
@@ -601,9 +688,9 @@ async function mapSimulation(simulate, mapboxgl) {
                 if (farm.farmer_reports.length === 0 && farm.technician_reports.length === 0) {
                     pointColor = '#00FF00';
                 } else if (isTreated) {
-                    pointColor = interpolateColor(farmProgress, [[255, 0, 0], [0, 255, 0]]);
-                } else {
                     pointColor = interpolateColor(farmProgress, [[255, 255, 0], [255, 0, 0]]);
+                } else {
+                    pointColor = interpolateColor(farmProgress, [[255, 0, 0], [0, 255, 0]]);
                 }
                 // Add farm point
                 farmFeatures.push({
@@ -697,14 +784,14 @@ async function mapSimulation(simulate, mapboxgl) {
                     if (isTreated) {
                         if (farmProgress > 0.6 || farmProgress > 0.2) {
                             baseRadius = interpolateSize(1 - farmProgress, 0, maxRadius);
-                            color = interpolateColor(farmProgress, [[255, 0, 0], [0, 255, 0]]);
+                            color = interpolateColor(farmProgress, [[255, 255, 0], [255, 0, 0]]);
                         } else {
                             baseRadius = interpolateSize(farmProgress, minRadius, maxRadius);
-                            color = interpolateColor(farmProgress, [[255, 0, 0], [0, 255, 0]]);
+                            color = interpolateColor(farmProgress, [[255, 255, 0], [255, 0, 0]]);
                         }
                     } else {
                         baseRadius = interpolateSize(farmProgress, minRadius, maxRadius);
-                        color = interpolateColor(farmProgress, [[255, 255, 0], [255, 0, 0]]);
+                        color = interpolateColor(farmProgress, [[255, 0, 0], [0, 255, 0]]);
                     }
                     const zoom = map_simulation.getZoom();
                     const zoomFactor = Math.pow(2, (9 - zoom)) * 1.5;
@@ -768,24 +855,31 @@ async function mapSimulation(simulate, mapboxgl) {
                     let progress, color, scale;
                     if (isTreated) {
                         progress = farmProgress + (animationProgress * (1 - farmProgress));
-                        color = interpolateColor(progress, [[255, 0, 0], [0, 255, 0]]);
+                        color = interpolateColor(progress, [[255, 255, 0], [255, 0, 0]]);
                         scale = 1 - animationProgress;
+                        const scaledFeature = scalePolygon(feature, scale, zoomFactor);
+                        return {
+                            ...scaledFeature,
+                            properties: {
+                                ...scaledFeature.properties,
+                                color: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
+                                sourceType: isGeofence ? 'geofence' : 'polygon'
+                            }
+                        };
                     } else {
                         progress = farmProgress + (animationProgress * (1 - farmProgress));
-                        color = interpolateColor(progress, [[255, 255, 0], [255, 0, 0]]);
+                        // color = interpolateColor(progress, [[255, 0, 0], [0, 255, 0]]);
                         scale = 1 + animationProgress * (maxScale - 1);
+                        const scaledFeature = scalePolygon(feature, scale, zoomFactor);
+                        return {
+                            ...scaledFeature,
+                            properties: {
+                                ...scaledFeature.properties,
+                                sourceType: isGeofence ? 'geofence' : 'polygon'
+                            }
+                        };
                     }
-        
-                    const scaledFeature = scalePolygon(feature, scale, zoomFactor);
-                    
-                    return {
-                        ...scaledFeature,
-                        properties: {
-                            ...scaledFeature.properties,
-                            color: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
-                            sourceType: isGeofence ? 'geofence' : 'polygon'
-                        }
-                    };
+             
                 });
         
                 // Split processed data back into polygons and geofences
@@ -878,9 +972,6 @@ async function mapSimulation(simulate, mapboxgl) {
             treatmentText.innerHTML = treatments[selectedDisease] || `<p class="mt-2 text-center">Please select a disease to view treatment recommendations.</p>`;
             const { farmPolygons } = updateFarmData(selectedDisease);
             if (farmPolygons.length > 0 && (selectedDisease !== 'All')) {
-                // const coordinates = farmPolygons.map(p => p.properties.center);
-                // const bounds = coordinates.reduce((bounds, coord) => bounds.extend(coord), new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
-                // map_simulation.fitBounds(bounds, { padding: 50 });
                 if (selectedDisease === 'no_treatment') {
                     treatmentText.innerHTML = `<p class="mt-5 text-center">All Farms that are not yet treated.</p>`;
                 } 
@@ -901,14 +992,11 @@ async function mapSimulation(simulate, mapboxgl) {
                 progressBar.style.width = '0%';
                 void progressBar.offsetWidth;
                 $('#simulate-button').text('Simulating . .').prop('disabled', true);
-                // setTimeout(() => {
                     progressBar.style.transition = 'width 7s linear';
                     progressBar.style.width = '100%';
-                // }, 50); // Small delay to ensure transition applies
             }
             // Initial start
             startProgress();
-        
             progressBar.addEventListener('transitionend', function handler(e) {
                 if (e.propertyName === 'width' && progressBar.style.width === '100%') {
                     // progressBar.style.transition = 'none'; 

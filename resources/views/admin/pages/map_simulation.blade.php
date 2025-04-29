@@ -1,17 +1,16 @@
 @include('admin.partials.__header')
 @include('admin.partials.__nav')
-
 <main id="main" class="main">
     <div class="pagetitle">
         <h1>Simulation</h1>
     </div>
-    <section class="section Simulation mt-4">
-        <div class="container">
+    <section class="section Simulation mt-4 m-0 p-0">
+        <div class="container m-0 p-0">
             <!-- Control Card -->
-            <div class="card position-absolute p-3 m-3 rounded rounded-3 bg-success bg-opacity-25 text-white" style="right:4%; width: 15rem; height: 9rem; z-index:10">
+            <div class="card position-absolute p-3 m-3 rounded rounded-3 bg-success bg-opacity-25 text-white" style="right:2%; width: 15rem; height: 9rem; z-index:10">
                 <h5 class="text-center">LEGEND</h5>
                 <div class="d-flex align-items-center mb-1">
-                    <span class="rounded rounded-5" style="display: inline-block; width: 20px; height: 20px; background-color: green; margin-right: 5px;"></span>
+                    <span class="rounded rounded-5" style="display: inline-block; width: 20px; height: 20px; background-color: #00FF00; margin-right: 5px;"></span>
                     <span>Healthy Farm </span>
                 </div>
                 <div class="d-flex align-items-center mb-1">
@@ -54,8 +53,7 @@
                 </div>
             </div>
             <!-- Map Container -->
-            <div id="map_simulation" style="width: 100%; height: 700px;"></div>
-
+            <div id="map_simulation" style="flex-grow: 1; width: calc(100vw - 350px); height: calc(100vh - 200px);"></div>
         </div>
     </section>
 </main>

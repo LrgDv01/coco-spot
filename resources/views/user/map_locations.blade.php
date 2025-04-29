@@ -6,6 +6,9 @@
         <h1><Strong>Map</Strong></h1>
     </div>
     <section class="section map mt-3">
+            <button id="drawer-toggle" class="btn btn-success position-absolute" style="top: 19%; left: 7%; z-index: 12;">
+                <i class="fas fa-bars"></i>
+            </button>
             <div id="drawer" class="card shadow-sm position-absolute" style="top: 25%; width: 20rem; height:auto; z-index: 11; left: -25rem; transition: left 0.3s;"> <!-- Adjust width -->
                 <div class="card-header bg-success text-white d-flex justify-content-center">
                     <h5 class="mb-0"><strong>Municipalities</strong></h5>
@@ -29,10 +32,7 @@
                     </div>
                 </div>
             </div>
-            <button id="drawer-toggle" class="btn btn-secondary position-absolute" style="top: 17%; left: 7%; z-index: 12;">
-                <i class="fas fa-bars"></i>
-            </button>
-            <div id="map_locations" style="width: 100%; height: 700px;"></div>
+            <div id="map_locations" style="width: 100%; height: 80vh;"></div>
   
     </section>
 </main>

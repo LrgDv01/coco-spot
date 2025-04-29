@@ -25,7 +25,7 @@ class MapController extends Controller
             ];
         }
    
-        $farm_loc = FarmModel::select('latitude', 'longitude', 'municipal', 'hectares', 'planted_coconut')->get();
+        $farm_loc = FarmModel::all();
 
         // $diseases = TechiniciansReportsModel::with('farms')->pluck('diagnosis_disease')->toArray();
         // $diseases = TechiniciansReportsModel::with('farms')->get();
