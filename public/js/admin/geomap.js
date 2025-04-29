@@ -529,7 +529,7 @@ async function mapSimulation(simulate, mapboxgl) {
             type: 'fill',
             source: 'technician-geofences',
             paint: {
-                'fill-color': '#FF0000',
+                'fill-color': '#fffc02',
                 'fill-opacity': 0.3 // Initial opacity
             }
         });
@@ -604,11 +604,19 @@ async function mapSimulation(simulate, mapboxgl) {
         }
 
         // Interpolate between two colors using HSL
-        function interpolateColor(progress, colors) {
+        function treatedInterpolateColor(progress, colors) {
             const [start, end] = colors.map(c => rgbToHsl(...c));
-            const h = start[0] + progress * (end[0] - start[0]);
-            const s = start[1] + progress * (end[1] - start[1]);
-            const l = start[2] + progress * (end[2] - start[2]);
+            const h = start[0] + progress * (start[0] - end[0] );
+            const s = start[1] + progress * (start[1] - end[1] );
+            const l = start[2] + progress * (start[2] - end[2] );
+            return hslToRgb(h, s, l);
+        }
+
+        function unTreatedInterpolateColor(progress, colors) {
+            const [start, end] = colors.map(c => rgbToHsl(...c));
+            const h = start[0] + progress * (end[0] - start[0] );
+            const s = start[1] + progress * (end[1] - start[1] );
+            const l = start[2] + progress * (end[2] - start[2] );
             return hslToRgb(h, s, l);
         }
 
@@ -628,7 +636,7 @@ async function mapSimulation(simulate, mapboxgl) {
             if (latestTechnicianReport && (!latestFarmerReport || new Date(latestTechnicianReport.created_at) > new Date(latestFarmerReport.created_at))) {
                 const timeSinceTreatment = now - new Date(latestTechnicianReport.created_at);
                 // console.log('timeSinceTreatment', timeSinceTreatment);
-                if (timeSinceTreatment > sevenDays) {
+                if (timeSinceTreatment > sevenDays ) {
                     // Farm treated over 7 days ago: fully healthy
                     return { isTreated: true, progress: 1 };
                 } else if (timeSinceTreatment) {
@@ -641,7 +649,7 @@ async function mapSimulation(simulate, mapboxgl) {
             } else if (latestFarmerReport) {
                 // Untreated farm based on farmer report
                 const timeSinceReport = now - new Date(latestFarmerReport.created_at);
-                const progress = Math.min(timeSinceReport / sevenDays, 1);
+                const progress = Math.min(timeSinceReport / sevenDays, 2);
                 return { isTreated: false, progress };
             } else {
                 // No reports
@@ -654,7 +662,6 @@ async function mapSimulation(simulate, mapboxgl) {
             const dayIndex = currentDate.getDay();
             const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
             const orderedDays = [...days.slice(dayIndex), ...days.slice(0, dayIndex)];
-
             let filteredFarms;
             if (selectedDisease === 'All') {
                 filteredFarms = simulate;
@@ -672,10 +679,8 @@ async function mapSimulation(simulate, mapboxgl) {
                     farm.farmer_reports.some(report => report.disease === selectedDisease)
                 );
             }
-
             const farmFeatures = [];
             const technicianGeofences = [];
-
             filteredFarms.forEach(farm => {
                 const longitude = parseFloat(farm.longitude);
                 const latitude = parseFloat(farm.latitude);
@@ -688,9 +693,9 @@ async function mapSimulation(simulate, mapboxgl) {
                 if (farm.farmer_reports.length === 0 && farm.technician_reports.length === 0) {
                     pointColor = '#00FF00';
                 } else if (isTreated) {
-                    pointColor = interpolateColor(farmProgress, [[255, 255, 0], [255, 0, 0]]);
+                    pointColor = treatedInterpolateColor(farmProgress, [[255, 255, 0], [255, 0, 0]]);
                 } else {
-                    pointColor = interpolateColor(farmProgress, [[255, 0, 0], [0, 255, 0]]);
+                    pointColor = unTreatedInterpolateColor(farmProgress, [[255, 0, 0], [255, 0, 0]]);
                 }
                 // Add farm point
                 farmFeatures.push({
@@ -735,7 +740,6 @@ async function mapSimulation(simulate, mapboxgl) {
                             (acc, coord) => [acc[0] + coord[0] / technicianCoords.length, acc[1] + coord[1] / technicianCoords.length],
                             [0, 0]
                         );
-
                         // Use same size and color logic as farm polygons
                         const minRadius = 0.01;
                         const maxRadius = 0.02;
@@ -743,14 +747,14 @@ async function mapSimulation(simulate, mapboxgl) {
                         if (isTreated) {
                             if (farmProgress > 0.6 || farmProgress > 0.2) {
                                 baseRadius = interpolateSize(1 - farmProgress, 0, maxRadius);
-                                color = interpolateColor(farmProgress, [[255, 0, 0], [0, 255, 0]]);
+                                color = treatedInterpolateColor(farmProgress, [[255, 255, 0], [255, 0, 0]]);
                             } else {
                                 baseRadius = interpolateSize(farmProgress, minRadius, maxRadius);
-                                color = interpolateColor(farmProgress, [[255, 0, 0], [0, 255, 0]]);
+                                color = treatedInterpolateColor(farmProgress, [[255, 255, 0], [255, 0, 0]]);
                             }
                         } else {
                             baseRadius = interpolateSize(farmProgress, minRadius, maxRadius);
-                            color = interpolateColor(farmProgress, [[255, 255, 0], [255, 0, 0]]);
+                            color = unTreatedInterpolateColor(farmProgress, [[255, 0, 0], [0, 255, 0]]);
                         }
                         const zoom = map_simulation.getZoom();
                         const zoomFactor = Math.pow(2, (9 - zoom)) * 1.5;
@@ -775,23 +779,40 @@ async function mapSimulation(simulate, mapboxgl) {
                     const center = farm.geometry.coordinates;
                     const originalFarm = simulate.find(f => f.id === farm.properties.farmId);
                     const { isTreated, progress: farmProgress } = getFarmState(originalFarm);
+                    console.log("originalFarm", originalFarm);
+                    // const { isTreated, progress: farmProgress } = getFarmState(farm);
                     if (originalFarm.farmer_reports.length === 0 && originalFarm.technician_reports.length === 0) {
                         return null;
                     }
-                    const minRadius = 0.01;
-                    const maxRadius = 0.02;
+                    const minRadius = 0.0;
+                    const maxRadius = 0.010;
                     let baseRadius, color;
                     if (isTreated) {
                         if (farmProgress > 0.6 || farmProgress > 0.2) {
-                            baseRadius = interpolateSize(1 - farmProgress, 0, maxRadius);
-                            color = interpolateColor(farmProgress, [[255, 255, 0], [255, 0, 0]]);
+                            baseRadius = interpolateSize(1 - farmProgress, minRadius, maxRadius);
+                            color = treatedInterpolateColor(farmProgress, [[255, 255, 0], [255, 0, 0]]);
                         } else {
-                            baseRadius = interpolateSize(farmProgress, minRadius, maxRadius);
-                            color = interpolateColor(farmProgress, [[255, 255, 0], [255, 0, 0]]);
+                            baseRadius = interpolateSize(1 - farmProgress, minRadius, maxRadius);
+                            color = treatedInterpolateColor(farmProgress, [[255, 255, 0], [255, 0, 0]]);
                         }
+
+                        // const zoom = map_simulation.getZoom();
+                        // const zoomFactor = Math.pow(2, (9 - zoom)) * 1.5;
+                        // const polygon = simulateGenerateRandomPolygon(center, 9, baseRadius);
+                        // return {
+                        //     ...scalePolygon(polygon, 1, zoomFactor),
+                        //     properties: {
+                        //         municipal: farm.properties.municipal,
+                        //         disease: farm.properties.disease,
+                        //         farmId: farm.properties.farmId,
+                        //         center,
+                        //         color: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
+                        //         baseRadius
+                        //     }
+                        // };
                     } else {
                         baseRadius = interpolateSize(farmProgress, minRadius, maxRadius);
-                        color = interpolateColor(farmProgress, [[255, 0, 0], [0, 255, 0]]);
+                        color = unTreatedInterpolateColor(farmProgress, [[255, 0, 0], [255, 0, 0]]);
                     }
                     const zoom = map_simulation.getZoom();
                     const zoomFactor = Math.pow(2, (9 - zoom)) * 1.5;
@@ -807,6 +828,7 @@ async function mapSimulation(simulate, mapboxgl) {
                             baseRadius
                         }
                     };
+            
                 }).filter(p => p !== null && p.properties.color);
 
             map_simulation.getSource('farms').setData({
@@ -855,7 +877,7 @@ async function mapSimulation(simulate, mapboxgl) {
                     let progress, color, scale;
                     if (isTreated) {
                         progress = farmProgress + (animationProgress * (1 - farmProgress));
-                        color = interpolateColor(progress, [[255, 255, 0], [255, 0, 0]]);
+                        color = treatedInterpolateColor(progress, [[255, 255, 0], [255, 0, 0]]);
                         scale = 1 - animationProgress;
                         const scaledFeature = scalePolygon(feature, scale, zoomFactor);
                         return {
