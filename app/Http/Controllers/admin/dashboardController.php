@@ -27,7 +27,7 @@ class dashboardController extends Controller
         $count_healthy_farms = FarmModel::whereDoesntHave('farmerReports')->count();
         $count_healthy_farms = $count_healthy_farms + $count_healthy_farm = FarmModel::whereHas('technicianReports')->count();
         $count_infected_farms = FarmerReportsModel::all()->count();
-        $count_infected_farms = ($count_correct_diagnosis + $count_incorrect_diagnosis) - $count_infected_farms;
+        $count_infected_farms = $count_infected_farms - ($count_correct_diagnosis + $count_incorrect_diagnosis);
         // $affected_rate = round(($count_infected_farms / $count_farms) * 100, 2);
         $affected_rate = round(($count_infected_farms / $count_farms) * 100);
         $count_treated_farms = TechiniciansReportsModel::all()->count();
