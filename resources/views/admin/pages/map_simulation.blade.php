@@ -27,15 +27,21 @@
                     <div class="form-group mt-3">
                         <label for="disease" class="form-label fw-bold text-white">Type of Disease</label>
                         <select id="disease" class="form-select">
-                            <option value="All" selected>All Conditions</option>
+                            <option value="All" selected>Select Disease</option>
                             <option value="no_treatment">No Treatment</option>
                             <option value="Stem Bleeding">Stem Bleeding</option>
                             <option value="Lethal Yellowing">Lethal Yellowing</option>
                             <option value="Leaf Spot">Leaf Spot</option>
                         </select>
                     </div>
-                    <div id="treatment" class="card mt-4 mb-0 alert alert-info" style="height: 300px;">
-                        <label class="alert-text fw-bold">Treatment Recommendations</label>
+                    <div id="description" class="card mt-4 mb-0 alert alert-info" style="height: 200px;">
+                        <label class="alert-text text-center fw-bold">Descriptions</label>
+                        <hr>
+                        <div id="description-text" class="card-body pe-2 p-0 m-0" style="max-height: 200px; overflow-y: auto;">
+                        </div>
+                    </div>
+                    <div id="treatment" class="card mt-4 mb-0 alert alert-info" style="height: 200px;">
+                        <label class="alert-text text-center fw-bold">Treatment Recommendations</label>
                         <hr>
                         <div id="treatment-text" class="card-body pe-2 p-0 m-0" style="max-height: 200px; overflow-y: auto;">
                         </div>

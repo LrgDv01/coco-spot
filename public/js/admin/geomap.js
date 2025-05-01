@@ -779,7 +779,7 @@ async function mapSimulation(simulate, mapboxgl) {
                     const center = farm.geometry.coordinates;
                     const originalFarm = simulate.find(f => f.id === farm.properties.farmId);
                     const { isTreated, progress: farmProgress } = getFarmState(originalFarm);
-                    console.log("originalFarm", originalFarm);
+                    // console.log("originalFarm", originalFarm);
                     // const { isTreated, progress: farmProgress } = getFarmState(farm);
                     if (originalFarm.farmer_reports.length === 0 && originalFarm.technician_reports.length === 0) {
                         return null;
@@ -901,35 +901,28 @@ async function mapSimulation(simulate, mapboxgl) {
                             }
                         };
                     }
-             
                 });
-        
                 // Split processed data back into polygons and geofences
                 const currentPolygons = processedData.filter(f => f.properties.sourceType === 'polygon');
                 const currentGeofences = processedData.filter(f => f.properties.sourceType === 'geofence');
-        
                 // Update all sources
                 map_simulation.getSource('farm-polygons').setData({
                     type: 'FeatureCollection',
                     features: currentPolygons
                 });
-                
                 map_simulation.getSource('technician-geofences').setData({
                     type: 'FeatureCollection',
                     features: currentGeofences
                 });
-        
                 // Update farm points colors
                 const farmFeatures = map_simulation.getSource('farms')._data.features.map(f => {
                     const polygon = currentPolygons.find(p => p.properties.farmId === f.properties.farmId);
                     return polygon ? { ...f, properties: { ...f.properties, pointColor: polygon.properties.color } } : f;
                 });
-        
                 map_simulation.getSource('farms').setData({
                     type: 'FeatureCollection',
                     features: farmFeatures
                 });
-        
                 if (animationProgress >= 1) {
                     isAnimating = false;
                 } else {
@@ -939,7 +932,41 @@ async function mapSimulation(simulate, mapboxgl) {
             requestAnimationFrame(step);
         }
    
-
+        const descriptions = {
+            'Stem Bleeding': `
+                <h6 class="fw-bold">What is Stem Bleeding? (Ano ang Stem Bleeding?)</h6>
+                <ul>
+                    <li>Stem Bleeding is a coconut disease where red-brown liquid leaks from the trunk, leading to rot and weakness of the tree.
+                        (Ang Stem Bleeding ay isang sakit ng niyog kung saan may tumutulong pulang likido mula sa katawan ng puno, na nagiging 
+                        sanhi ng pagkabulok at paghina ng puno.)</li>
+                    <li>Causes (Sanhi) - Caused by a soil fungus called Thielaviopsis paradoxa, especially when the trunk is wounded.
+                        (Dulot ito ng fungus sa lupa na tinatawag na Thielaviopsis paradoxa, lalo na kapag may sugat ang puno.)</li>
+                </ul>
+            `,
+            'Lethal Yellowing': `
+               <h6 class="fw-bold">What is Lethal Yellowing? (Ano ang Lethal Yellowing?)</h6>
+                <ul>
+                    <li>Lethal Yellowing is a serious coconut disease where the fruits and flowers die early, and the whole tree eventually collapses.
+                        (Ang Lethal Yellowing ay isang malalang sakit ng niyog kung saan maaga pang nalalaglag ang bunga at namamatay ang mga bulaklak,
+                         hanggang sa tuluyang bumagsak ang buong puno.)</li>
+                    <li>Causes (Sanhi) - It is caused by a phytoplasma (a type of bacteria) carried by insects like planthoppers.
+                        (Dulot ito ng phytoplasma (uri ng bacteria) na ikinakalat ng mga insekto tulad ng planthopper.)</li>
+                </ul>
+            `,
+            'Leaf Spot': `
+                <h6 class="fw-bold">What is Leaf Spot? (Ano ang Leaf Spot?)</h6>
+                <ul>
+                    <li>Leaf Spot is a common disease in coconut trees where small spots appear on the leaves. These spots usually
+                        start yellow or brown and can spread, making the leaves weak and dry. (Ang Leaf Spot ay isang karaniwang sakit
+                        sa puno ng niyog kung saan lumilitaw ang maliliit na batik sa mga dahon. Karaniwan, nagsisimula itong dilaw o
+                        kayumanggi at kumakalat, kaya humihina at natutuyo ang mga dahon.)</li>
+                    <li>Causes (Sanhi) - It is caused by fungi, like Pestalotiopsis palmarum, especially when the weather is wet or humid.
+                        (Dulot ito ng fungi o amag, tulad ng Pestalotiopsis palmarum, lalo na kapag basa o mahalumigmig ang panahon.)</li>
+                </ul>
+            `
+        };
+        const descriptionText = document.getElementById('description-text');
+        descriptionText.innerHTML = `<p class="mt-2 text-center">Please select a disease to view its descriptions.</p>`;
         const treatments = {
             'Stem Bleeding': `
                 <ul>
@@ -969,9 +996,8 @@ async function mapSimulation(simulate, mapboxgl) {
                 </ul>
             `
         };
-
         const treatmentText = document.getElementById('treatment-text');
-        treatmentText.innerHTML = `<p class="mt-2 text-center">Please select a disease to view treatment recommendations.</p>`;
+        treatmentText.innerHTML = `<p class="mt-2 text-center">Please select a disease to view its treatment recommendations.</p>`;
         const { farmPolygons: initialFarmPolygons } = updateFarmData('All');
         let intervalId;
         function interval(simulate) {
@@ -988,10 +1014,10 @@ async function mapSimulation(simulate, mapboxgl) {
                 intervalId = setInterval(updateFunction, 1000);
             }
         }
-  
         document.getElementById('disease').addEventListener('change', (event) => {
             const selectedDisease = event.target.value;
-            treatmentText.innerHTML = treatments[selectedDisease] || `<p class="mt-2 text-center">Please select a disease to view treatment recommendations.</p>`;
+            treatmentText.innerHTML = treatments[selectedDisease] || `<p class="mt-2 text-center">Please select a disease to view its treatment recommendations.</p>`;
+            descriptionText.innerHTML =  descriptions[selectedDisease] || `<p class="mt-2 text-center">Please select a disease to view its descriptions.</p>`;
             const { farmPolygons } = updateFarmData(selectedDisease);
             if (farmPolygons.length > 0 && (selectedDisease !== 'All')) {
                 if (selectedDisease === 'no_treatment') {
@@ -1001,7 +1027,6 @@ async function mapSimulation(simulate, mapboxgl) {
                 map_simulation.setZoom(0);
             }
         });
-
         document.getElementById('simulate-button').addEventListener('click', () => {
             const selectedDisease = document.getElementById('disease').value;
             const { farmPolygons } = selectedDisease === 'All'
