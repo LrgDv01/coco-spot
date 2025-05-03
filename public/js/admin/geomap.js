@@ -365,9 +365,6 @@ async function displayMap(farm_loc, locations, mapboxgl) {
             }
         });
 
-
-
-
         // farm_loc.forEach(element => {
         //     if (element.id === farm-points ) {
         //         document.getElementById('farm_name').textContent = element.name || 'N/A';
@@ -460,39 +457,9 @@ function scalePolygon(polygon, k, zoomFactor = 1) {
     };
 }
 
-
-// Add duration calculation helper
-function getDurationMs(selectedDisease) {
-    switch(selectedDisease) {
-      case 'Lethal Yellowing': return 90 * 24 * 60 * 60 * 1000; // 3 months
-      case 'Leaf Spot': return 10 * 24 * 60 * 60 * 1000;      // 10 days
-      case 'Stem Bleeding': return 3 * 24 * 60 * 60 * 1000;   // 3 days
-      default: return 7 * 24 * 60 * 60 * 1000;               // Default 1 week
-    }
-  }
-  
-// Update date range display
-function updateDateRange(selectedDisease) {
-const durationMs = getDurationMs(selectedDisease);
-const startDate = new Date();
-const endDate = new Date(startDate.getTime() + durationMs);
-
-const options = { month: 'short', day: 'numeric', year: 'numeric' };
-const weekDisplay = document.querySelector('.week-display');
-weekDisplay.innerHTML = `
-    <div class="text-center fw-bold">Simulation Period:</div>
-    <div class="text-center">
-    ${startDate.toLocaleDateString('en-US', options)} - 
-    ${endDate.toLocaleDateString('en-US', options)}
-    </div>
-`;
-}
-  
-
 async function mapSimulation(simulate, mapboxgl) {
     const simulationContainer = document.getElementById('simulationContainer');
     if (simulationContainer) simulationContainer.innerHTML = "";
-
     const map_simulation = new mapboxgl.Map({
         container: 'map_simulation',
         style: 'mapbox://styles/mapbox/satellite-streets-v11',
@@ -505,7 +472,6 @@ async function mapSimulation(simulate, mapboxgl) {
             [121.95, 14.65]
         ]
     });
-
     map_simulation.on('load', async () => {
         const data = await geoJsonData();
         map_simulation.addSource('municipal', { type: 'geojson', data });
@@ -655,34 +621,96 @@ async function mapSimulation(simulate, mapboxgl) {
             return minSize + (maxSize - minSize) * progress;
         }
 
-        function getFarmState(farm) {
-        // function getFarmState(farm, durationMs) {
+        function getFarmState(selectedDisease, farm) {
+ 
             const now = new Date();
             const sevenDays = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+            const threeMonths = 3 * 30 * 24 * 60 * 60 * 1000; // 3 months in milliseconds (approx. 30 days per month)
+            const tenDays = 10 * 24 * 60 * 60 * 1000; // 10 days in milliseconds
+            const threeDays = 3 * 24 * 60 * 60 * 1000; // 3 days in milliseconds
 
             const latestFarmerReport = farm.farmer_reports.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
             const latestTechnicianReport = farm.technician_reports.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
 
-            if (latestTechnicianReport && (!latestFarmerReport || new Date(latestTechnicianReport.created_at) > new Date(latestFarmerReport.created_at))) {
-                const timeSinceTreatment = now - new Date(latestTechnicianReport.created_at);
-                if (timeSinceTreatment > sevenDays) {
-                    return { isTreated: true, progress: 1 };
-                } else if (timeSinceTreatment) {
-                    const progress = Math.min(timeSinceTreatment / sevenDays, 1);
-                    return { isTreated: true, progress };
+            if (selectedDisease === 'Stem Bleeding') {
+                
+                if (latestTechnicianReport && (!latestFarmerReport || new Date(latestTechnicianReport.created_at) > new Date(latestFarmerReport.created_at))) {
+                    const timeSinceTreatment = now - new Date(latestTechnicianReport.created_at);
+                    if (timeSinceTreatment > threeDays) {
+                        return { isTreated: true, progress: 1 };
+                    } else if (timeSinceTreatment) {
+                        const progress = Math.min(timeSinceTreatment / threeDays, 1);
+                        return { isTreated: true, progress };
+                    }
+                } else if (latestFarmerReport) {
+                    const timeSinceReport = now - new Date(latestFarmerReport.created_at);
+                    const progress = Math.min(timeSinceReport / threeDays, 1);
+                    return { isTreated: false, progress };
+                } else {
+                    return { isTreated: false, progress: 1 };
                 }
-            } else if (latestFarmerReport) {
-                const timeSinceReport = now - new Date(latestFarmerReport.created_at);
-                const progress = Math.min(timeSinceReport / sevenDays, 1);
-                return { isTreated: false, progress };
-            } else {
-                return { isTreated: false, progress: 1 };
-            }
 
+            } else if (selectedDisease === 'Lethal Yellowing') {
+                
+                if (latestTechnicianReport && (!latestFarmerReport || new Date(latestTechnicianReport.created_at) > new Date(latestFarmerReport.created_at))) {
+                    const timeSinceTreatment = now - new Date(latestTechnicianReport.created_at);
+                    if (timeSinceTreatment > threeMonths) {
+                        return { isTreated: true, progress: 1 };
+                    } else if (timeSinceTreatment) {
+                        const progress = Math.min(timeSinceTreatment / threeMonths, 1);
+                        return { isTreated: true, progress };
+                    }
+                } else if (latestFarmerReport) {
+                    const timeSinceReport = now - new Date(latestFarmerReport.created_at);
+                    const progress = Math.min(timeSinceReport / threeMonths, 1);
+                    return { isTreated: false, progress };
+                } else {
+                    return { isTreated: false, progress: 1 };
+                }
+
+            } else if (selectedDisease === 'Leaf Spot') {
+
+                if (latestTechnicianReport && (!latestFarmerReport || new Date(latestTechnicianReport.created_at) > new Date(latestFarmerReport.created_at))) {
+                    const timeSinceTreatment = now - new Date(latestTechnicianReport.created_at);
+                    if (timeSinceTreatment > tenDays) {
+                        return { isTreated: true, progress: 1 };
+                    } else if (timeSinceTreatment) {
+                        const progress = Math.min(timeSinceTreatment / tenDays, 1);
+                        return { isTreated: true, progress };
+                    }
+                } else if (latestFarmerReport) {
+                    const timeSinceReport = now - new Date(latestFarmerReport.created_at);
+                    const progress = Math.min(timeSinceReport / tenDays, 1);
+                    return { isTreated: false, progress };
+                } else {
+                    return { isTreated: false, progress: 1 };
+                }
+
+            } else {
+
+                // farm.farmer_reports.forEach(report => { 
+                //     console.log('farm', report.disease);
+                // });
+
+                if (latestTechnicianReport && (!latestFarmerReport || new Date(latestTechnicianReport.created_at) > new Date(latestFarmerReport.created_at))) {
+                    const timeSinceTreatment = now - new Date(latestTechnicianReport.created_at);
+                    if (timeSinceTreatment > sevenDays) {
+                        return { isTreated: true, progress: 1 };
+                    } else if (timeSinceTreatment) {
+                        const progress = Math.min(timeSinceTreatment / sevenDays, 1);
+                        return { isTreated: true, progress };
+                    }
+                } else if (latestFarmerReport) {
+                    const timeSinceReport = now - new Date(latestFarmerReport.created_at);
+                    const progress = Math.min(timeSinceReport / sevenDays, 1);
+                    return { isTreated: false, progress };
+                } else {
+                    return { isTreated: false, progress: 1 };
+                }
+            }
         }
 
         function updateFarmData(selected, condition) {
-            // const durationMs = getDurationMs(selected);
             const currentDate = new Date();
             const dayIndex = currentDate.getDay();
             const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -725,8 +753,7 @@ async function mapSimulation(simulate, mapboxgl) {
                     console.warn(`Invalid coordinates for farm ${farm.id}: ${farm.longitude}, ${farm.latitude}`);
                     return;
                 }
-                const { isTreated, progress: farmProgress } = getFarmState(farm);
-           
+                const { isTreated, progress: farmProgress } = getFarmState(selected, farm);
                 let pointColor;
                 if (farm.farmer_reports.length === 0 && farm.technician_reports.length === 0) {
                     pointColor = '#00FF00';
@@ -778,7 +805,6 @@ async function mapSimulation(simulate, mapboxgl) {
                             (acc, coord) => [acc[0] + coord[0] / technicianCoords.length, acc[1] + coord[1] / technicianCoords.length],
                             [0, 0]
                         );
-                        // Use same size and color logic as farm polygons
                         const minRadius = 0.01;
                         const maxRadius = 0.02;
                         let baseRadius, color;
@@ -803,7 +829,7 @@ async function mapSimulation(simulate, mapboxgl) {
                                 farmId: farm.id,
                                 disease: farm.technician_reports[0]?.diagnosis_disease || 'Unknown',
                                 center: centroid,
-                                color: `rgb(${color[0]}, ${color[1]}, ${color[2]})`, // Match farm polygon color
+                                color: `rgb(${color[0]}, ${color[1]}, ${color[2]})`, 
                                 baseRadius
                             }
                         });
@@ -816,7 +842,7 @@ async function mapSimulation(simulate, mapboxgl) {
                 .map(farm => {
                     const center = farm.geometry.coordinates;
                     const originalFarm = simulate.find(f => f.id === farm.properties.farmId);
-                    const { isTreated, progress: farmProgress } = getFarmState(originalFarm);
+                    const { isTreated, progress: farmProgress } = getFarmState(selected, originalFarm);
 
                     // const originalFarm = simulate.find(f => f.id === farm.properties.farmId);
                     // // Pass durationMs here
@@ -874,11 +900,7 @@ async function mapSimulation(simulate, mapboxgl) {
             return { farmPolygons, orderedDays };
         }
 
-        // function animatePolygons(farmPolygons) { 
-        function animatePolygons(farmPolygons, durationMs) { 
-              // Update animation logic to use durationMs
-            // const duration = durationMs; // Use disease-specific duration
-            // const durationSeconds = durationMs / 1000;
+        function animatePolygons(selectedDisease, farmPolygons) { 
             let isAnimating = false;
             const duration = 7000;
             const maxScale = 2;
@@ -898,7 +920,7 @@ async function mapSimulation(simulate, mapboxgl) {
                 // Process both polygons and geofences
                 const processedData = [...initialPolygons, ...initialGeofences].map(feature => {
                     const farm = simulate.find(f => f.id === feature.properties.farmId);
-                    const { isTreated, progress: farmProgress } = getFarmState(farm);
+                    const { isTreated, progress: farmProgress } = getFarmState(selectedDisease, farm);
                     // const { isTreated, progress: farmProgress } = getFarmState(farm, durationMs);
                     const isGeofence = feature.source === 'technician-geofences';
         
@@ -1048,7 +1070,6 @@ async function mapSimulation(simulate, mapboxgl) {
         }
         document.getElementById('disease').addEventListener('change', (event) => {
             const selectedDisease = event.target.value;
-            // updateDateRange(selectedDisease);
             descriptionText.innerHTML =  descriptions[selectedDisease] || `<p class="mt-2 text-center">Please select a disease to view its descriptions.</p>`;
             const { farmPolygons } = updateFarmData(selectedDisease, null);
             // const { farmPolygons } = updateFarmData(selectedDisease);
@@ -1078,16 +1099,7 @@ async function mapSimulation(simulate, mapboxgl) {
             const { farmPolygons } = selectedDisease === 'All_Diseases'
                 ? { farmPolygons: initialFarmPolygons }
                 : updateFarmData(selectedDisease);
-            animatePolygons(farmPolygons);
-
-            // const selectedDisease = document.getElementById('disease').value;
-            // const durationMs = getDurationMs(selectedDisease);
-            // const { farmPolygons } = selectedDisease === 'All_Diseases'
-            //     ? { farmPolygons: initialFarmPolygons }
-            //     : updateFarmData(selectedDisease);
-            
-            // animatePolygons(farmPolygons, durationMs);
-
+            animatePolygons(selectedDisease, farmPolygons);
             const progressBar = document.getElementById('week-progress');
             function startProgress() {
                 progressBar.style.transition = 'none'; 
@@ -1100,11 +1112,7 @@ async function mapSimulation(simulate, mapboxgl) {
                     // progressBar.style.transition = `width ${durationMs}ms linear`;
                     // progressBar.style.width = '100%';
             }
-            // startProgress();
             // Initial start
-            // Usage when clicking simulate:
-            // const selectedDisease = document.getElementById('disease').value;
-            // startProgress(getDurationMs(selectedDisease));
             startProgress();
             progressBar.addEventListener('transitionend', function handler(e) {
                 if (e.propertyName === 'width' && progressBar.style.width === '100%') {
@@ -1117,8 +1125,6 @@ async function mapSimulation(simulate, mapboxgl) {
         
             interval('simulate');
         });
-        // Initialize date range on load
-        // updateDateRange('All_Diseases');
         interval();
     });
 }
