@@ -631,61 +631,61 @@ async function mapSimulation(simulate, mapboxgl) {
             const latestFarmerReport = farm.farmer_reports.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
             const latestTechnicianReport = farm.technician_reports.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
 
-            // if (selectedDisease === 'Stem Bleeding') {
+            if (selectedDisease === 'Stem Bleeding') {
                 
-            //     if (latestTechnicianReport && (!latestFarmerReport || new Date(latestTechnicianReport.created_at) > new Date(latestFarmerReport.created_at))) {
-            //         const timeSinceTreatment = now - new Date(latestTechnicianReport.created_at);
-            //         if (timeSinceTreatment > threeDays) {
-            //             return { isTreated: true, progress: 1 };
-            //         } else if (timeSinceTreatment) {
-            //             const progress = Math.min(timeSinceTreatment / threeDays, 1);
-            //             return { isTreated: true, progress };
-            //         }
-            //     } else if (latestFarmerReport) {
-            //         const timeSinceReport = now - new Date(latestFarmerReport.created_at);
-            //         const progress = Math.min(timeSinceReport / threeDays, 1);
-            //         return { isTreated: false, progress };
-            //     } else {
-            //         return { isTreated: false, progress: 1 };
-            //     }
+                if (latestTechnicianReport && (!latestFarmerReport || new Date(latestTechnicianReport.created_at) > new Date(latestFarmerReport.created_at))) {
+                    const timeSinceTreatment = now - new Date(latestTechnicianReport.created_at);
+                    if (timeSinceTreatment > threeDays) {
+                        return { isTreated: true, progress: 1 };
+                    } else if (timeSinceTreatment) {
+                        const progress = Math.min(timeSinceTreatment / threeDays, 1);
+                        return { isTreated: true, progress };
+                    }
+                } else if (latestFarmerReport) {
+                    const timeSinceReport = now - new Date(latestFarmerReport.created_at);
+                    const progress = Math.min(timeSinceReport / threeDays, 1);
+                    return { isTreated: false, progress };
+                } else {
+                    return { isTreated: false, progress: 1 };
+                }
 
-            // } else if (selectedDisease === 'Lethal Yellowing') {
+            } else if (selectedDisease === 'Lethal Yellowing') {
                 
-            //     if (latestTechnicianReport && (!latestFarmerReport || new Date(latestTechnicianReport.created_at) > new Date(latestFarmerReport.created_at))) {
-            //         const timeSinceTreatment = now - new Date(latestTechnicianReport.created_at);
-            //         if (timeSinceTreatment > threeMonths) {
-            //             return { isTreated: true, progress: 1 };
-            //         } else if (timeSinceTreatment) {
-            //             const progress = Math.min(timeSinceTreatment / threeMonths, 1);
-            //             return { isTreated: true, progress };
-            //         }
-            //     } else if (latestFarmerReport) {
-            //         const timeSinceReport = now - new Date(latestFarmerReport.created_at);
-            //         const progress = Math.min(timeSinceReport / threeMonths, 1);
-            //         return { isTreated: false, progress };
-            //     } else {
-            //         return { isTreated: false, progress: 1 };
-            //     }
+                if (latestTechnicianReport && (!latestFarmerReport || new Date(latestTechnicianReport.created_at) > new Date(latestFarmerReport.created_at))) {
+                    const timeSinceTreatment = now - new Date(latestTechnicianReport.created_at);
+                    if (timeSinceTreatment > threeMonths) {
+                        return { isTreated: true, progress: 1 };
+                    } else if (timeSinceTreatment) {
+                        const progress = Math.min(timeSinceTreatment / threeMonths, 1);
+                        return { isTreated: true, progress };
+                    }
+                } else if (latestFarmerReport) {
+                    const timeSinceReport = now - new Date(latestFarmerReport.created_at);
+                    const progress = Math.min(timeSinceReport / threeMonths, 1);
+                    return { isTreated: false, progress };
+                } else {
+                    return { isTreated: false, progress: 1 };
+                }
 
-            // } else if (selectedDisease === 'Leaf Spot') {
+            } else if (selectedDisease === 'Leaf Spot') {
 
-            //     if (latestTechnicianReport && (!latestFarmerReport || new Date(latestTechnicianReport.created_at) > new Date(latestFarmerReport.created_at))) {
-            //         const timeSinceTreatment = now - new Date(latestTechnicianReport.created_at);
-            //         if (timeSinceTreatment > tenDays) {
-            //             return { isTreated: true, progress: 1 };
-            //         } else if (timeSinceTreatment) {
-            //             const progress = Math.min(timeSinceTreatment / tenDays, 1);
-            //             return { isTreated: true, progress };
-            //         }
-            //     } else if (latestFarmerReport) {
-            //         const timeSinceReport = now - new Date(latestFarmerReport.created_at);
-            //         const progress = Math.min(timeSinceReport / tenDays, 1);
-            //         return { isTreated: false, progress };
-            //     } else {
-            //         return { isTreated: false, progress: 1 };
-            //     }
+                if (latestTechnicianReport && (!latestFarmerReport || new Date(latestTechnicianReport.created_at) > new Date(latestFarmerReport.created_at))) {
+                    const timeSinceTreatment = now - new Date(latestTechnicianReport.created_at);
+                    if (timeSinceTreatment > tenDays) {
+                        return { isTreated: true, progress: 1 };
+                    } else if (timeSinceTreatment) {
+                        const progress = Math.min(timeSinceTreatment / tenDays, 1);
+                        return { isTreated: true, progress };
+                    }
+                } else if (latestFarmerReport) {
+                    const timeSinceReport = now - new Date(latestFarmerReport.created_at);
+                    const progress = Math.min(timeSinceReport / tenDays, 1);
+                    return { isTreated: false, progress };
+                } else {
+                    return { isTreated: false, progress: 1 };
+                }
 
-            // } else {
+            } else {
 
                 // farm.farmer_reports.forEach(report => { 
                 //     console.log('farm', report.disease);
@@ -706,7 +706,7 @@ async function mapSimulation(simulate, mapboxgl) {
                 } else {
                     return { isTreated: false, progress: 1 };
                 }
-            // }
+            }
         }
 
         function updateFarmData(selected, condition) {
