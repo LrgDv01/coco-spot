@@ -22,13 +22,10 @@ class ServicesModel extends Model
         'request_id',
         'status', 
     ];
-
-    // Define relationships if needed
     public function user()
     {
         return $this->belongsTo(User::class, 'farmer_id', 'id');
     }
-
     public function farms()
     {
         // return $this->belongsTo(FarmModel::class, 'farmer_id', 'farmer_id');
@@ -66,7 +63,9 @@ class ServicesModel extends Model
     }
 
     public function farmerReports() {
-        return $this->hasOne(FarmerReportsModel::class, 'farmer_id', 'farmer_id'); 
+        return $this->belongsTo(FarmerReportsModel::class, 'farmer_id', 'farmer_id');  
+        // return $this->hasOne(FarmerReportsModel::class, 'farmer_id', 'farmer_id'); 
+        
     }
 
     public function diseaseVerified() {

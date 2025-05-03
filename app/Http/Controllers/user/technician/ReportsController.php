@@ -24,9 +24,9 @@ class ReportsController extends Controller
         $report = ServicesModel::with(['user', 'userFarms', 'farmerReports']) 
             ->where(function ($query) use ($technicianId) {
                 $query->where('technician_id', $technicianId)
-                    ->whereIn('status', ['Acknowledged', 'end']);
+                    ->where('status', 'Acknowledged');
             })->first();
-        
+        // dd($report);
         return view('user.technician.pages.reports',
             compact(
                 'report',
