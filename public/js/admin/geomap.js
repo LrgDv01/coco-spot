@@ -1079,6 +1079,7 @@ async function mapSimulation(simulate, mapboxgl) {
             }
         }
         document.getElementById('condition').disabled = true;
+        document.getElementById('condition').style.opacity = 0.7;
         document.getElementById('disease').addEventListener('change', (event) => {
             const selectedDisease = event.target.value;
             descriptionText.innerHTML =  descriptions[selectedDisease] || `<p class="mt-2 text-center">Please select a disease to view its descriptions.</p>`;
@@ -1087,10 +1088,12 @@ async function mapSimulation(simulate, mapboxgl) {
             // console.log('selectedDisease', selectedDisease);
             if ((farmPolygons.length > 0) && (selectedDisease !== 'All_Diseases')) {
                 document.getElementById('condition').disabled = false;
+                document.getElementById('condition').style.opacity = null;
                 map_simulation.setZoom(0);
             } else if (selectedDisease === 'All_Diseases') {
                 map_simulation.setZoom(0);
                 document.getElementById('condition').disabled = true;
+                document.getElementById('condition').style.opacity = 0.7;
             }
             document.getElementById('condition').addEventListener('change', (event) => {
                 const selectedCondition = event.target.value;

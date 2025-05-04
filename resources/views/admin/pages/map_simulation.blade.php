@@ -39,8 +39,8 @@
                     </div>
                     <div id="description" class="card mt-4 mb-0 alert alert-info" style="height: 200px;">
                         <label class="alert-text text-center fw-bold">Descriptions</label>
-                        <hr>
-                        <div id="description-text" class="card-body pe-2 p-0 m-0" style="max-height: 200px; overflow-y: auto;">
+                        <hr class="m-0 my-2">
+                        <div id="description-text" class="card-body pe-2 p-0 m-" style="font-size: 13px; max-height: 200px; overflow-y: auto;">
                         </div>
                     </div>
                     <div class="form-group mt-3">
@@ -54,8 +54,8 @@
                     </div>
                     <div id="treatment" class="card mt-4 mb-0 alert alert-info" style="height: 200px;">
                         <label class="alert-text text-center fw-bold">Treatment Recommendations</label>
-                        <hr>
-                        <div id="treatment-text" class="card-body pe-2 p-0 m-0" style="max-height: 200px; overflow-y: auto;">
+                        <hr class="m-0 my-2">
+                        <div id="treatment-text" class="card-body pe-2 p-0 m-0" style="font-size: 13px; max-height: 200px; overflow-y: auto;">
                         </div>
                     </div>
                 </div> 

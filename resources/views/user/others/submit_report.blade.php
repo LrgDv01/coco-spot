@@ -479,6 +479,8 @@
                 formData.append('disease', topDisease || 'Unknown');
                 async function submitDiagnosis(event, farmId) {
                     event.preventDefault();
+                    reportButton.disabled = true;
+                    reportButton.textContent = 'Submitting...';
                     try {
                         diagnosisText.innerHTML += '<img src="/img/loading.gif" alt="Loading..." id="loading-gif" class="mt-3">';
                         const response = await fetch('/user/farmer-report', {
