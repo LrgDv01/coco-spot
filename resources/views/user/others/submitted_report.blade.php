@@ -226,7 +226,7 @@
         });
 
         // Title
-        doc.setFontSize(20);
+        doc.setFontSize(15);
         doc.setFont("helvetica", "bold");
         doc.text("Farm Status Report", 105, 15, { align: "center" });
 
@@ -248,39 +248,74 @@
             headStyles: { fillColor: [22, 160, 133] }, // Green header
             styles: { fontSize: 10 }
         });
-        let y = doc.lastAutoTable.finalY + 10;
+        let y = doc.lastAutoTable.finalY + 7;
+
+        // Observed Symptoms
+        // doc.setFontSize(12);
+        // doc.setFont("helvetica", "bold");
+        // doc.text("Observed Symptoms", 10, y);
+        // y += 6;
+        // doc.setFontSize(10);
+        // doc.setFont("helvetica", "normal");
+        // farmData.symptoms.forEach(symptom => {
+        //     const lines = doc.splitTextToSize(symptomsMap[symptom] ?? symptom , 180);
+        //     lines.forEach((line, i) => {
+        //         doc.text('•', 15, y);
+        //         doc.text(line, 20, y);
+        //         y += 5;
+        //         if (y > 270) {
+        //             doc.addPage();
+        //             y = 20;
+        //         }
+        //     });
+        // });
+        // y += 3;
 
         // Observed Symptoms
         doc.setFontSize(12);
         doc.setFont("helvetica", "bold");
         doc.text("Observed Symptoms", 10, y);
-        y += 7;
+        y += 7;  // Match the treatment section's initial spacing
         doc.setFontSize(10);
         doc.setFont("helvetica", "normal");
-        farmData.symptoms.forEach(symptom => {
-            const lines = doc.splitTextToSize("• " + symptomsMap[symptom] ?? symptom , 180);
-            lines.forEach(line => {
-                doc.text(line, 15, y);
-                y += 5;
+
+        farmData.symptoms.forEach((symptom, index) => {
+            // Add spacing between symptoms
+            if (index > 0) {
+                y += 2;
+            }
+            
+            const lines = doc.splitTextToSize("• " + (symptomsMap[symptom] ?? symptom), 180);
+            
+            lines.forEach((line, lineIndex) => {
+                // For wrapped lines, remove the bullet and maintain indentation
+                const text = lineIndex === 0 ? line : line.replace(/^• /, '');
+                
+                doc.text(text, lineIndex === 0 ? 15 : 20, y);
+                y += 5;  // Match treatment section's line height
+                
                 if (y > 270) {
                     doc.addPage();
                     y = 20;
                 }
             });
         });
-        y += 5;
+
+        y += 3;  // Match treatment section's final spacing
+
+
 
         // Disease Status
         doc.setFontSize(12);
         doc.setFont("helvetica", "bold");
         doc.text("Disease Status", 10, y);
-        y += 7;
+        y += 6;
         doc.setFontSize(10);
         doc.setFont("helvetica", "normal");
         doc.text(`Detected Disease: ${farmData.disease}`, 15, y);
         y += 5;
         doc.text(`Status: ${farmData.status}`, 15, y);
-        y += 10;
+        y += 8;
 
         // Technician Details (if assigned)
         if (farmData.technician.name) {
@@ -299,7 +334,7 @@
                 headStyles: { fillColor: [22, 160, 133] },
                 styles: { fontSize: 10 }
             });
-            y = doc.lastAutoTable.finalY + 10;
+            y = doc.lastAutoTable.finalY + 8;
         }
 
         // Treatment Recommendations (if available)
@@ -311,54 +346,57 @@
             y += 7;
             doc.setFontSize(10);
             doc.setFont("helvetica", "normal");
-
+  
+            // Then handle solution content
             const plainTextSolutions = solutionContent
                 .replace(/<ul>|<\/ul>/g, '')
                 .replace(/<li>/g, '')
                 .replace(/<\/li>/g, '\n\n') 
                 .replace(/<br>/g, '\n')   
                 .replace(/<[^>]+>/g, '');
+            
             const solutionGroups = plainTextSolutions.split('\n\n').filter(group => group.trim().length > 0);
-            let yPosition = 35;
-            doc.setFontSize(11);
+            
+            doc.setFontSize(10);
             solutionGroups.forEach((group, index) => {
                 const lines = group.split('\n').filter(line => line.trim().length > 0);
                 if (lines.length > 0) {
+                    // Add spacing between groups
                     if (index > 0) {
-                        yPosition += 4; 
+                        y += 2;
                     }
+
+                    // Handle main solution lines
                     const mainSolutionLines = doc.splitTextToSize(lines[0].trim(), 180);
                     mainSolutionLines.forEach((line, i) => {
-                        if (i === 0) {
-                            doc.text('•', 15, yPosition); 
+                        doc.text('•', 15, y);
+                        doc.text(line, 20, y);
+                        y += 5;
+                        
+                        if (y > 270) {
+                            doc.addPage();
+                            y = 20;
                         }
-                        doc.text(line, 20, yPosition);
-                        yPosition += 6;
                     });
+
+                    // Handle translation lines if present
                     if (lines[1] && lines[1].trim().startsWith('(')) {
                         const translationLines = doc.splitTextToSize(lines[1].trim(), 180);
                         translationLines.forEach(line => {
-                            doc.text(line, 20, yPosition);
-                            yPosition += 6;
+                            doc.text(line, 20, y);
+                            y += 6;
+                            
+                            if (y > 270) {
+                                doc.addPage();
+                                y = 20;
+                            }
                         });
-                    }
-                    if (yPosition > 270) { 
-                        doc.addPage();
-                        yPosition = 20;
                     }
                 }
             });
-
-            // const treatmentLines = doc.splitTextToSize(farmData.treatment, 180);
-            // treatmentLines.forEach(line => {
-            //     doc.text(line, 15, y);
-            //     y += 5;
-            //     if (y > 270) {
-            //         doc.addPage();
-            //         y = 20;
-            //     }
-            // });
+            y += 7;
         }
+
 
         // Footer with date and page number
         const pageCount = doc.internal.getNumberOfPages();

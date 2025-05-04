@@ -86,7 +86,7 @@
                                                 id="diagnosis_disease" 
                                                 class="form-select @error('diagnosis_disease') is-invalid @enderror" 
                                                 required>
-                                            <option value="" selected disabled>Select Disease</option>
+                                            <option value="" disabled selected hidden>Select Disease</option>
                                             @foreach(['Stem Bleeding', 'Lethal Yellowing', 'Leaf Spot'] as $disease)
                                                 <option value="{{ $disease }}">{{ $disease }}</option>
                                             @endforeach
@@ -123,7 +123,7 @@
                                         <select name="status" 
                                                 class="form-select @error('status') is-invalid @enderror" 
                                                 required>
-                                            <option value="" selected disabled>Select Status</option>
+                                            <option value="" disabled selected hidden>Select Status</option>
                                             @foreach(['Verified', 'False Detection'] as $status)
                                                 <option value="{{ $status }}">{{ $status }}</option>
                                             @endforeach

@@ -5,7 +5,7 @@
         <div class="d-flex flex-column justify-content-between" style="height:85vh;">
             <div class="card shadow-sm p-3" style="border: 1px solid #188754; border-radius: 8px; background-color: #f9f9f9;">
                 <h5 class="card-title text-center pt-0" style="font-weight: bold;">Assigned Farm Details</h5>
-                
+                {{-- dd($requestDetails->status); --}}
                 <div class="mb-2">
                     <strong>Report ID : </strong> {{ $requestDetails->request_id }}
                 </div>
@@ -29,12 +29,14 @@
                     <textarea name="note" class="form-control" rows="2" placeholder="Visit this farm for actual confirmation with the reported disease" disabled></textarea>
                 </div>
                 <div class="d-flex justify-content-center gap-5">
-                    <button type="button" class="btn btn-outline-success fw-bold px-3 w-35 btn-block rounded-pill" 
+                    <button type="button" class="btn {{ $requestDetails->status === 'Acknowledged'  
+                            ? 'btn-success' : 'btn-outline-success' }} fw-bold px-3 w-35 btn-block rounded-pill" 
                             data-status="Acknowledged"
                             data-message="Acknowledged"
                             data-bs-toggle="modal" 
                             data-bs-target="#actionModal">
-                        <i class="bi bi-check-circle"></i> Acknowledge & Proceed
+                        <i class="bi bi-check-circle"></i> {{ $requestDetails->status === 'Acknowledged'  
+                            ? 'Acknowledged' : 'Acknowledge & Proceed' }}
                     </button>
                 </div>
             </div>

@@ -21,7 +21,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+<div class="modal fade" id="successModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content text-center">
             <div class="modal-body">
@@ -31,7 +31,7 @@
                 </div>
                 <div class="d-flex justify-content-center">
                     <a href="{{ route('user.reports') }}" class="btn btn-success mx-2">See New Report</a>
-                    <button type="button" class="btn btn-outline-secondary mx-2" data-bs-dismiss="modal">Later</button>
+                    {{-- <button type="button" class="btn btn-outline-secondary mx-2" data-bs-dismiss="modal">Later</button> --}}
                 </div>
             </div>
         </div>
@@ -59,7 +59,6 @@
             success: function (response) {
                 $('#actionModal').modal('hide');
                 $('#successMessage').text(response.message);
-
                 setTimeout(function () {
                     $('#successModal').modal('show');
                 }, 300); 
