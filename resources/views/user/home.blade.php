@@ -125,7 +125,7 @@
                     </button>
                 </div>
             </div>
-            <div style="margin-top: 100px;"></div>
+            <div style="margin-top: 110px;"></div>
             @foreach($farms as $farm)
                 <div class="card mb-2">
                     <div class="card-body" style="max-height: 100vh; overflow-y: auto;">

@@ -5,7 +5,7 @@
         <h1><strong>Simulation</strong></h1>
     </div>
     <section class="section Simulation mt-4 m-0 p-0">
-        <div class="container m-0 p-0">
+        <div class="m-0 p-0">
             <!-- Control Card -->
             <div class="card position-absolute p-3 m-3 rounded rounded-3 bg-success bg-opacity-25 text-white" style="right:2%; width: 15rem; height: 9rem; z-index:10">
                 <h5 class="text-center">LEGEND</h5>

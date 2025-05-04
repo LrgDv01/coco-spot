@@ -43,8 +43,9 @@
                     <div class="card-header bg-success text-white d-flex justify-content-center">
                         <h5 class="mb-0"><strong>Farm Details</strong></h5>
                     </div>
-                    <div class="card-body mb-0 pb-0">
-                        <div id="details" class="mt-2 alert alert-info">
+                    <label for="disease" class="form-label text-muted text-center mt-2">Tap on any farm on the map to show it details here.</label>
+                    <div class="card-body my-0 py-0">
+                        <div id="details" class="mt-1 alert alert-info">
                             <p><strong>Farm Name:</strong> <span id="farm_name"></span> </p>
                             <p><strong>Location:</strong> <span id="address"></span> </p>
                             <p><strong>District:</strong> <span id="district"></span></p>

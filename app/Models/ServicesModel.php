@@ -63,8 +63,8 @@ class ServicesModel extends Model
     }
 
     public function farmerReports() {
-        return $this->belongsTo(FarmerReportsModel::class, 'farmer_id', 'farmer_id');  
-        // return $this->hasOne(FarmerReportsModel::class, 'farmer_id', 'farmer_id'); 
+        // return $this->belongsTo(FarmerReportsModel::class, 'farmer_id', 'farmer_id');  
+        return $this->hasOne(FarmerReportsModel::class, 'farmer_id', 'farmer_id'); 
         
     }
 

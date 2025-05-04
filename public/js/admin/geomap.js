@@ -723,16 +723,20 @@ async function mapSimulation(simulate, mapboxgl) {
                 if (condition === 'not_treated') {
                     filteredFarms = simulate.filter(farm => {
                         return farm.farmer_reports.some(farmerReport => 
+                            farmerReport.disease === selected &&
                             !farm.technician_reports.some(techReport => 
-                                techReport.farm_id === farmerReport.farm_id
-                            )
+                                techReport.farm_id === farmerReport.farm_id 
+                                // &&
+                                // farmerReport.disease === selected
+                            ) 
                         );
                     });
                 }else if (condition === 'treated') {
                     filteredFarms = simulate.filter(farm => {
                         return farm.technician_reports.some(techReport => 
                             farm.farmer_reports.some(farmerReport => 
-                                techReport.farm_id === farmerReport.farm_id
+                                techReport.farm_id === farmerReport.farm_id &&
+                                techReport.diagnosis_disease === selected
                             )
                         );
                     });
@@ -920,7 +924,7 @@ async function mapSimulation(simulate, mapboxgl) {
                 const processedData = [...initialPolygons, ...initialGeofences].map(feature => {
                     const farm = simulate.find(f => f.id === feature.properties.farmId);
                     const { isTreated, progress: farmProgress } = getFarmState(selectedDisease, farm);
-                    // const { isTreated, progress: farmProgress } = getFarmState(farm, durationMs);
+                    // const { isTreated, progress: farmProgress } = getFarmState(farm);
                     const isGeofence = feature.source === 'technician-geofences';
         
                     let progress, color, scale;
@@ -968,6 +972,11 @@ async function mapSimulation(simulate, mapboxgl) {
                 });
                 // Update farm points colors
                 const farmFeatures = map_simulation.getSource('farms')._data.features.map(f => {
+                    // if (selectedCondition === 'not_treated') {
+                    //     f.properties.pointColor = '#00FF00';
+                    // } else if (selectedCondition === 'treated') {
+                    //     f.properties.pointColor = '#FF0000';
+                    // } 
                     const polygon = currentPolygons.find(p => p.properties.farmId === f.properties.farmId);
                     return polygon ? { ...f, properties: { ...f.properties, pointColor: polygon.properties.color } } : f;
                 });
@@ -1059,9 +1068,11 @@ async function mapSimulation(simulate, mapboxgl) {
             const updateFunction = () => updateFarmData(document.getElementById('disease').value, document.getElementById('condition').value);
             // const updateFunction = () => updateFarmData(document.getElementById('disease').value);
             if (simulate === 'simulate') {
+                document.getElementById('disease').disabled = true; 
                 setTimeout(() => {
                     updateFunction();
                     intervalId = setInterval(updateFunction, 1000);
+                    document.getElementById('disease').disabled = false; 
                 }, 7000);
             } else {
                 intervalId = setInterval(updateFunction, 1000);
@@ -1073,11 +1084,11 @@ async function mapSimulation(simulate, mapboxgl) {
             descriptionText.innerHTML =  descriptions[selectedDisease] || `<p class="mt-2 text-center">Please select a disease to view its descriptions.</p>`;
             const { farmPolygons } = updateFarmData(selectedDisease, null);
             // const { farmPolygons } = updateFarmData(selectedDisease);
-            if (farmPolygons.length > 0 && (selectedDisease !== 'All_Diseases')) {
+            // console.log('selectedDisease', selectedDisease);
+            if ((farmPolygons.length > 0) && (selectedDisease !== 'All_Diseases')) {
                 document.getElementById('condition').disabled = false;
                 map_simulation.setZoom(0);
-            } 
-            if (selectedDisease === 'All_Diseases') {
+            } else if (selectedDisease === 'All_Diseases') {
                 map_simulation.setZoom(0);
                 document.getElementById('condition').disabled = true;
             }
@@ -1087,10 +1098,11 @@ async function mapSimulation(simulate, mapboxgl) {
                 if (farmPolygons.length > 0 && (selectedCondition !== 'All_Conditions')) {
                 }
                 if (selectedCondition === 'All_Conditions') {
+                    treatmentText.innerHTML = `<p class="mt-3 text-center">All Farms that are both not treated and treated with the selected disease.</p>`;
                     map_simulation.setZoom(0);
                 }
                 else if (selectedCondition === 'not_treated') {
-                    treatmentText.innerHTML = `<p class="mt-5 text-center">All Farms that are not yet treated.</p>`;
+                    treatmentText.innerHTML = `<p class="mt-3 text-center">All Farms that are not yet treated with the selected disease.</p>`;
                 } else {
                     treatmentText.innerHTML = treatments[selectedDisease] || `<p class="mt-2 text-center">Please select a disease to view its treatment recommendations.</p>`;
                 }
@@ -1099,9 +1111,10 @@ async function mapSimulation(simulate, mapboxgl) {
         }); 
         document.getElementById('simulate-button').addEventListener('click', () => { 
             const selectedDisease = document.getElementById('disease').value;
+            const selectedCondition = document.getElementById('condition').value;
             const { farmPolygons } = selectedDisease === 'All_Diseases'
                 ? { farmPolygons: initialFarmPolygons }
-                : updateFarmData(selectedDisease);
+                : updateFarmData(selectedDisease, selectedCondition);
             animatePolygons(selectedDisease, farmPolygons);
             const progressBar = document.getElementById('week-progress');
             function startProgress() {
@@ -1109,11 +1122,11 @@ async function mapSimulation(simulate, mapboxgl) {
                 progressBar.style.width = '0%';
                 void progressBar.offsetWidth;
                 $('#simulate-button').text('Simulating . .').prop('disabled', true);
-                    progressBar.style.transition = 'width 7s linear';
-                    progressBar.style.width = '100%';
-                    // progressBar.style.transition = `width ${duration}ms linear`;
-                    // progressBar.style.transition = `width ${durationMs}ms linear`;
-                    // progressBar.style.width = '100%';
+                progressBar.style.transition = 'width 7s linear';
+                progressBar.style.width = '100%';
+                // progressBar.style.transition = `width ${duration}ms linear`;
+                // progressBar.style.transition = `width ${durationMs}ms linear`;
+                // progressBar.style.width = '100%';
             }
             // Initial start
             startProgress();

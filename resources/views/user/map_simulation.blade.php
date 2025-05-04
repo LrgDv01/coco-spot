@@ -5,7 +5,7 @@
     <div class="pagetitle ms-3">
         <h1 class="text-center"><strong>Simulation</strong></h1>
     </div>
-    <section class="section Simulation mt-4 m-0 p-0">
+    <section class="section Simulation mt-3 m-0 p-0">
         <button id="drawer-toggle" class="btn btn-success position-absolute ms-2" 
             style="top: 22%; z-index: 12;">
             <i class="fas fa-bars" id="toggle-icon"></i>
@@ -64,14 +64,16 @@
                 <button id="simulate-button" class="btn btn-outline-danger fw-bold">Simulate</button>
             </div>
         </div>
-        <div class="card position-absolute" style="font-size: 10px; bottom: 0%; width: 100%; height: 5rem; z-index:11">
-            <div class="week-display mt-3 mb-3 d-flex justify-content-between" style="width: 90%; max-width: 700px; margin: 0 auto;"></div>
-            <div class="progress-bar-container mx-3" style="width: 90%; height: 10px; background: #ddd; position: relative; margin: 0 auto;">
-                <div id="week-progress" style="height: 100%; background: #28a745; width: 0%;"></div>
+  
+        <!-- Map Container -->
+        <div id="map_simulation" style="width: 100%; height: 80vh;">    
+            <div class="card position-absolute" style="font-size: 10px; bottom: -4%; width: 100%; height: 5rem; z-index:11">
+                <div class="week-display mt-3 mb-3 d-flex justify-content-between" style="width: 90%; max-width: 700px; margin: 0 auto;"></div>
+                <div class="progress-bar-container mx-3" style="width: 90%; height: 10px; background: #ddd; position: relative; margin: 0 auto;">
+                    <div id="week-progress" style="height: 100%; background: #28a745; width: 0%;"></div>
+                </div>
             </div>
         </div>
-        <!-- Map Container -->
-        <div id="map_simulation" style="width: 100%; height: 60vh;"></div>
     </section>
 </main>
 <style>
