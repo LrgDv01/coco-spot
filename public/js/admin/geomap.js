@@ -1078,7 +1078,9 @@ async function mapSimulation(simulate, mapboxgl) {
                 intervalId = setInterval(updateFunction, 1000);
             }
         }
-        document.getElementById('condition').disabled = true;
+        // document.getElementById('condition').disabled = true;
+        // document.getElementById('condition').prop('disabled', true);
+        $('#condition').prop('disabled', true);
         document.getElementById('condition').style.opacity = 0.7;
         document.getElementById('disease').addEventListener('change', (event) => {
             const selectedDisease = event.target.value;
