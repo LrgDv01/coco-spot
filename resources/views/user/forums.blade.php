@@ -2,11 +2,11 @@
 @include('user.partials.__nav')
 
 <main id="main" class="main">
-    {{-- <div class="pagetitle position-fixed d-flex align-items-end justify-content-center rounded-3" 
+ <div class="pagetitle position-fixed d-flex align-items-end justify-content-center rounded-3" 
         style="top:5%; right:0; left:0; z-index: 995; height: 80px; width: 100%; background-color: #134125;">
-  --}}
-  <div class="pagetitle container-fluid position-fixed d-flex align-items-end justify-content-center rounded-3 px-3"
-     style="top: 5%; z-index: 995; height: 80px; background-color: #134125;">
+ 
+        {{--<div class="pagetitle container-fluid position-fixed d-flex align-items-end justify-content-center rounded-3 px-3"
+     style="top: 5%; z-index: 995; height: 80px; background-color: #134125;">  --}}
         <h2 class="py-2 mt-2 text-white text-center"><strong>Forums</strong></h2>
     </div>
     <div style="margin-top: 60px;"></div>
@@ -18,10 +18,10 @@
         @endphp
         <h3 class="fw-bold text-muted text-center">Create Topics</h3>
         <div class="card p-3 text-white" style="background-color: #1a4d2e;">
-            <div class="d-flex flex-row align-items-center">
+            <div class="d-flex flex-row">
      
-                {{--     <img src="{{ $prof_img }}" alt="Logo" class="img-fluid rounded-circle" style="width: 50px; height: 50px;"> --}}
-                <img src="{{ $prof_img }}" alt="Logo" class="rounded-circle me-2" style="width: 50px; max-width: 100%; height: auto;">
+                 <img src="{{ $prof_img }}" alt="Logo" class="img-fluid rounded-circle" style="width: 50px; height: 50px;"> 
+                 {{--    <img src="{{ $prof_img }}" alt="Logo" class="rounded-circle me-2" style="width: 50px; max-width: 100%; height: auto;"> --}}
 
                 <div class="ms-2">
                     <h4 class="p-0 m-0 fw-bold"> {{ $username }}  </h4>
@@ -31,13 +31,13 @@
             <form method="POST" action="{{ route('forum.storePost') }}" enctype="multipart/form-data">
                 @csrf
                 <div class="input-group">
-                    <textarea name="caption" class="form-control w-100" rows="3" placeholder="Write some thoughts . ." required></textarea>
-                        {{--             <div class="d-flex flex-row mt-2 align-items-center">  --}}
-                    <div class="d-flex flex-column flex-sm-row mt-2">
+                    <textarea name="caption" class="form-control w-100 rounded" rows="3" placeholder="Write some thoughts . ." required></textarea>
+                              <div class="d-flex flex-row mt-2 flex-sm-row"> 
+                              {{--  <div class="d-flex flex-column flex-sm-row mt-2">  --}}
                         <img id="image_preview" src="#" alt="Image Preview" class="img-fluid rounded me-2" style="display: none; width: 50px; height: auto;">
                         {{--              <label id="default_img" class="input-group-text me-2" for="image_proof"><i class="bi bi-image"></i></label>
                             <input type="file" class="form-control w-75" id="image_proof" name="image_proof" accept="image/*" onchange="previewImage(event)">--}}
-                            
+
                         <label id="default_img" class="input-group-text me-2" for="image_proof"><i class="bi bi-image"></i></label>
                         <input type="file" class="form-control" id="image_proof" name="image_proof" accept="image/*" onchange="previewImage(event)">
                     </div>
@@ -53,7 +53,7 @@
             <hr class="w-50 ms-3">
         </div>
         <div class="card bg-transparent border border-0 shadow-none">
-            <div class="card-body text-truncate p-0" style="max-height: 80vh; overflow-y: auto;">
+            <div class="card-body p-0" style="max-height: 80vh; overflow-y: auto;">
                 <ul class="list-unstyled">
                     @foreach ($posts as $post)
                         @php
@@ -64,7 +64,7 @@
                         @endphp  
                         <li>
                             <div class="card p-3 text-white" style="background-color: #1a4d2e;">
-                                <div class="d-flex flex-row align-items-center">
+                                <div class="d-flex flex-row my-0 py-0">
                                     <img src="{{ $post_prof_img }}" alt="Logo" class="img-fluid rounded-circle" style="width: 50px; height: 50px;">  
                                     <div class="ms-2">
                                         @php
@@ -72,21 +72,30 @@
                                                             : ($post->user->user_type === '1' ? 'Farmer' : 'Technician');  
                                         @endphp
                                         <h4 class="p-0 m-0 fw-bold"> {{ $post->user->full_name }}</h4> 
-                                        <p>{{ $userTypePost }}</p>
+                                        <p class="my-0 py-0">{{ $userTypePost }}</p>
                                     </div>
                                 </div>
-                                <div class="mx-2 my-0">
+                                <div class="mx-2 mb-0 mt-1 py-0">
                                     @if ($post->image_path)
                                         {{--     <img class="align-self-center p-1 rounded rounded-3 border border-1 border-secondary"
                                             src="{{ URL::asset('storage/' . $post->image_path) }}" width="100%" height="auto" alt="post-image"> --}}
-                                        <img src="{{ URL::asset('storage/' . $post->image_path) }}" class="img-fluid rounded border border-secondary" alt="post-image">
+                                        <img src="{{ URL::asset('storage/' . $post->image_path) }}" class="img-fluid rounded border border-secondary my-2" alt="post-image">
                                     @endif
-                                    <div class="px-3 m-0 py-3">
-                                        <p class="text-white"><strong>{{ $post->caption }}</strong></p>
+                                    <div class="px-1 pt-0 m-0 d-flex flex-row">
+                                        <span>`</span>
+                                        <p class="text-white">
+                                            @if (strlen($post->caption) > 100)
+                                                {{ substr($post->caption, 0, 100) }}
+                                                <a href="javascript:void(0);" id="see-more-{{ $post->id }}" class="text-white" onclick="toggleFullText({{ $post->id }})">... <span class="fw-bold">See more</span></a>
+                                                <span id="full-text-{{ $post->id }}" style="display: none;">{{ substr($post->caption, 100) }}</span>
+                                            @else
+                                                {{ $post->caption }}
+                                            @endif
+                                        </p>
                                     </div>
                                 </div>
-                                <div class="d-flex flex-row justify-content-between mx-3 my-0 py-0">
-                                    <div class="d-flex flex-row">
+                                <div class="d-flex flex-row justify-content-between mx-0 my-0 py-0">
+                                    <div class="d-flex flex-row text-truncate">
                                         <form method="POST" action="{{ route('forum.react', $post->id) }}" class="react-form" data-post-id="{{ $post->id }}">
                                             @csrf
                                             <input type="hidden" name="type" value="like">
@@ -135,8 +144,8 @@
                                     </form>
                                 </div>
                                 <hr class="p-0 m-0">
-                                <div id="comments-{{ $post->id }}" class="m-3" style="display: none;">
-                                    <ul class="list-unstyled pe-3" style="max-height: 300px; overflow-y: auto;">
+                                <div id="comments-{{ $post->id }}" class="m-0 p-0" style="display: none; width: 100%;">
+                                    <ul class="list-unstyled pe-3" style="width: 100%; max-height: 300px; overflow-y: auto;">
                                         @foreach ($post->comments as $comment)
                                             <li class="my-2" id="comment-{{ $comment->id }}">
                                                 @php
@@ -145,14 +154,14 @@
                                                                 : ($comment->user->user_type === '1' ? URL::asset('img/farmer.png') 
                                                                 : URL::asset('img/technician.png')));
                                                 @endphp
-                                                <div class="p-2 d-flex flex-row align-items-center">
-                                                    <img src="{{ $comment_list_prof_img }}" alt="Logo" class="img-fluid rounded-circle align-self-start" style="width: 40px; height: 40px;">
-                                                    <div class="d-flex flex-column justify-content-end mx-3 w-100">
+                                                <div class="d-flex flex-row align-items-center justify-content-end py-2" style="width: 100%;">
+                                                    <img src="{{ $comment_list_prof_img }}" alt="Logo" class="img-fluid rounded-circle align-self-start" style="width: 35px; height: 35px;">
+                                                    <div class="d-flex flex-column justify-content-end mx-3">
                                                         <p class="text-bottom my-0 fw-bold">{{ $comment->user->full_name }}</p>
                                                         <p class="text-bottom my-0">{{ $comment->text }}</p>
                                                     </div>
                                                     @if ($comment->user_id == Auth::id())
-                                                        <div class="dropdown">
+                                                        <div class="dropdown align-self-start">
                                                             <button class="btn btn-outline-secondary btn-sm text-white border-white" type="button" id="dropdownMenuButton{{ $comment->id }}" data-bs-toggle="dropdown" aria-expanded="false">
                                                                 <i class="bi bi-three-dots-vertical"></i>
                                                             </button>
@@ -230,6 +239,17 @@
         };
         reader.readAsDataURL(event.target.files[0]);
     }
+    
+    function toggleFullText(postId) {
+        var fullText = document.getElementById('full-text-' + postId);
+        var seeMore = document.getElementById('see-more-' + postId);
+        if (fullText.style.display === 'none') {
+            fullText.style.display = 'inline';
+            seeMore.style.display = 'none';
+        } else {
+            fullText.style.display = 'none';
+        }
+    }
 
     function toggleComments(postId) {
         var commentsDiv = document.getElementById('comments-' + postId);
@@ -301,7 +321,7 @@
                             var commentHtml = `
                                 <li class="my-2" id="comment-${response.comment.id}">
                                     <div class="p-2 d-flex flex-row align-items-center">
-                                        <img src="${response.prof_img}" alt="User" class="img-fluid rounded-circle" style="width: 40px; height: 40px;">
+                                        <img src="${response.prof_img}" alt="User" class="img-fluid rounded-circle align-self-start" style="width: 40px; height: 40px;">
                                         <div class="d-flex flex-column justify-content-end mx-3 w-100">
                                             <p class="text-bottom my-0 fw-bold">${response.comment.user.full_name}</p>
                                             <p class="text-bottom my-0">${response.comment.text}</p>

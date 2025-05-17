@@ -2,7 +2,6 @@
 @include('admin.partials.__nav')
 
 <main id="main" class="main">
-
     @if ($notif->user->user_type === '1')
         <div class="pagetitle mb-5">
                 <h1><strong>{{ $notif->report->farmer_name }}'s Report</strong></h1>  
@@ -89,7 +88,7 @@
                         <div class="card mb-3" style="background-color:rgb(218, 180, 182);">
                             <div class="card-body">
                                 <h5 class="card-title text-start pb-0">
-                                <strong>System Status</strong> </h5>
+                                <strong>Report Status</strong> </h5>
                                 <p class="text-muted">Initial disease indenfication complete. A technician has been automatically assigned for verification.</p>
                                 <p class="card-text text-truncate fs-5 mb-0">
                                 {{-- dd($notif->disease); --}}
@@ -163,7 +162,7 @@
             <div class="row p-0 m-0">
                 <div class="col-lg-6">
                     <div class="row p-0 m-0">
-                        <div class="card h-100" style="background-color:rgb(178, 214, 178);">
+                        <div class="card h-100" style="background-color:rgb(178, 214, 178);"> 
                             <div class="card-body">
                                 <h5 class="card-title text-center"><strong>Assigned Farm</strong></h5>
                                 <p class="card-text text-truncate">
@@ -191,7 +190,7 @@
                         <div class="card m-0" style="background-color:rgb(170, 202, 221);">
                             <div class="card-body">
                                 @php
-                                    $treatments = [
+                                    $treatments = [ 
                                         'Stem Bleeding' => '
                                             <ul>
                                                 <li>Carve the affected tissue and then burn it.<br>(Pag-ukit ng apektadong tissue at pagkatapos ay sunugin ito.)</li>
@@ -236,7 +235,7 @@
                         <div class="card mb-3" style="background-color:rgb(218, 180, 182);">
                             <div class="card-body">
                                 <h5 class="card-title text-start pb-0">
-                                <strong>System Status</strong> </h5>
+                                <strong>Report Status</strong> </h5>
                                 <p class="text-muted">Disease indenfication completed. A technician has been confirmed the disease.</p>
                                 <p class="card-text text-truncate fs-5 mb-0">
                                 <strong>Confirmed Disease:</strong><span class="text-danger ms-3"><strong>{{$notif->disease}}</strong></span></p>

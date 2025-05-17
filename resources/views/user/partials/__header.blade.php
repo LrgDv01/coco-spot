@@ -23,6 +23,10 @@
   <link href="{{ URL::asset('theme/assets/vendor/quill/quill.snow.css')}}" rel="stylesheet">
   <link href="{{ URL::asset('theme/assets/vendor/quill/quill.bubble.css')}}" rel="stylesheet">
   <link href="{{ URL::asset('theme/assets/vendor/remixicon/remixicon.css')}}" rel="stylesheet">
+  <!-- Added -->
+  <link href="{{ URL::asset('css/lightbox.css')}}" rel="stylesheet">
+  <link href="{{ URL::asset('css/style.css')}}" rel="stylesheet">
+  <!--. -->
 
   <!-- Mapbox Latest-->
   <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />

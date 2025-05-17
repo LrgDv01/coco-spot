@@ -116,7 +116,8 @@ h6 {
 }
 
 .back-to-top:hover {
-  background: #6776f4;
+  /* background: #6776f4; */
+  background-color: #84a090;
   color: #fff;
 }
 

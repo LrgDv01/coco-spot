@@ -100,9 +100,9 @@
     top: 7%; /* Distance from the top */
     right: 10%; /* Distance from the right */
     margin: 0; /* Remove default centering margins */
-    width: 500px;
+    width: 700px;
     height: 70vh;
-    max-width: 500px; /* Optional: Adjust width as needed */
+    max-width: 700px; /* Optional: Adjust width as needed */
   }
  
   @media (max-width: 576px) {
@@ -183,71 +183,197 @@
   </div> 
 </aside>
 
-
 <!-- Notification Modal -->
 <div class="modal fade"
-     id="notificationmodal"
-     tabindex="-1"
-     data-bs-backdrop="static"
-     data-bs-keyboard="false"
-     role="dialog"
-     aria-labelledby="notificationmodalTitle"
-     aria-hidden="true">
+  id="notificationmodal"
+  tabindex="-1"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  role="dialog"
+  aria-labelledby="notificationmodalTitle"
+  aria-hidden="true" >
     <div class="modal-dialog modal-dialog-notif modal-dialog-scrollable rounded" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="notificationmodalTitle"><strong>Notifications</strong></h5>
-                <button type="button" class="btn-close fs-1" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" style="background-color: #f0f8f0; border: 1px solid #28a745;">
-                <div class="list-group list-group-flush bg-transparent" id="notification-list">
-                    @if ($notif->isNotEmpty())
-                        @foreach ($notif as $n)
-                          @php
-                            $prof_img = $n->user->profile_img ? URL::asset('storage/' . $n->user->profile_img) 
-                                        : ($n->user->user_type === '1' ?  URL::asset('img/farmer.png') :  URL::asset('img/technician.png') ) ;
-                          @endphp
-                          @if ($n->status === 'unread')
-                            <div class="rounded rounded-4 mb-3">
-                              <a href="{{route('admin.notifications.read', $n->id)}}"
-                                class="list-group-item list-group-item-action flex-column align-items-start"
-                                style= "background-color: #f9ecdb;"
-                                data-id="{{ $n->id }}">
-                                <span class="badge bg-danger mb-3">A newly reported disease from {{ $n->user->user_type === '1' ? 'Farmer' : 'Technician' }} </span>
-                                  <div class="d-flex flex-row">
-                                    <img src="{{ $prof_img }}" alt="user_photo" class="img-fluid rounded-circle" style="width: 40px; height: 40px;">  
-                                    <p class="ms-2"><span class="fw-bold">{{ $n->user->full_name}}</span> - reported a disease. </p>
-                                  </div>
-                                  <div class="d-flex w-100 justify-content-between mt-3">
-                                      <h5 class="mb-1 text-danger"><strong>{{ $n->disease }}</strong></h5>
-                                      <small class="text-muted"><strong>{{  $n->created_at->timezone('Asia/Manila')->format('F d, Y | h:i A') }}</strong> </small>
-                                  </div>
-                              </a>
-                              </div>
-                          @else
-                              <div class="rounded rounded-4 mb-3">
-                                <a href="{{route('admin.notifications.read', $n->id)}}"
-                                  class="list-group-item list-group-item-action flex-column align-items-start"
-                                  style="background-color: white;"
-                                  data-id="{{ $n->id }}">
-                                    <div class="d-flex flex-row">
-                                      <img src="{{ $prof_img }}" alt="user_photo" class="img-fluid rounded-circle" style="width: 40px; height: 40px;">  
-                                      <p class="ms-2"><span class="fw-bold">{{ $n->user->full_name}}</span> - reported a disease. </p>
-                                    </div>
-                                    <div class="d-flex w-100 justify-content-between mt-3">
-                                        <h5 class="mb-1 text-secondary"><strong>{{ $n->disease }}</strong></h5>
-                                        <small class="text-muted"><strong>{{  $n->created_at->timezone('Asia/Manila')->format('F d, Y | h:i A') }}</strong> </small>
-                                    </div>
-                                </a>
-                              </div>
-                          @endif 
-                        @endforeach
-                    @else
-                        <div class="text-center">No Notifications</div>
-                    @endif
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="notificationmodalTitle"><strong>Notifications</strong></h5>
+          <button type="button" class="btn-close fs-1" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" style="background-color: #f0f8f0; border: 1px solid #28a745;">
+          <!-- Horizontal Navigation -->
+          <ul class="nav nav-tabs mb-3" id="notificationTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active text-success" id="farmers-tab" data-bs-toggle="tab" data-bs-target="#farmers" type="button" role="tab" aria-controls="farmers" aria-selected="true">Farmers</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link text-success" id="technicians-tab" data-bs-toggle="tab" data-bs-target="#technicians" type="button" role="tab" aria-controls="technicians" aria-selected="false">Technicians</button>
+            </li>
+          </ul>
+
+          <div class="tab-content" id="notificationTabsContent">
+            <!-- Farmers Tab -->
+            <div class="tab-pane fade show active" id="farmers" role="tabpanel" aria-labelledby="farmers-tab">
+                <div class="list-group list-group-flush bg-transparent" id="notification-list-farmers">
+                @if ($notif->where('user.user_type', '1')->isNotEmpty())
+                  @foreach ($notif->where('user.user_type', '1') as $n)
+                  @php
+                    $prof_img = $n->user->profile_img ? URL::asset('storage/' . $n->user->profile_img) 
+                          : URL::asset('img/farmer.png');
+                  @endphp
+                  <div class="rounded rounded-4 mb-3">
+                    <a href="{{route('admin.notifications.read', $n->id)}}"
+                      class="list-group-item list-group-item-action flex-column align-items-start"
+                      style="{{ $n->status === 'unread' ? 'background-color: #f9ecdb;' : 'background-color: white;' }}"
+                      data-id="{{ $n->id }}">
+                        <div class="d-flex flex-row">
+                        <img src="{{ $prof_img }}" alt="user_photo" class="img-fluid rounded-circle" style="width: 40px; height: 40px;">  
+                        <p class="ms-2"><span class="fw-bold">{{ $n->user->full_name}}</span> - reported a disease. </p>
+                        </div>
+                        <div class="d-flex w-100 justify-content-between mt-3">
+                        <h5 class="mb-1 {{ $n->status === 'unread' ? 'text-danger' : 'text-secondary' }}"><strong>{{ $n->disease }}</strong></h5>
+                        <small class="text-muted"><strong>{{  $n->created_at->timezone('Asia/Manila')->format('F d, Y | h:i A') }}</strong> </small>
+                        </div>
+                    </a>
+                  </div>
+                  @endforeach
+                @else
+                  <div class="text-center">No Notifications for Farmers</div>
+                @endif
                 </div>
             </div>
+
+            <!-- Technicians Tab -->
+        
+            {{--     <div class="tab-pane fade" id="technicians" role="tabpanel" aria-labelledby="technicians-tab">
+              @php
+              // This array should ideally be passed from your controller.
+              // Using the data you provided for this example.
+              $technicians_list = [
+                  ['id' => 5, 'name' => 'Lovely Labor'],
+                  ['id' => 6, 'name' => 'Riza Manalo'],
+                  ['id' => 7, 'name' => 'Nora Acueza'],
+                  ['id' => 8, 'name' => 'Charlon Pabon'],
+                  ['id' => 9, 'name' => 'Rizaldy Acuno'],
+                  ['id' => 10, 'name' => 'Ruel de Villa'],
+                  ['id' => 11, 'name' => 'Rose Ann Alejandro'],
+              ];
+              @endphp
+            
+              <div class="list-group list-group-flush bg-transparent" id="notification-list-technicians">
+                @if ($notif->where('user.user_type', '2')->isNotEmpty())
+                  @foreach ($notif->where('user.user_type', '2') as $n)
+                    @php
+                      $prof_img = $n->user->profile_img ? URL::asset('storage/' . $n->user->profile_img) 
+                            : URL::asset('img/technician.png');
+                    @endphp
+                    <div class="rounded rounded-4 mb-3">
+                      <a href="{{route('admin.notifications.read', $n->id)}}"
+                        class="list-group-item list-group-item-action flex-column align-items-start"
+                        style="{{ $n->status === 'unread' ? 'background-color: #f9ecdb;' : 'background-color: white;' }}"
+                        data-id="{{ $n->id }}">
+                          <div class="d-flex flex-row">
+                          <img src="{{ $prof_img }}" alt="user_photo" class="img-fluid rounded-circle" style="width: 40px; height: 40px;">  
+                          <p class="ms-2"><span class="fw-bold">{{ $n->user->full_name}}</span> - reported a disease. </p>
+                          </div>
+                          <div class="d-flex w-100 justify-content-between mt-3">
+                          <h5 class="mb-1 {{ $n->status === 'unread' ? 'text-danger' : 'text-secondary' }}"><strong>{{ $n->disease }}</strong></h5>
+                          <small class="text-muted"><strong>{{  $n->created_at->timezone('Asia/Manila')->format('F d, Y | h:i A') }}</strong> </small>
+                          </div>
+                      </a>
+                    </div>
+                  @endforeach
+                @else
+                  <div class="text-center">No Notifications for Technicians</div>
+                @endif
+              </div>
+            </div> --}}
+
+            <div class="tab-pane fade" id="technicians" role="tabpanel" aria-labelledby="technicians-tab">
+              @php
+                $technicians_list = [
+                    ['id' => 5, 'name' => 'Lovely Labor'],
+                    ['id' => 6, 'name' => 'Riza Manalo'],
+                    ['id' => 7, 'name' => 'Nora Acueza'],
+                    ['id' => 8, 'name' => 'Charlon Pabon'],
+                    ['id' => 9, 'name' => 'Rizaldy Acuno'],
+                    ['id' => 10, 'name' => 'Ruel de Villa'],
+                    ['id' => 11, 'name' => 'Rose Ann Alejandro'],
+                ];
+              @endphp
+
+              @if (!empty($technicians_list) && $notif->where('user.user_type', '2')->isNotEmpty())
+                  <div class="d-flex align-items-start">
+                      <div class="nav flex-column nav-pills me-2" id="v-pills-technician-tab" role="tablist" aria-orientation="vertical" style="min-width: 130px; width: 27%;">
+                    @foreach ($technicians_list as $index => $technician)
+                        <button class="nav-link text-start {{ $index == 0 ? 'active' : '' }}"
+                          id="v-pills-tech-{{ $technician['id'] }}-tab"
+                          data-bs-toggle="pill"
+                          data-bs-target="#v-pills-tech-{{ $technician['id'] }}"
+                          type="button" role="tab"
+                          aria-controls="v-pills-tech-{{ $technician['id'] }}"
+                          aria-selected="{{ $index == 0 ? 'true' : 'false' }}">
+                      {{ $technician['name'] }}
+                        </button>
+                    @endforeach
+                      </div>
+                      <div class="vr"></div> <!-- Separation line -->
+                      <div class="tab-content flex-grow-1" id="v-pills-technician-tabContent">
+                        @foreach ($technicians_list as $index => $technician)
+                            <div class="tab-pane fade {{ $index == 0 ? 'show active' : '' }}"
+                          id="v-pills-tech-{{ $technician['id'] }}"
+                          role="tabpanel"
+                          aria-labelledby="v-pills-tech-{{ $technician['id'] }}-tab">
+                          
+                          <div class="list-group list-group-flush bg-transparent">
+                              @php
+                            // Filter notifications for the current technician
+                            $technician_notifications = $notif->where('user.user_type', '2')->where('user_id', $technician['id']);
+                              @endphp
+
+                              @if ($technician_notifications->isNotEmpty())
+                            @foreach ($technician_notifications as $n)
+                                @php
+                              $prof_img = $n->user->profile_img ? URL::asset('storage/' . $n->user->profile_img) 
+                                      : URL::asset('img/technician.png');
+                                @endphp
+                                <div class="rounded rounded-4 mb-3 ms-2">
+                              <a href="{{route('admin.notifications.read', $n->id)}}"
+                                class="list-group-item list-group-item-action flex-column align-items-start"
+                                style="{{ $n->status === 'unread' ? 'background-color: #f9ecdb;' : 'background-color: white;' }}"
+                                data-id="{{ $n->id }}">
+                                  <div class="d-flex flex-row align-items-center">
+                                <img src="{{ $prof_img }}" alt="user_photo" class="img-fluid rounded-circle me-2" style="width: 40px; height: 40px;"> 
+                                <p class="mb-0"><span class="fw-bold">{{ $n->user->full_name}}</span> - reported a disease.</p>
+                                  </div>
+                                  <div class="d-flex w-100 justify-content-between mt-2">
+                                <h6 class="mb-1 {{ $n->status === 'unread' ? 'text-danger' : 'text-secondary' }}"><strong>{{ $n->disease }}</strong></h6>
+                                <small class="text-muted"><strong>{{ $n->created_at->timezone('Asia/Manila')->format('F d, Y | h:i A') }}</strong></small>
+                                  </div>
+                              </a>
+                                </div>
+                            @endforeach
+                              @else
+                            <div class="text-center p-3">No notifications for {{ $technician['name'] }}.</div>
+                              @endif
+                          </div>
+                            </div>
+                        @endforeach
+                      </div>
+                  </div>
+              @else
+                  {{-- This condition handles two cases:
+                      1. The $technicians_list is empty.
+                      2. There are no notifications for any technician (user_type 2). --}}
+                  @if($notif->where('user.user_type', '2')->isEmpty())
+                      <div class="text-center">No Notifications for Technicians.</div>
+                  @else
+                      {{-- This case implies $technicians_list was empty but there might have been notifications if list was populated --}}
+                      <div class="text-center">Technician list is not available or no technicians found.</div>
+                  @endif
+              @endif
+          </div>
+          </div>
         </div>
+      </div>
     </div>
 </div>
 
