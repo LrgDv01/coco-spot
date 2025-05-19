@@ -30,6 +30,14 @@ class NotificationController extends Controller
             $unreadCount = $notif->where('status', 'Assigned')->count();
             $view->with('notif', $notif)->with('unreadCount', $unreadCount);
         });
+
+        view()->composer('user.partials.__nav', function ($view) {
+            $farmerId = auth()->id();
+            // $notifications = ServicesModel::where('technician_id', $technicianId);
+            $notif = ServicesModel::where('farmer_id', $farmerId)->latest()->get(); 
+            $unreadCount = $notif->where('status', 'Acknowledged')->count();
+            $view->with('notif', $notif)->with('unreadCount', $unreadCount);
+        });
     }
     public function adminNotif()
     { 
@@ -125,20 +133,18 @@ class NotificationController extends Controller
         ]);
     }
 
+    // Technicians notifications
     public function technicianNotif() {
         $technicianId = auth()->id();
         $notifications = ServicesModel::where('technician_id', $technicianId)
             ->select('id', 'request_id', 'status', 'created_at')
             ->orderBy('created_at', 'desc')
             ->get();
-
             // $technicianId = auth()->id();
             // $notifications = ServicesModel::where('technician_id', $technicianId);
-
         $notif = ServicesModel::where('technician_id', $technicianId)->latest()->get(); 
         $unreadCount = $notif->where('status', 'Assigned')->count();
         // return view('admin.dashboard', compact('notif', 'unreadCount'));
-
         return view('user.home', compact('notifications', 'notif', 'unreadCount'));
     }
      
@@ -160,11 +166,52 @@ class NotificationController extends Controller
         // return response()->json(['success' => true]);
     } 
 
-    public function viewDetails($id)
+    public function techViewDetails($id)
     {
         $notification = ServicesModel::findOrFail($id);
         $notification->update(['status' => 'Viewed']);
         $requestDetails = ServicesModel::with('farmers', 'user' ,'farmerReports')->findOrFail($id);
         return view('user.technician.pages.request_details', compact('requestDetails'));
+    }
+
+    // Farmer notifications
+    public function farmerNotif() {
+        $farmerId = auth()->id();
+        $notifications = ServicesModel::where('farmer_id', $farmerId)
+            ->select('id', 'request_id', 'status', 'created_at')
+            ->orderBy('created_at', 'desc')
+            ->get();
+            // $technicianId = auth()->id();
+            // $notifications = ServicesModel::where('technician_id', $technicianId);
+        $notif = ServicesModel::where('farmer_id', $farmerId)->latest()->get(); 
+        $unreadCount = $notif->where('status', 'Acknowledged')->count();
+        // return view('admin.dashboard', compact('notif', 'unreadCount'));
+        return view('user.pages.notifications', compact('notifications', 'notif', 'unreadCount'));
+    }
+
+    public function getFarmerNotifications()
+    {
+        $notifications = ServicesModel::latest()->get(); 
+        return response()->json($notifications);
+    }
+
+     public function markAsReadFarmerNotif($id)
+    {
+        $notification = FarmerReportsModel::with('technician')->findOrFail($id);
+        $services = ServicesModel::pluck('farm_id')->toArray();
+        // $exist = in_array($services, $notification->farm_id);
+        $exist = in_array($notification->farm_id, $services);
+        // dd($exist);
+        $notification->update(['status' => 'read']);
+        return view('admin.pages.notification', compact('notification', 'exist'));
+        // return response()->json(['success' => true]);
+    } 
+
+    public function farmerViewDetails($id)
+    {
+        $notification = ServicesModel::findOrFail($id);
+        $notification->update(['status' => 'Acknowledged']);
+        $requestDetails = ServicesModel::with('farmers', 'user' ,'farmerReports')->findOrFail($id);
+        return view('user.pages.request_details', compact('requestDetails'));
     }
 }

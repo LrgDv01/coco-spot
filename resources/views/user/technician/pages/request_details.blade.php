@@ -28,6 +28,19 @@
                     <strong>Admin's Instructions : </strong>
                     <textarea name="note" class="form-control" rows="2" placeholder="Visit this farm for actual confirmation with the reported disease" disabled></textarea>
                 </div>
+                <div class="mb-3">
+                    <strong>Schedule Visit :</strong>
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <input type="date" class="form-control" name="visit_date" id="visit_date" 
+                                   value="{{ old('visit_date') }}" required {{ $requestDetails->status === 'Acknowledged' ? 'disabled' : '' }}>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="time" class="form-control" name="visit_time" id="visit_time" 
+                                   value="{{ old('visit_time') }}" required {{ $requestDetails->status === 'Acknowledged' ? 'disabled' : '' }}>
+                        </div>
+                    </div>
+                </div>
                 <div class="d-flex justify-content-center gap-5">
                     <button type="button" class="btn {{ $requestDetails->status === 'Acknowledged'  
                             ? 'btn-success' : 'btn-outline-success' }} fw-bold px-3 w-35 btn-block rounded-pill" 

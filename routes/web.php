@@ -97,6 +97,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::middleware(['farmer'])->group(function () {
         Route::get('/user/farm', [FarmController::class, 'index'])->name('user.farm');
+        Route::get('/user/farmer/notifications', [NotificationController::class, 'farmerNotif'])->name('user.farmer.notifications'); 
+        Route::get('/user/api/notifications', [NotificationController::class, 'getFarmerNotifications'])->name('user.farmer.notifications.get');
+        Route::get('/user/farmer/notifications/{id}/request-details', [NotificationController::class, 'farmerViewDetails'])->name('user.farmer.viewDetails');
         Route::get('/technician/{id}', [ServicesController::class, 'show'])->name('technician.info');
         Route::get('/user/farmer/reports', [ServicesController::class, 'index'])->name('user.farmer.reports');
         Route::get('/user/submit-report/{id}/diagnosis', [ServicesController::class, 'viewReport'])->name('user.submit-report'); 
@@ -104,6 +107,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/user/farmer/settings', [ProfileController::class, 'index'])->name('user.settings');
         Route::middleware(['web'])->group(function () {
             Route::post('/user/add_farm', [FarmController::class, 'store'])->name('farm.store');
+            Route::post('/user/farmer/notifications/{id}/{status}/request-details', [ServicesController::class, 'updateStatus'])->name('update.status');
             Route::post('/user/farmer-report', [ServicesController::class, 'farmerReport'])->name('user.farmer-report');
             Route::post('/user/farmer/update-field', [ProfileController::class, 'updateField'])->name('user.farmer.updateField-profile');
             Route::post('/user/farmer/update-profile', [ProfileController::class, 'updateProfile'])->name('user.farmer.update-profile');
@@ -116,7 +120,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/user/technician', [NotificationController::class, 'technicianNotif'])->name('user.notif'); 
         Route::get('/user/api/notifications', [NotificationController::class, 'getTechNotifications'])->name('user.notifications.get');
         // Route::get('/admin/notifications/{id}/read', [NotificationController::class, 'markAsReadTechNotif'])->name('admin.notifications.read');
-        Route::get('/user/notifications/{id}/request-details', [NotificationController::class, 'viewDetails'])->name('user.viewDetails');
+        Route::get('/user/notifications/{id}/request-details', [NotificationController::class, 'techViewDetails'])->name('user.viewDetails');
         Route::get('/user/reports', [ReportsController::class, 'index'])->name('user.reports'); 
         Route::get('/user/monitor', [ReportsController::class, 'monitorList'])->name('user.monitor'); 
         Route::get('/user/monitor/{id}/report-details', [ReportsController::class, 'viewDetails'])->name('user.viewReportDetails');

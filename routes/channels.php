@@ -34,3 +34,8 @@ Broadcast::channel('technician-notifications', function ($user) {
     // Only allow admins to listen
     return $user->isTechnician(); // Replace with your admin check logic
 });
+
+Broadcast::channel('farmer-notifications', function ($user) {
+    // Only allow admins to listen
+    return $user->isFarmer(); // Replace with your admin check logic
+});

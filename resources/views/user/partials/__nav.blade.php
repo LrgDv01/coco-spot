@@ -3,7 +3,7 @@
       <a href="{{ url('/user/home') }}" class="logo d-flex align-items-center justify-content-center">
         {{-- <img src="{{ URL::asset('img/admin-profile.png') }}" alt=""> --}}
         {{--<span class="d-none d-lg-block">{{ isset($appInfo->app_name) ? $appInfo->app_name : "Coco-Spot" }} Coco-Spot</span>--}}
-        <span class="d-none d-lg-block"> Coco-Spot</span>
+        <span class="d-none d-lg-block"> Coco-Spot </span>
 
       </a>
       <i class="text-dark bi bi-list toggle-sidebar-btn"></i>
@@ -91,7 +91,6 @@
   }
 </style>
 
-
 <aside id="sidebar" class="sidebar d-flex flex-column justify-content-between" style="background-color:#134125">
   <ul class="sidebar-nav" id="sidebar-nav">
     @if (auth()->user()->isFarmer())
@@ -99,6 +98,19 @@
         <a class="nav-link border border-0 {{ Request::is('user/farm') ? 'active' : 'inactive' }}" href="{{ url('/user/farm') }}">
           <i class="bi bi-house-fill"></i>  
           <span>My Farm</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link border border-0 {{ Request::is('user/farmer/notifications') ? 'active' : 'inactive' }}" href="{{ url('/user/farmer/notifications') }}">
+          <i class="bi bi-bell-fill"></i>
+          @if ($unreadCount > 0)
+              <span id="notification-count" 
+                class="position-absolute text-white text-center translate-middle bg-danger border border-light"
+                style="border-radius: 50%; width:25px; height:auto;">
+                  {{ $unreadCount }}
+              </span>
+          @endif
+          <span>Notifications</span>
         </a>
       </li>
       <li class="nav-item">

@@ -50,6 +50,13 @@ class AppServiceProvider extends ServiceProvider
             $unreadCount = $notif->where('status', 'Assigned')->count();
             $view->with('notif', $notif)->with('unreadCount', $unreadCount);
         });
+
+        View::composer('user.partials.__nav', function ($view) {
+            $farmerId = auth()->id();
+            $notif = ServicesModel::where('farmer_id', $farmerId)->latest()->get();
+            $unreadCount = $notif->where('status', 'Acknowledged')->count();
+            $view->with('notif', $notif)->with('unreadCount', $unreadCount);
+        });
     }
  
 }

@@ -32,6 +32,7 @@ class NewFarmerReport implements ShouldBroadcast
         return [
             new Channel('admin-notifications'),
             new Channel('technician-notifications'),
+            new Channel('farmer-notifications'),
         ];
     }
 }

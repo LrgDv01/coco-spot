@@ -170,8 +170,12 @@ class ServicesController extends Controller
         try {
             $requestDetails = ServicesModel::findOrFail($id);
             $requestDetails->status = $status;
+            // If visit_date and visit_time are provided, update updated_at accordingly
+            if ($request->filled('visit_date') && $request->filled('visit_time')) {
+                $datetime = $request->input('visit_date') . ' ' . $request->input('visit_time') . ':00';
+                $requestDetails->updated_at = $datetime;
+            }
             $requestDetails->save();
-    
             return response()->json([
                 'success' => true,
                 'message' => "Report has been successfully {$status}."

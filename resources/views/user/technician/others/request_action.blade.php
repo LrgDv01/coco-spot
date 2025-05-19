@@ -46,6 +46,13 @@
         var url = form.attr('action');
         var data = form.serialize();
 
+        // Get visit date and time values from the main page
+        var visit_date = $('#visit_date').val();
+        var visit_time = $('#visit_time').val();
+
+        // Append to data if present
+        data += '&visit_date=' + encodeURIComponent(visit_date) + '&visit_time=' + encodeURIComponent(visit_time);
+
         $.ajax({
             method: 'POST',
             url: url,
