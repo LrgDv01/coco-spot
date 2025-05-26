@@ -8,12 +8,15 @@ use App\Models\technician\TechiniciansReportsModel;
 use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\View; 
+use Illuminate\Support\Facades\Auth; 
+
 
 class NotificationController extends Controller
 {
     public function __construct()
     {
-        view()->composer('admin.partials.__nav', function ($view) {
+        View::composer('admin.partials.__nav', function ($view) {
             // $farmerNotif = FarmerReportsModel::latest()->get(); 
             // $techNotif = TechiniciansReportsModel::latest()->get();
             $notif = Notification::latest()->get();
@@ -23,21 +26,51 @@ class NotificationController extends Controller
             $unreadCount = $notif->where('status', 'unread')->count();
             $view->with('notif', $notif)->with('unreadCount', $unreadCount);
         });
-        view()->composer('user.partials.__nav', function ($view) {
-            $technicianId = auth()->id();
-            // $notifications = ServicesModel::where('technician_id', $technicianId);
-            $notif = ServicesModel::where('technician_id', $technicianId)->latest()->get(); 
-            $unreadCount = $notif->where('status', 'Assigned')->count();
-            $view->with('notif', $notif)->with('unreadCount', $unreadCount);
+
+        View::composer('user.partials.__nav', function ($view) {
+            $user = Auth::user(); // Get the authenticated user INSIDE the closure
+
+            // Always good to check if a user is actually logged in
+            if ($user) {
+                // Now you can safely check the user's role
+                if (method_exists($user, 'isTechnician') && $user->isTechnician()) {
+                    $technicianId = $user->id; // Use $user->id for clarity
+                    $notif = ServicesModel::where('technician_id', $technicianId)->latest()->get();
+                    $unreadCount = $notif->where('status', 'Assigned')->count();
+                    $view->with('notif', $notif)->with('unreadCount', $unreadCount);
+                } elseif (method_exists($user, 'isFarmer') && $user->isFarmer()) {
+                    $farmerId = $user->id; // Use $user->id for clarity
+                    $notif = ServicesModel::where('farmer_id', $farmerId)->latest()->get();
+                    $unreadCount = $notif->where('status', 'Acknowledged')->count();
+                    $view->with('notif', $notif)->with('unreadCount', $unreadCount);
+                } else {
+                    // Optional: Handle cases where the user is logged in but is neither
+                    // or if the view should have default empty data.
+                    $view->with('notif', collect())->with('unreadCount', 0);
+                }
+            } else {
+                // Optional: Handle cases where no user is logged in for this view,
+                // if the view might be rendered for guests.
+                // Provide default empty data.
+                $view->with('notif', collect())->with('unreadCount', 0);
+            }
         });
 
-        view()->composer('user.partials.__nav', function ($view) {
-            $farmerId = auth()->id();
-            // $notifications = ServicesModel::where('technician_id', $technicianId);
-            $notif = ServicesModel::where('farmer_id', $farmerId)->latest()->get(); 
-            $unreadCount = $notif->where('status', 'Acknowledged')->count();
-            $view->with('notif', $notif)->with('unreadCount', $unreadCount);
-        });
+        // view()->composer('user.partials.__nav', function ($view) {
+        //     $technicianId = auth()->id();
+        //     // $notifications = ServicesModel::where('technician_id', $technicianId);
+        //     $notif = ServicesModel::where('technician_id', $technicianId)->latest()->get(); 
+        //     $unreadCount = $notif->where('status', 'Assigned')->count();
+        //     $view->with('notif', $notif)->with('unreadCount', $unreadCount);
+        // });
+
+        // view()->composer('user.partials.__nav', function ($view) {
+        //     $farmerId = auth()->id();
+        //     // $notifications = ServicesModel::where('technician_id', $technicianId);
+        //     $notif = ServicesModel::where('farmer_id', $farmerId)->latest()->get(); 
+        //     $unreadCount = $notif->where('status', 'Acknowledged')->count();
+        //     $view->with('notif', $notif)->with('unreadCount', $unreadCount);
+        // });
     }
     public function adminNotif()
     { 
@@ -137,6 +170,7 @@ class NotificationController extends Controller
     public function technicianNotif() {
         $technicianId = auth()->id();
         $notifications = ServicesModel::where('technician_id', $technicianId)
+            ->whereIn('status', ['Assigned', 'Viewed'])
             ->select('id', 'request_id', 'status', 'created_at')
             ->orderBy('created_at', 'desc')
             ->get();
@@ -145,6 +179,7 @@ class NotificationController extends Controller
         $notif = ServicesModel::where('technician_id', $technicianId)->latest()->get(); 
         $unreadCount = $notif->where('status', 'Assigned')->count();
         // return view('admin.dashboard', compact('notif', 'unreadCount'));
+        // dd($unreadCount);
         return view('user.home', compact('notifications', 'notif', 'unreadCount'));
     }
      
@@ -178,6 +213,7 @@ class NotificationController extends Controller
     public function farmerNotif() {
         $farmerId = auth()->id();
         $notifications = ServicesModel::where('farmer_id', $farmerId)
+            ->where('status', 'Acknowledged')
             ->select('id', 'request_id', 'status', 'created_at')
             ->orderBy('created_at', 'desc')
             ->get();

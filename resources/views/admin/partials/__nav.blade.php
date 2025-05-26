@@ -241,7 +241,7 @@
                   </div>
                   @endforeach
                 @else
-                  <div class="text-center">No Notifications for Farmers</div>
+                  <div class="text-center">No Notifications for Farmers.</div>
                 @endif
                 </div>
             </div>

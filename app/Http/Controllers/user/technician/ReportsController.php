@@ -34,19 +34,105 @@ class ReportsController extends Controller
         ));
     }
 
-    public function diseaseReports()
+    // public function diseaseReports()
+    // {
+    //     // $technicianId = auth()->id();
+    //     // $recipient = auth()->user()->full_name;
+    //     $reports = ServicesModel::with(['user', 'technicians', 'farmerReports', 'technicianReports'])
+    //         // ->where('technician_id', $technicianId)
+    //         ->get();
+    //     // dd($reports);
+    //     return view('admin.pages.reports',
+    //         compact(
+    //             'reports',
+    //             // 'recipient',
+    //     ));
+    // }
+
+     public function diseaseReports(Request $request)
     {
-        // $technicianId = auth()->id();
-        // $recipient = auth()->user()->full_name;
-        $reports = ServicesModel::with(['user', 'technicians', 'farmerReports', 'technicianReports'])
-            // ->where('technician_id', $technicianId)
-            ->get();
-        // dd($reports);
-        return view('admin.pages.reports',
-            compact(
-                'reports',
-                // 'recipient',
-        ));
+        // Start with a base query, eager load relationships to prevent N+1 issues
+        $query = ServicesModel::query()->with([
+            'farmerReports',      // Assuming 'farmerReports' is the relationship name for farmer's report details
+            'technicianReports',  // Assuming 'technicianReports' is for technician's report details
+            'technicians'         // Assuming 'technicians' is the relationship to the Technician model
+        ]);
+
+        // Apply Date Range Filter
+        if ($request->filled('date_from') && $request->filled('date_to')) {
+            try {
+                $dateFrom = Carbon::parse($request->input('date_from'))->startOfDay();
+                $dateTo = Carbon::parse($request->input('date_to'))->endOfDay();
+                // $query->whereBetween('reports.created_at', [$dateFrom, $dateTo]);
+                $query->whereBetween('created_at', [$dateFrom, $dateTo]);
+
+            } catch (\Exception $e) {
+                // Handle invalid date format if necessary, or rely on browser validation
+                // For now, we'll ignore invalid dates or you can add a flash message
+            }
+        } elseif ($request->filled('date_from')) {
+            try {
+                $dateFrom = Carbon::parse($request->input('date_from'))->startOfDay();
+                // $query->where('reports.created_at', '>=', $dateFrom);
+                $query->where('created_at', '>=', $dateFrom);
+
+            } catch (\Exception $e) {
+                // Handle error
+            }
+        } elseif ($request->filled('date_to')) {
+            try {
+                $dateTo = Carbon::parse($request->input('date_to'))->endOfDay();
+                // $query->where('reports.created_at', '<=', $dateTo);
+                $query->where('created_at', '<=', $dateTo);
+
+            } catch (\Exception $e) {
+                // Handle error
+            }
+        }
+
+        // Apply Disease Filter
+        // This filter assumes 'disease' is in 'farmer_reports.disease' OR 'technician_reports.diagnosis_disease'
+        if ($request->filled('disease_filter')) {
+            $disease = $request->input('disease_filter');
+            $query->where(function ($subQuery) use ($disease) {
+                $subQuery->whereHas('farmerReports', function ($q) use ($disease) {
+                    $q->where('disease', $disease); // Column name in farmer_reports table
+                })->orWhereHas('technicianReports', function ($q) use ($disease) {
+                    $q->where('diagnosis_disease', $disease); // Column name in technician_reports table
+                });
+            });
+        }
+
+        // Apply Status Filter
+        // This filter assumes 'status' is in 'technician_reports.status'
+        if ($request->filled('status_filter')) {
+            $status = $request->input('status_filter');
+            if ($status === 'UnVerified') {
+                // Reports are 'UnVerified' if they don't have a technicianReport
+                // or if the technicianReport status is null or empty.
+                $query->where(function ($subQuery) {
+                    $subQuery->whereDoesntHave('technicianReports')
+                             ->orWhereHas('technicianReports', function ($q) {
+                                 $q->whereNull('status')->orWhere('status', '');
+                             });
+                });
+            } else {
+                $query->whereHas('technicianReports', function ($q) use ($status) {
+                    $q->where('status', $status); // Column name in technician_reports table
+                });
+            }
+        }
+
+        // Order by the latest reports and paginate
+        // If you don't use pagination, replace paginate() with get()
+        // $reports = $query->latest('reports.created_at')->paginate(15); // Adjust items per page as needed
+        $reports = $query->latest('created_at')->paginate(15); // Adjust items per page as needed
+
+        // Pass the filtered reports and request inputs to the view
+        return view('admin.pages.reports', [ // Replace 'your_report_view' with your actual blade file name
+            'reports' => $reports,
+            'request' => $request // Pass the request to easily repopulate filter fields
+        ]);
     }
 
     private function updateStatus($farm_id, $status)

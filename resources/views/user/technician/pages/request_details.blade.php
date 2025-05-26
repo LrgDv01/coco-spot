@@ -30,7 +30,7 @@
                 </div>
                 <div class="mb-3">
                     <strong>Admin's Instructions : </strong>
-                    <textarea name="note" class="form-control" rows="2" placeholder="Visit this farm for actual confirmation with the reported disease." disabled></textarea>
+                    <textarea name="note" class="form-control text-muted" rows="2" placeholder="Visit this farm for actual confirmation of detected disease." disabled></textarea>
                 </div>
                 <div class="mb-3">
                     <strong>Schedule Visit :</strong>

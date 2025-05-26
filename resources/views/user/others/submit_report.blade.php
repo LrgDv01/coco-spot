@@ -495,7 +495,7 @@
                             console.log('Report saved successfully');
                             diagnosisText.innerHTML += '<p class="mt-5 text-success">Disease identified, Report submitted successfully!</p>';
                             reportButton.classList.remove('btn-outline-success');
-                            reportButton.classList.add('btn-success');
+                            reportButton.classList.add('btn-secondary');
                             reportButton.textContent = 'Reported';
                             farmStatusButton.classList.remove('d-none');
                             // add icon for button (optional)
