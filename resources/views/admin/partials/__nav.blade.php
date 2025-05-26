@@ -156,6 +156,11 @@
         </a>
       </li>
       <li class="nav-item">
+        <a class="nav-link border border-0 {{ Request::is('reports') ? 'active' : 'inactive' }}" href="{{ url('/reports') }}">
+            <i class="bi bi-table"></i><span>Reports</span>
+        </a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link border border-0 {{ Request::is('admin/map') ? 'active' : 'inactive' }}" href="{{ url('/admin/map') }}">
           <i class="bi bi-map-fill"></i><span>Map</span>
         </a>

@@ -34,6 +34,21 @@ class ReportsController extends Controller
         ));
     }
 
+    public function diseaseReports()
+    {
+        // $technicianId = auth()->id();
+        // $recipient = auth()->user()->full_name;
+        $reports = ServicesModel::with(['user', 'technicians', 'farmerReports', 'technicianReports'])
+            // ->where('technician_id', $technicianId)
+            ->get();
+        // dd($reports);
+        return view('admin.pages.reports',
+            compact(
+                'reports',
+                // 'recipient',
+        ));
+    }
+
     private function updateStatus($farm_id, $status)
     {
         try {
@@ -160,6 +175,7 @@ class ReportsController extends Controller
                 'recipient',
         )); 
     }
+
 
     
     public function viewDetails($id)

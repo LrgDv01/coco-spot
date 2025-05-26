@@ -63,7 +63,6 @@ Route::middleware(['redirect.nonlogin', 'guest'])->group(function () {
         Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
     });
 });
-
  
 Route::middleware(['auth'])->group(function () {
     Route::get('/forums', [ForumController::class, 'index'])->name('admin.forums');
@@ -78,6 +77,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::middleware(['admin'])->group(function () {
         Route::get('/admin', [dashboardController::class, 'display_dashboard'])->name('admin.dashboard');
+        Route::get('/reports', [ReportsController::class, 'diseaseReports'])->name('admin.reports');
         Route::get('/admin/notifications', [NotificationController::class, 'adminNotif'])->name('admin.notifications'); 
         Route::get('/admin/api/notifications', [NotificationController::class, 'getNotifications'])->name('admin.notifications.get');
         Route::get('/admin/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('admin.notifications.read');

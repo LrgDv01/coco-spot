@@ -26,6 +26,10 @@ class ServicesModel extends Model
     {
         return $this->belongsTo(User::class, 'farmer_id', 'id');
     }
+    public function technicians()
+    {
+        return $this->belongsTo(User::class, 'technician_id', 'id');
+    }
     public function farms()
     {
         // return $this->belongsTo(FarmModel::class, 'farmer_id', 'farmer_id');
