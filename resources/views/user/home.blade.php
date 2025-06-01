@@ -166,10 +166,11 @@
                                 <li class="list-group-item d-flex flex-column align-items-start shadow-sm p-3 mb-2" 
                                     style="border: 1px solid #188754; border-radius: 8px;">
                                     <div class="mb-2">
-                                        <h5 class="mb-1 fw-bold">New Farm Assigned you to Visit</h5>
+                                        <h5 class="mb-1 fw-bold" style="font-size: 100%;">{{ ($notifs->status === 'Confirmed' || $notifs->status === 'Rescheduled')  
+                                            ? 'Farmer was ' . $notifs->status . ' a Farm Visitation.' : 'New Farm was Assigned you to visit.' }} </h5>
                                         <p class="mb-1">
                                             <strong>Assigned ID:</strong> {{ $notifs->request_id }}<br>
-                                            <strong>Date/Time:</strong> {{ $notifs->created_at->format('F d, Y | h:i A') }}
+                                            <strong>Date/Time:</strong> {{ $notifs->updated_at->timezone('Asia/Manila')->format('F d, Y | h:i A') }}
                                         </p>
                                     </div>
                                     <div class="mt-3 align-self-end">

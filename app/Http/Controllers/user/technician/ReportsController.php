@@ -14,6 +14,9 @@ use App\Http\Controllers\ServicesController;
 use App\Models\farmer\FarmModel;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
+use Carbon\Carbon;
+use PDF;
+use Maatwebsite\Excel\Excel;
 
 class ReportsController extends Controller
 {
@@ -24,9 +27,8 @@ class ReportsController extends Controller
         $report = ServicesModel::with(['user', 'userFarms', 'farmerReports']) 
             ->where(function ($query) use ($technicianId) {
                 $query->where('technician_id', $technicianId)
-                    ->where('status', 'Acknowledged');
+                    ->whereIn('status', ['Acknowledged','Viewed', 'Confirmed', 'Rescheduled', 'Unverified']);
             })->first();
-        // dd($report);
         return view('user.technician.pages.reports',
             compact(
                 'report',
@@ -34,104 +36,71 @@ class ReportsController extends Controller
         ));
     }
 
-    // public function diseaseReports()
-    // {
-    //     // $technicianId = auth()->id();
-    //     // $recipient = auth()->user()->full_name;
-    //     $reports = ServicesModel::with(['user', 'technicians', 'farmerReports', 'technicianReports'])
-    //         // ->where('technician_id', $technicianId)
-    //         ->get();
-    //     // dd($reports);
-    //     return view('admin.pages.reports',
-    //         compact(
-    //             'reports',
-    //             // 'recipient',
-    //     ));
-    // }
-
-     public function diseaseReports(Request $request)
+    public function diseaseReports(Request $request)
     {
-        // Start with a base query, eager load relationships to prevent N+1 issues
         $query = ServicesModel::query()->with([
-            'farmerReports',      // Assuming 'farmerReports' is the relationship name for farmer's report details
-            'technicianReports',  // Assuming 'technicianReports' is for technician's report details
-            'technicians'         // Assuming 'technicians' is the relationship to the Technician model
+            'farmerReports',
+            'technicianReports',
+            'technicians'
         ]);
-
-        // Apply Date Range Filter
         if ($request->filled('date_from') && $request->filled('date_to')) {
             try {
                 $dateFrom = Carbon::parse($request->input('date_from'))->startOfDay();
                 $dateTo = Carbon::parse($request->input('date_to'))->endOfDay();
-                // $query->whereBetween('reports.created_at', [$dateFrom, $dateTo]);
                 $query->whereBetween('created_at', [$dateFrom, $dateTo]);
-
-            } catch (\Exception $e) {
-                // Handle invalid date format if necessary, or rely on browser validation
-                // For now, we'll ignore invalid dates or you can add a flash message
-            }
+            } catch (\Exception $e) {}
         } elseif ($request->filled('date_from')) {
             try {
                 $dateFrom = Carbon::parse($request->input('date_from'))->startOfDay();
-                // $query->where('reports.created_at', '>=', $dateFrom);
                 $query->where('created_at', '>=', $dateFrom);
-
-            } catch (\Exception $e) {
-                // Handle error
-            }
+            } catch (\Exception $e) {}
         } elseif ($request->filled('date_to')) {
             try {
                 $dateTo = Carbon::parse($request->input('date_to'))->endOfDay();
-                // $query->where('reports.created_at', '<=', $dateTo);
                 $query->where('created_at', '<=', $dateTo);
-
-            } catch (\Exception $e) {
-                // Handle error
-            }
+            } catch (\Exception $e) {}
         }
 
-        // Apply Disease Filter
-        // This filter assumes 'disease' is in 'farmer_reports.disease' OR 'technician_reports.diagnosis_disease'
         if ($request->filled('disease_filter')) {
             $disease = $request->input('disease_filter');
             $query->where(function ($subQuery) use ($disease) {
                 $subQuery->whereHas('farmerReports', function ($q) use ($disease) {
-                    $q->where('disease', $disease); // Column name in farmer_reports table
+                    $q->where('disease', $disease);
                 })->orWhereHas('technicianReports', function ($q) use ($disease) {
-                    $q->where('diagnosis_disease', $disease); // Column name in technician_reports table
+                    $q->where('diagnosis_disease', $disease);
                 });
             });
         }
 
-        // Apply Status Filter
-        // This filter assumes 'status' is in 'technician_reports.status'
         if ($request->filled('status_filter')) {
             $status = $request->input('status_filter');
-            if ($status === 'UnVerified') {
-                // Reports are 'UnVerified' if they don't have a technicianReport
-                // or if the technicianReport status is null or empty.
-                $query->where(function ($subQuery) {
-                    $subQuery->whereDoesntHave('technicianReports')
-                             ->orWhereHas('technicianReports', function ($q) {
-                                 $q->whereNull('status')->orWhere('status', '');
-                             });
-                });
-            } else {
-                $query->whereHas('technicianReports', function ($q) use ($status) {
-                    $q->where('status', $status); // Column name in technician_reports table
-                });
+            $query->where('status', $status); 
+        }
+
+        // Export logic
+        if ($request->has('export')) {
+            $exportType = $request->get('export');
+            $reports = $query->latest('created_at')->get(); // Get all filtered (not paginated) for export
+
+            if ($exportType === 'excel' || $exportType === 'csv') {
+                // Use fully qualified class name for the format constant
+                $format = $exportType === 'excel' ? \Maatwebsite\Excel\Excel::XLSX : \Maatwebsite\Excel\Excel::CSV;
+                return \Maatwebsite\Excel\Facades\Excel::download(
+                    new \App\Exports\ReportsExport($reports),
+                    'reports_' . now()->format('Ymd_His') . '.' . ($exportType === 'excel' ? 'xlsx' : 'csv'),
+                    $format
+                );
+            } elseif ($exportType === 'pdf') {
+                // Use the correct PDF facade
+                $pdf = PDF::loadView('admin.pages.exports.reports_pdf', ['reports' => $reports]);
+                return $pdf->download('reports_' . now()->format('Ymd_His') . '.pdf');
             }
         }
 
-        // Order by the latest reports and paginate
-        // If you don't use pagination, replace paginate() with get()
-        // $reports = $query->latest('reports.created_at')->paginate(15); // Adjust items per page as needed
-        $reports = $query->latest('created_at')->paginate(15); // Adjust items per page as needed
-
-        // Pass the filtered reports and request inputs to the view
-        return view('admin.pages.reports', [ // Replace 'your_report_view' with your actual blade file name
+        $reports = $query->latest('created_at')->paginate(10);
+        return view('admin.pages.reports', [
             'reports' => $reports,
-            'request' => $request // Pass the request to easily repopulate filter fields
+            // 'request' => $request // The request object is globally available in Blade via request() helper
         ]);
     }
 
@@ -140,6 +109,7 @@ class ReportsController extends Controller
         try {
             $updateStatus = ServicesModel::where('farm_id', $farm_id)->first();
             $updateStatus->status = $status; 
+            $updateStatus->remarks = $status. ' by Technician'; 
             $updateStatus->save();
         } catch (\Exception $e) {
             return response()->json([
@@ -222,6 +192,9 @@ class ReportsController extends Controller
                 'disease' => $report->diagnosis_disease,
                 'status' => 'unread'
             ]);
+
+            // ServicesModel::where('farm_id', $report->farm_id)->update(['status' => 'Verified']);
+
             // Update farm status
             $this->updateStatus($report->farm_id, $report->status);
             return response()->json([
@@ -261,17 +234,12 @@ class ReportsController extends Controller
                 'recipient',
         )); 
     }
-
-
     
     public function viewDetails($id)
     {
-        // $notification = ServicesModel::findOrFail($id);
-        // $notification->update(['status' => 'Viewed']); 
-        $reportDetails = TechiniciansReportsModel::with('farms')->findOrFail($id);
+        $reportDetails = ServicesModel::with('userFarms', 'technicianReports')->findOrFail($id);
         return view('user.technician.others.monitor_details', compact('reportDetails'));
     }
-
 }
 
 

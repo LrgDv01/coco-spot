@@ -120,6 +120,12 @@
         </a>
       </li>
       <li class="nav-item">
+        <a class="nav-link border border-0 {{ Request::is('user/farmer/reports') ? 'active' : 'inactive' }}" href="{{ url('/user/farmer/reports') }}">
+        <i class="bi bi-clipboard-data-fill"></i>  
+          <span>Reports</span>
+        </a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link border border-0 {{ Request::is('user/map') ? 'active' : 'inactive' }}" href="{{ url('/user/map') }}">
         <i class="bi bi-map-fill"></i>  
           <span>Map</span>
@@ -129,12 +135,6 @@
         <a class="nav-link border border-0 {{ Request::is('user/simulation') ? 'active' : 'inactive' }}" href="{{ url('/user/simulation') }}">
         <i class="bi bi-geo-fill"></i> 
           <span>Simulation</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link border border-0 {{ Request::is('user/farmer/reports') ? 'active' : 'inactive' }}" href="{{ url('/user/farmer/reports') }}">
-        <i class="bi bi-clipboard-data-fill"></i>  
-          <span>Reports</span>
         </a>
       </li>
       <li class="nav-item">

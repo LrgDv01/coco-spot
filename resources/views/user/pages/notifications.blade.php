@@ -23,7 +23,7 @@
                                     <h5 class="mb-1 fw-bold text-truncate" style="font-size: 100%;">Your technician set a schedule for visit</h5>
                                     <p class="mb-1">
                                         <strong>Assigned ID:</strong> {{ $notifs->request_id }}<br>
-                                        <strong>Date/Time:</strong> {{ $notifs->created_at->format('F d, Y | h:i A') }}
+                                        <strong>Date/Time:</strong> {{ $notifs->created_at->timezone('Asia/Manila')->format('F d, Y | h:i A')  }}
                                     </p>
                                 </div>
                                  <div class="mt-3 align-self-end">

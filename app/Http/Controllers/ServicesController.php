@@ -13,15 +13,14 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
-
+use Carbon\Carbon;
 class ServicesController extends Controller
 {
     public function index()
     {   
         $userId = Auth::id(); 
         $farms = FarmModel::where('farmer_id', $userId)
-        // ->orderBy('created_at', 'desc')->limit(4) // Order by created_at, newest first
-            ->orderBy('created_at', 'desc') // Order by created_at, newest first
+            ->orderBy('created_at', 'desc')
             ->get();
         $farmReports = FarmerReportsModel::with('farm')->where('farmer_id', $userId)
             ->pluck('farm_id')->toArray();
@@ -49,17 +48,12 @@ class ServicesController extends Controller
                 'disease' => 'required|string|max:255',
                 'image_proof' => 'required|image|mimes:jpeg,png,jpg,gif,svg|min:0', 
             ]);
-
-            // Handle image upload
             $imagePath = null;
             if ($request->hasFile('image_proof')) {
-                // Store in storage/app/public/images
                 $imagePath = $request->file('image_proof')->store('images', 'public');
-                // Manually copy to public/storage/images
                 $filename = basename($imagePath);
                 $storagePath = storage_path('app/public/images/' . $filename);
                 $publicPath = public_path('storage/images/' . $filename);
-                // Ensure the directory exists
                 if (!File::exists(dirname($publicPath))) {
                     File::makeDirectory(dirname($publicPath), 0755, true);
                 }
@@ -86,7 +80,6 @@ class ServicesController extends Controller
                 'disease' => $validated['disease'],
                 'image_path' => $imagePath, 
             ]);
-
             // Create notification using the newly created report
             if ($report) {
                 $notification = $report->notifications()->create([
@@ -105,7 +98,6 @@ class ServicesController extends Controller
             } else {
                 throw new \Exception('Failed to create farmer report');
             }
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false, 
@@ -117,15 +109,11 @@ class ServicesController extends Controller
     public function viewSubmmittedReport($id)
     {
         $reported = FarmerReportsModel::with('farms')->where('farm_id', $id)->first();
-        // $reported = FarmerReportsModel::with('farms')->findOrFail($id);
         $services = ServicesModel::pluck('farm_id')->toArray();
         $technicianReport = TechiniciansReportsModel::pluck('farm_id')->toArray();
-        // dd($verified->diseaseVerified->farm_id);
         $treatmentRecommendation = TechiniciansReportsModel::where('farm_id', $id)->pluck('diagnosis_disease')->first();
         $assigned = in_array($id, $services);
         $verified = in_array($id, $technicianReport);
-        // $notification->update(['status' => 'read']);
-        // return view('admin.pages.notification', compact('notification', 'exist'));
         return view('user.others.submitted_report', compact('reported', 'assigned', 'verified', 'treatmentRecommendation'));
     }
 
@@ -137,12 +125,10 @@ class ServicesController extends Controller
             'technician_id' => 'required|exists:users,id',
             'farmer_name' => 'required|string|max:255',
         ]);
-
         do {
             $request_id = rand(10000, 99999);
             $exists = ServicesModel::where('request_id', $request_id)->exists();
         } while ($exists);
-
         $confirmation = new ServicesModel();
         $confirmation->farm_id = $validated['farm_id'];
         $confirmation->farmer_id = $validated['farmer_id'];
@@ -150,7 +136,8 @@ class ServicesController extends Controller
         $confirmation->farmer_name = $validated['farmer_name'];
         $confirmation->request_id = $request_id;
         $confirmation->status = 'Assigned';
-
+        $confirmation->remarks = 'Assigned by Admin'; 
+        // $confirmation->visit_date ='Unscheduled';
         try {
             $confirmation->save();
             return response()->json([
@@ -165,20 +152,35 @@ class ServicesController extends Controller
         }
     }
 
-    public function updateStatus(Request $request, $id, $status)
+    public function updateStatus(Request $request, $id, $status, $remarks)
     {
         try {
             $requestDetails = ServicesModel::findOrFail($id);
-            $requestDetails->status = $status;
-            // If visit_date and visit_time are provided, update updated_at accordingly
             if ($request->filled('visit_date') && $request->filled('visit_time')) {
-                $datetime = $request->input('visit_date') . ' ' . $request->input('visit_time') . ':00';
-                $requestDetails->updated_at = $datetime;
+                $new_datetime = $request->input('visit_date') . ' ' . $request->input('visit_time') . ':00';
+                $current_datetime = $requestDetails->visit_date;
+                if ($requestDetails->remarks === 'Viewed by Farmer') {
+                    if ($new_datetime === $current_datetime) {
+                        $requestDetails->status = $status;
+                        $requestDetails->remarks = $remarks;
+                    } else {
+                        $requestDetails->status = 'Rescheduled';
+                        $requestDetails->remarks = 'Farm visitation was Rescheduled by Farmer';
+                    }
+                } else {
+                    $requestDetails->status = $status;
+                    $requestDetails->remarks = $remarks;
+                }
+                $requestDetails->visit_date = $new_datetime;
+            }
+            if ($requestDetails->status === 'Verified' || $requestDetails->status === 'False Detection') {
+                $requestDetails->status = $status;
+                $requestDetails->remarks = $status . ' by Technician';
             }
             $requestDetails->save();
             return response()->json([
                 'success' => true,
-                'message' => "Report has been successfully {$status}."
+                'message' => "You've Successfully {$requestDetails->status} your farm visitation."
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -186,6 +188,10 @@ class ServicesController extends Controller
                 'message' => 'An error occurred while processing your request.'
             ], 500);
         }
+    }
+
+    public function markAsTreated(Request $request, $id) {
+
     }
     
     public function show($id) {

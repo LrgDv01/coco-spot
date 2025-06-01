@@ -248,49 +248,7 @@
 
             <!-- Technicians Tab -->
         
-            {{--     <div class="tab-pane fade" id="technicians" role="tabpanel" aria-labelledby="technicians-tab">
-              @php
-              // This array should ideally be passed from your controller.
-              // Using the data you provided for this example.
-              $technicians_list = [
-                  ['id' => 5, 'name' => 'Lovely Labor'],
-                  ['id' => 6, 'name' => 'Riza Manalo'],
-                  ['id' => 7, 'name' => 'Nora Acueza'],
-                  ['id' => 8, 'name' => 'Charlon Pabon'],
-                  ['id' => 9, 'name' => 'Rizaldy Acuno'],
-                  ['id' => 10, 'name' => 'Ruel de Villa'],
-                  ['id' => 11, 'name' => 'Rose Ann Alejandro'],
-              ];
-              @endphp
-            
-              <div class="list-group list-group-flush bg-transparent" id="notification-list-technicians">
-                @if ($notif->where('user.user_type', '2')->isNotEmpty())
-                  @foreach ($notif->where('user.user_type', '2') as $n)
-                    @php
-                      $prof_img = $n->user->profile_img ? URL::asset('storage/' . $n->user->profile_img) 
-                            : URL::asset('img/technician.png');
-                    @endphp
-                    <div class="rounded rounded-4 mb-3">
-                      <a href="{{route('admin.notifications.read', $n->id)}}"
-                        class="list-group-item list-group-item-action flex-column align-items-start"
-                        style="{{ $n->status === 'unread' ? 'background-color: #f9ecdb;' : 'background-color: white;' }}"
-                        data-id="{{ $n->id }}">
-                          <div class="d-flex flex-row">
-                          <img src="{{ $prof_img }}" alt="user_photo" class="img-fluid rounded-circle" style="width: 40px; height: 40px;">  
-                          <p class="ms-2"><span class="fw-bold">{{ $n->user->full_name}}</span> - reported a disease. </p>
-                          </div>
-                          <div class="d-flex w-100 justify-content-between mt-3">
-                          <h5 class="mb-1 {{ $n->status === 'unread' ? 'text-danger' : 'text-secondary' }}"><strong>{{ $n->disease }}</strong></h5>
-                          <small class="text-muted"><strong>{{  $n->created_at->timezone('Asia/Manila')->format('F d, Y | h:i A') }}</strong> </small>
-                          </div>
-                      </a>
-                    </div>
-                  @endforeach
-                @else
-                  <div class="text-center">No Notifications for Technicians</div>
-                @endif
-              </div>
-            </div> --}}
+          
 
             <div class="tab-pane fade" id="technicians" role="tabpanel" aria-labelledby="technicians-tab">
               @php

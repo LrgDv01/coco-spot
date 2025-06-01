@@ -1,4 +1,3 @@
- 
 @include('admin.partials.__header')
 @include('admin.partials.__nav')
 
@@ -10,70 +9,112 @@
         <div class="container mt-2 mb-5">
     <header class="mb-4 pt-2">
         <h1 class="display-6 fw-bold text-muted">Disease Reports</h1>
-        <p class="text-muted">Filter and view reports submitted.</p>
+        {{-- <p class="text-muted">Filter and view reports submitted.</p>  --}}
     </header>
 
+    
+
     {{-- Filter Form --}}
-    <div class="card shadow-sm mb-4">
-        <div class="card-body bg-light p-4">
-            <form method="GET" action="{{ url()->current() }}">
-                <div class="row g-3">
-                    {{-- Date Range Filter --}}
-                    <div class="col-md-6 col-lg-3">
-                        <label for="date_from" class="form-label fw-semibold">Date From:</label>
-                        <input type="date" name="date_from" id="date_from" value="{{ request('date_from') }}" class="form-control form-control-sm">
-                    </div>
-                    <div class="col-md-6 col-lg-3">
-                        <label for="date_to" class="form-label fw-semibold">Date To:</label>
-                        <input type="date" name="date_to" id="date_to" value="{{ request('date_to') }}" class="form-control form-control-sm">
-                    </div>
-
-                    {{-- Disease Filter --}}
-                    <div class="col-md-6 col-lg-3">
-                        <label for="disease_filter" class="form-label fw-semibold">Disease:</label>
-                        <select name="disease_filter" id="disease_filter" class="form-select form-select-sm">
-                            <option value="">All Diseases</option>
-                            <option value="Lethal Yellowing" {{ request('disease_filter') == 'Lethal Yellowing' ? 'selected' : '' }}>Lethal Yellowing</option>
-                            <option value="Stem Bleeding" {{ request('disease_filter') == 'Stem Bleeding' ? 'selected' : '' }}>Stem Bleeding</option>
-                            <option value="Leaf Spot" {{ request('disease_filter') == 'Leaf Spot' ? 'selected' : '' }}>Leaf Spot</option>
-                            {{-- Add more diseases as needed --}}
-                        </select>
-                    </div>
-
-                    {{-- Status Filter --}}
-                    <div class="col-md-6 col-lg-3">
-                        <label for="status_filter" class="form-label fw-semibold">Status:</label>
-                        <select name="status_filter" id="status_filter" class="form-select form-select-sm">
-                            <option value="">All Statuses</option>
-                            <option value="Reported" {{ request('status_filter') == 'Reported' ? 'selected' : '' }}>Reported</option>
-                            <option value="Verified" {{ request('status_filter') == 'Verified' ? 'selected' : '' }}>Verified</option>
-                            <option value="Treated" {{ request('status_filter') == 'Treated' ? 'selected' : '' }}>Treated</option>
-                            <option value="UnVerified" {{ request('status_filter') == 'UnVerified' ? 'selected' : '' }}>UnVerified</option>
-                        </select>
-                    </div>
+<div class="card shadow-sm mb-4">
+    <div class="card-body bg-light p-4">
+        <form method="GET" action="{{ url()->current() }}">
+            <div class="row g-3">
+                {{-- Date Range Filter --}}
+                <div class="col-md-6 col-lg-3">
+                    <label for="date_from" class="form-label fw-semibold">Date From:</label>
+                    <input type="date" name="date_from" id="date_from" value="{{ request('date_from') }}" class="form-control form-control-sm">
                 </div>
-                <div class="mt-4 d-flex justify-content-end align-items-center">
-                    <a href="{{ url()->current() }}" class="btn btn-sm btn-outline-secondary me-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle me-1" viewBox="0 0 16 16">
-                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-                        </svg>
-                        Clear
-                    </a>
-                    <button type="submit" class="btn btn-sm btn-primary">
-                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel-fill me-1" viewBox="0 0 16 16">
-                            <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2z"/>
-                        </svg>
-                        Filter
-                    </button>
+                <div class="col-md-6 col-lg-3">
+                    <label for="date_to" class="form-label fw-semibold">Date To:</label>
+                    <input type="date" name="date_to" id="date_to" value="{{ request('date_to') }}" class="form-control form-control-sm">
                 </div>
-            </form>
-        </div>
+
+                {{-- Disease Filter --}}
+                <div class="col-md-6 col-lg-3">
+                    <label for="disease_filter" class="form-label fw-semibold">Disease:</label>
+                    <select name="disease_filter" id="disease_filter" class="form-select form-select-sm">
+                        <option value="">All Diseases</option>
+                        <option value="Lethal Yellowing" {{ request('disease_filter') == 'Lethal Yellowing' ? 'selected' : '' }}>Lethal Yellowing</option>
+                        <option value="Stem Bleeding" {{ request('disease_filter') == 'Stem Bleeding' ? 'selected' : '' }}>Stem Bleeding</option>
+                        <option value="Leaf Spot" {{ request('disease_filter') == 'Leaf Spot' ? 'selected' : '' }}>Leaf Spot</option>
+                        {{-- Add more diseases as needed --}}
+                    </select>
+                </div>
+
+                {{-- Status Filter (Adjusted) --}}
+                <div class="col-md-6 col-lg-3">
+                    <label for="status_filter" class="form-label fw-semibold">Status:</label>
+                    <select name="status_filter" id="status_filter" class="form-select form-select-sm">
+                        <option value="">All Statuses</option>
+                        <option value="Assigned" {{ request('status_filter') == 'Assigned' ? 'selected' : '' }}>Assigned</option>
+                        <option value="Viewed" {{ request('status_filter') == 'Viewed' ? 'selected' : '' }}>Viewed</option>
+                        <option value="Acknowledged" {{ request('status_filter') == 'Acknowledged' ? 'selected' : '' }}>Acknowledged</option>
+                        <option value="Confirmed" {{ request('status_filter') == 'Confirmed' ? 'selected' : '' }}>Confirmed</option>
+                        <option value="Rescheduled" {{ request('status_filter') == 'Rescheduled' ? 'selected' : '' }}>Rescheduled</option>
+                        <option value="UnVerified" {{ request('status_filter') == 'UnVerified' ? 'selected' : '' }}>UnVerified</option>
+                        <option value="Reported" {{ request('status_filter') == 'Reported' ? 'selected' : '' }}>Reported</option>
+                        <option value="Verified" {{ request('status_filter') == 'Verified' ? 'selected' : '' }}>Verified</option> 
+                        <option value="False Detection" {{ request('status_filter') == 'False Detection' ? 'selected' : '' }}>False Detection</option> 
+                        <option value="Treated" {{ request('status_filter') == 'Treated' ? 'selected' : '' }}>Treated</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mt-4 d-flex justify-content-end align-items-center">
+                <a href="{{ url()->current() }}" class="btn btn-sm btn-outline-secondary me-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle me-1" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                    </svg>
+                    Clear
+                </a>
+                <button type="submit" class="btn btn-sm btn-primary">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel-fill me-1" viewBox="0 0 16 16">
+                        <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2z"/>
+                    </svg>
+                    Filter
+                </button>
+            </div>
+        </form>
     </div>
+</div>
 
     {{-- Reports Table --}}
+    {{-- Export & Print Buttons --}}
+    <div class="d-flex justify-content-end mb-2 gap-2">
+        <form method="GET" action="{{ url()->current() }}" class="d-inline">
+            @foreach(request()->except('export') as $key => $value)
+                <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+            @endforeach
+            <input type="hidden" name="export" value="pdf">
+            <button type="submit" class="btn btn-sm btn-danger">
+                <i class="bi bi-file-earmark-pdf"></i> Export PDF
+            </button>
+        </form>
+        <form method="GET" action="{{ url()->current() }}" class="d-inline">
+            @foreach(request()->except('export') as $key => $value)
+                <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+            @endforeach
+            <input type="hidden" name="export" value="excel">
+            <button type="submit" class="btn btn-sm btn-success">
+                <i class="bi bi-file-earmark-excel"></i> Export Excel
+            </button>
+        </form>
+        <form method="GET" action="{{ url()->current() }}" class="d-inline">
+            @foreach(request()->except('export') as $key => $value)
+                <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+            @endforeach
+            <input type="hidden" name="export" value="csv">
+            <button type="submit" class="btn btn-sm btn-primary">
+                <i class="bi bi-file-earmark-spreadsheet"></i> Export CSV
+            </button>
+        </form>
+        <button onclick="printTable()" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-printer"></i> Print
+        </button>
+    </div>
+
     <div class="card shadow-sm">
-        <div class="table-responsive">
+        <div class="table-responsive" id="reports-table-section">
             <table class="table table-hover table-striped mb-0"> {{-- Added table-striped, table-hover for better visuals --}}
                 <thead class="table-dark">
                     <tr>
@@ -92,26 +133,35 @@
                             <td class="align-middle">{{ $report->id }}</td>
                             <td class="align-middle">{{ $report->farmer_name }}</td>
                             <td class="align-middle">
-                                {{ $report->farmerReports->disease ?? $report->technicianReports->diagnosis_disease ?? 'N/A' }}
+                                {{ optional($report->technicianReports)->diagnosis_disease ? optional($report->technicianReports)->diagnosis_disease : optional($report->farmerReports)->disease }}
                             </td>
                             <td class="align-middle">
                                 {{ $report->technicians->full_name ?? 'N/A' }}
                             </td>
                             <td class="align-middle">
                                 @php
-                                    $status = $report->technicianReports->status ?? 'UnVerified';
-                                    $statusClass = '';
-                                    if (strtolower($status) === 'verified') $statusClass = 'bg-success';
-                                    elseif (strtolower($status) === 'treated') $statusClass = 'bg-primary';
-                                    elseif (strtolower($status) === 'reported') $statusClass = 'bg-warning text-dark';
-                                    else $statusClass = 'bg-secondary'; // UnVerified or other
+                                    $status = strtolower($report->status);
+                                    $statusColors = [
+                                        'assigned'      => 'background-color: #0dcaf0; color: #212529;',
+                                        'viewed'        => 'background-color: #6c757d; color: #fff;',
+                                        'acknowledged'  => 'background-color: #ffc107; color: #212529;',
+                                        'confirmed'     => 'background-color: #0d6efd; color: #fff;',
+                                        'rescheduled'   => 'background-color: #f8f9fa; color: #212529; border: 1px solid #ffc107;',
+                                        'unverified'    => 'background-color: #212529; color: #fff;',
+                                        'reported'      => 'background-color: #ffc107; color: #212529;',
+                                        'verified'      => 'background-color: #198754; color: #fff;',
+                                        'false detection'  => 'background-color: #dc3545; color: #fff;',
+                                        'treated'       => 'background: linear-gradient(90deg, #198754 60%, #28a745 100%); color: #fff;',
+                                    ];
+                                    $badgeStyle = $statusColors[$status] ?? 'background-color: #adb5bd; color: #fff;';
                                 @endphp
-                                <span class="badge rounded-pill {{ $statusClass }}">
-                                    {{ $status }}
+                                <span class="badge rounded-pill" style="{{ $badgeStyle }}">
+                                    {{ $report->status }}
                                 </span>
                             </td>
+                        
                             <td class="align-middle">
-                                {{ 'Report ' . ($report->status ?? 'N/A') }}
+                                {{($report->remarks ?? 'N/A') }}
                             </td>
                             <td class="align-middle small">
                                 {{ $report->created_at instanceof \Carbon\Carbon ? $report->created_at->format('M d, Y H:i A') : $report->created_at }}
@@ -146,3 +196,15 @@
 </main>
 
 @include('admin.partials.__footer')
+
+{{-- Print Table Script --}}
+<script>
+    function printTable() {
+        var printContents = document.getElementById('reports-table-section').innerHTML;
+        var originalContents = document.body.innerHTML;
+        document.body.innerHTML = printContents;
+        window.print();
+        document.body.innerHTML = originalContents;
+        location.reload(); // reload to restore JS events
+    }
+</script>

@@ -21,6 +21,9 @@ class ServicesModel extends Model
         'farmer_name',
         'request_id',
         'status', 
+        'remarks',
+        'visit_date'
+
     ];
     public function user()
     {
@@ -68,8 +71,9 @@ class ServicesModel extends Model
     }
 
     public function farmerReports() {
-        // return $this->belongsTo(FarmerReportsModel::class, 'farmer_id', 'farmer_id');  
-        return $this->hasOne(FarmerReportsModel::class, 'farmer_id', 'farmer_id'); 
+        return $this->belongsTo(FarmerReportsModel::class, 'farm_id', 'farm_id');  
+         // return $this->hasOne(FarmerReportsModel::class, 'farmer_id', 'farmer_id'); 
+       
     }
 
     public function diseaseVerified() {

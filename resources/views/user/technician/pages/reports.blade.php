@@ -214,11 +214,11 @@
     };
 
     const treatmentText = document.getElementById('treatment_recommendation');
-    treatmentText.innerHTML = `<p class="mt-1 text-center">Select a disease type for treatment recommendations.</p>`;
+    treatmentText.innerHTML = `<p class="mt-1 text-center">Select a disease type to view treatment recommendations.</p>`;
 
     document.getElementById('diagnosis_disease').addEventListener('change', (event) => {
         const selectedDisease = event.target.value;
-        treatmentText.innerHTML = treatments[selectedDisease] || `<p class="mt-1 text-center">Select a disease type for treatment recommendations.</p>`;
+        treatmentText.innerHTML = treatments[selectedDisease] || `<p class="mt-1 text-center">Select a disease type to view treatment recommendations.</p>`;
     });
 
     document.getElementById('no_of_infected').addEventListener('input', function() {

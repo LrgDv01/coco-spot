@@ -3,34 +3,43 @@
 <main id="main" class="main">
     <section class="section services">
         <div class="d-flex flex-column justify-content-between" style="height:85vh;">
-            <div class="d-flex flex-row justify-content-start align-items-center">
+            <div class="d-flex flex-row justify-content-between align-items-center">
                 <a href="{{ url()->previous() }}" class="btn btn-outline-secondary fw-bold"><i class="fas fa-arrow-left"></i></a>
+                {{-- Treated Button --}}
+                <div class="mt-4 text-center">
+                    <button id="treated-btn" class="btn {{ $reportDetails->status === 'Treated' ? 'btn-secondary' : 'btn-success' }} fw-bold" 
+                        onclick="updateTreatedStatus({{ $reportDetails->id }})"
+                        @if($reportDetails->status === 'Treated') disabled @endif>
+                        <i class="fas fa-check"></i> | 
+                        {{ $reportDetails->status === 'Treated' ? $reportDetails->status : 'Mark as Treated' }}
+                    </button>
+                </div>
             </div>
             <div class="card shadow-sm p-3 mt-3" style="border: 1px solid #188754; border-radius: 8px; background-color: #f9f9f9;">
                 <h5 class="card-title text-center pt-0" style="font-weight: bold;">Monitoring  Details</h5>
                 <div class="mb-2">
-                    <strong>Farmer Name : </strong> {{ $reportDetails->farms->name }} 
+                    <strong>Farmer Name : </strong> {{ $reportDetails->userFarms->name }} 
                 </div>
                 <div class="mb-2">
-                    <strong>Location : </strong><i class="bi bi-geo-alt-fill" style="color: red;"></i> {{ $reportDetails->farm_location }} 
+                    <strong>Location : </strong><i class="bi bi-geo-alt-fill" style="color: red;"></i> {{ $reportDetails->technicianReports->farm_location }} 
                 </div>
                 <div class="mb-2">
-                    <strong>Coconut Trees : </strong> {{ $reportDetails->coconut_trees }}
+                    <strong>Coconut Trees : </strong> {{ $reportDetails->technicianReports->coconut_trees }}
                 </div>
                 <div class="mb-2">
-                    <strong>Variety : </strong> {{ $reportDetails->coconut_variety }}
+                    <strong>Variety : </strong> {{ $reportDetails->technicianReports->coconut_variety }}
                 </div>
                 <div class="mb-2">
-                    <strong>Size : </strong> {{ $reportDetails->farm_size }}
+                    <strong>Size : </strong> {{ $reportDetails->technicianReports->farm_size }}
                 </div>
             </div>
             <div class="card shadow-sm p-3" style="border: 1px solid #188754; border-radius: 8px; background-color: #f9f9f9;">
                 <h5 class="card-title text-center pt-0" style="font-weight: bold;">Report Status</h5>
                 <div class="mb-2">
-                    <strong>Actual Disease Diagnosis : </strong> <span class="text-danger fw-bold"> {{ $reportDetails->diagnosis_disease }} </span>
+                    <strong>Actual Disease Diagnosis : </strong> <span class="text-danger fw-bold"> {{ $reportDetails->technicianReports->diagnosis_disease }} </span>
                 </div>
                 <div class="mb-2">
-                    <strong>No. Infected Trees : </strong> {{ $reportDetails->no_of_infected }} 
+                    <strong>No. Infected Trees : </strong> {{ $reportDetails->technicianReports->no_of_infected }} 
                 </div>
                 @php
                     $treatments = [
@@ -64,20 +73,64 @@
                     ];
                 @endphp
                 <div class="mb-2"><strong>Treatment Applied </strong>
-                    @if (isset($treatments[$reportDetails->diagnosis_disease]))
-                        <p class="card-text text-muted ps-3"> {!! $treatments[$reportDetails->diagnosis_disease] !!} </p>
+                    @if (isset($treatments[$reportDetails->technicianReports->diagnosis_disease]))
+                        <p class="card-text text-muted ps-3"> {!! $treatments[$reportDetails->technicianReports->diagnosis_disease] !!} </p>
                     @else
                         <p class="card-text text-muted ps-3">No treatment recommendation available for the reported disease.</p>
                     @endif
                 </div>
-                <div class="d-flex flex-row mt-3">
+                {{--            <div class="d-flex flex-row mt-3">
                     <p class="card-text text-truncate fs-6 mb-1 align-self-start"><strong>Uploaded Proof:</strong></p>
                     <img class="ms-3 align-self-center p-1 rounded rounded-3 border border-1 border-danger" 
-                        src="{{ URL::asset('storage/'. $reportDetails->image_proof) }}" width="50%" height="auto" alt="report-disease">
+                        src="{{ URL::asset('storage/'. $reportDetails->technicianReports->image_proof) }}" width="50%" height="auto" alt="report-disease">
+                </div> --}}
+                <div class="d-flex flex-row mt-3">
+                    <p class="card-text fs-6 mb-1 align-self-start w-50"><strong>Uploaded Proof:</strong></p>
+                    <a href="{{ URL::asset('storage/'. $reportDetails->technicianReports->image_proof) }}" target="_blank" class="ms-3">
+                        <img 
+                            class="p-1 rounded rounded-3 border border-1 border-danger" 
+                            src="{{ URL::asset('storage/'. $reportDetails->technicianReports->image_proof) }}" 
+                            width="100%" height="auto" alt="report-disease"
+                            style="cursor: zoom-in;"
+                        >
+                    </a>
                 </div>
             </div>
         </div>
     </section>
 </main>
 @include('user.partials.__footer')
+
+<script>
+    function updateTreatedStatus(id) {
+        if (!confirm('Are you sure you want to mark this report as Treated?')) return;
+        const btn = document.getElementById('treated-btn');
+        btn.disabled = true;
+        btn.innerText = 'Processing...';
+        fetch("{{ url('/user/monitoring') }}/" + id + "/Treated/Treated%20by%20Technician/request-details", {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                btn.innerText = 'Treated';
+                alert('Status updated to Treated.');
+                location.reload();
+            } else {
+                btn.disabled = false;
+                btn.innerText = 'Mark as Treated';
+                alert(data.message || 'Failed to update status.');
+            }
+        })
+        .catch(() => {
+            btn.disabled = false;
+            btn.innerText = 'Mark as Treated';
+            alert('An error occurred.');
+        });
+    }
+</script>
 

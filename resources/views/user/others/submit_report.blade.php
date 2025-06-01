@@ -119,127 +119,126 @@
             </div>
         @endif
         <div class="card mb-2 p-0" style="background-color: #f0f8f0; border: 1px solid #28a745;">
-    <div class="card-body">
-        <p class="card-text text-truncate text-muted">
-            <strong>Farm Location :</strong> {{ $farm->address }}<br>
-            <strong>District :</strong> {{ $farm->district }}<br>
-            <strong>Farm Size :</strong> {{ $farm->hectares }}<br>
-            <strong>No. of Coconut Trees :</strong> {{ $farm->planted_coconut }}<br>
-            <strong>Coconut Variety :</strong> {{ $farm->variety }}<br>
-        </p>
-        <form id="report-form-{{ $farm->id }}" action="/user/farmer-report" method="POST" enctype="multipart/form-data">
-            @csrf
-            <!-- Hidden inputs for farm data -->
-            <input type="hidden" name="farm_id" value="{{ $farm->id }}">
-            <input type="hidden" name="farm_location" value="{{ $farm->address ?? 'Laguna' }}">
-            <input type="hidden" name="farm_size" value="{{ $farm->hectares }}">
-            <input type="hidden" name="coconut_trees" value="{{ $farm->planted_coconut }}">
-            <input type="hidden" name="coconut_variety" value="{{ $farm->variety }}">
-            <input type="hidden" name="farmer_name" value="{{ auth()->user()->full_name }}">
-            <input type="hidden" name="contact_no" value="{{ auth()->user()->contact }}">
+            <div class="card-body">
+                <p class="card-text text-truncate text-muted">
+                    <strong>Farm Location :</strong> {{ $farm->address }}<br>
+                    <strong>District :</strong> {{ $farm->district }}<br>
+                    <strong>Farm Size :</strong> {{ $farm->hectares }}<br>
+                    <strong>No. of Coconut Trees :</strong> {{ $farm->planted_coconut }}<br>
+                    <strong>Coconut Variety :</strong> {{ $farm->variety }}<br>
+                </p>
+                <form id="report-form-{{ $farm->id }}" action="/user/farmer-report" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <!-- Hidden inputs for farm data -->
+                    <input type="hidden" name="farm_id" value="{{ $farm->id }}">
+                    <input type="hidden" name="farm_location" value="{{ $farm->address ?? 'Laguna' }}">
+                    <input type="hidden" name="farm_size" value="{{ $farm->hectares }}">
+                    <input type="hidden" name="coconut_trees" value="{{ $farm->planted_coconut }}">
+                    <input type="hidden" name="coconut_variety" value="{{ $farm->variety }}">
+                    <input type="hidden" name="farmer_name" value="{{ auth()->user()->full_name }}">
+                    <input type="hidden" name="contact_no" value="{{ auth()->user()->contact }}">
 
-            <strong>Check Symptoms:</strong>
-            <div class="card" style="background-color: #fce9d8; max-height: 500px;">
-                <h5 class="fs-6 p-2" for="symptoms">
-                    <strong>Check the symptoms you see on your coconut trees: 
-                        <br>(Lagyan ng check ang mga sintomas na nakikita mo sa iyong mga punong niyog.)</strong>
-                </h5>
-                <div class="symptom-checklist p-3" style="height: 100%; overflow-y: auto; border: 1px solid #ccc;">
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input custom-checkbox" id="yellowing_leaves_{{ $farm->id }}" name="symptoms[]" value="yellowing_leaves">
-                        <label class="form-check-label" for="yellowing_leaves_{{ $farm->id }}">Leaves are turning yellow. - (Dilaw ang mga dahon.)</label>
-                    </div>
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input custom-checkbox" id="dying_leaves_{{ $farm->id }}" name="symptoms[]" value="dying_leaves">
-                        <label class="form-check-label" for="dying_leaves_{{ $farm->id }}">Leaves are dying - (Pagkamatay ng mga dahon)</label>
-                    </div>
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input custom-checkbox" id="dropping_fruits_{{ $farm->id }}" name="symptoms[]" value="dropping_fruits">
-                        <label class="form-check-label" for="dropping_fruits_{{ $farm->id }}">Fruits are dropping. - (Pagbagsak ng mga bunga.)</label>
-                    </div>
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input custom-checkbox" id="dying_tree_{{ $farm->id }}" name="symptoms[]" value="dying_tree">
-                        <label class="form-check-label" for="dying_tree_{{ $farm->id }}">The tree is dying - (Pagkamatay ng puno.)</label>
-                    </div>
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input custom-checkbox" id="circular_spots_{{ $farm->id }}" name="symptoms[]" value="circular_spots">
-                        <label class="form-check-label" for="circular_spots_{{ $farm->id }}">Small circular spots with yellow edges appear on the leaves. - (Paglitaw ng maliliit na bilog na mantsa na may dilaw ng gilid sa mga dahon.)</label>
-                    </div>
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input custom-checkbox" id="black_or_brown_spots_{{ $farm->id }}" name="symptoms[]" value="black_or_brown_spots">
-                        <label class="form-check-label" for="black_or_brown_spots_{{ $farm->id }}">The spots often turn black or brown. - (Ang mga mantsa ay kadalasang nagiging itim o kayumanggi.)</label>
-                    </div>
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input custom-checkbox" id="lost_leaves_{{ $farm->id }}" name="symptoms[]" value="lost_leaves">
-                        <label class="form-check-label" for="lost_leaves_{{ $farm->id }}">Leaves are lost. - (Pagkawala ng mga dahon.)</label>
-                    </div>
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input custom-checkbox" id="reduced_yield_{{ $farm->id }}" name="symptoms[]" value="reduced_yield">
-                        <label class="form-check-label" for="reduced_yield_{{ $farm->id }}">Yield is reduced. - (Pagbaba ng ani.)</label>
-                    </div>
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input custom-checkbox" id="reddish_brown_{{ $farm->id }}" name="symptoms[]" value="reddish_brown">
-                        <label class="form-check-label" for="reddish_brown_{{ $farm->id }}">Reddish-brown liquid is exuded from the openings on the tree trunk. - (Naglalabas ng reddish-brown na likido mula sa mga butas sa katawan ng puno.)</label>
-                    </div>
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input custom-checkbox" id="cracks_or_wounds_{{ $farm->id }}" name="symptoms[]" value="cracks_or_wounds">
-                        <label class="form-check-label" for="cracks_or_wounds_{{ $farm->id }}">Cracks or wounds are present on the trunk. - (Pagkakaroon ng mga bitak o sugat sa katawan.)</label>
-                    </div>
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input custom-checkbox" id="stem_decay_{{ $farm->id }}" name="symptoms[]" value="stem_decay">
-                        <label class="form-check-label" for="stem_decay_{{ $farm->id }}">Decay of the internal stem. - (Pagkabulok ng panloob na tangkay.)</label>
-                    </div>
-                </div>
-                <div class="form-group mt-3 px-2">
-                    <label for="image_proof_{{ $farm->id }}"><strong>Upload Image as Proof:</strong></label>
-                    <input type="file" class="form-control" id="image_proof_{{ $farm->id }}" name="image_proof" accept="image/*" required>
-                </div>
-                <button type="submit" id="identify-btn-{{ $farm->id }}" 
-                        class="btn btn-outline-success m-3 identify-btn" 
-                        data-farm-id="{{ $farm->id }}" disabled>
-                    <i class="fas fa-search"></i> Identify
-                </button>
-        </form>
-    </div>
-</div>
+                    <strong>Check Symptoms:</strong>
+                    <div class="card" style="background-color: #fce9d8; max-height: 500px;">
+                        <h5 class="fs-6 p-2" for="symptoms">
+                            <strong>Check the symptoms you see on your coconut trees: 
+                                <br>(Lagyan ng check ang mga sintomas na nakikita mo sa iyong mga punong niyog.)</strong>
+                        </h5>
+                        <div class="symptom-checklist p-3" style="height: 100%; overflow-y: auto; border: 1px solid #ccc;">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input custom-checkbox" id="yellowing_leaves_{{ $farm->id }}" name="symptoms[]" value="yellowing_leaves">
+                                <label class="form-check-label" for="yellowing_leaves_{{ $farm->id }}">Leaves are turning yellow. - (Dilaw ang mga dahon.)</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input custom-checkbox" id="dying_leaves_{{ $farm->id }}" name="symptoms[]" value="dying_leaves">
+                                <label class="form-check-label" for="dying_leaves_{{ $farm->id }}">Leaves are dying - (Pagkamatay ng mga dahon)</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input custom-checkbox" id="dropping_fruits_{{ $farm->id }}" name="symptoms[]" value="dropping_fruits">
+                                <label class="form-check-label" for="dropping_fruits_{{ $farm->id }}">Fruits are dropping. - (Pagbagsak ng mga bunga.)</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input custom-checkbox" id="dying_tree_{{ $farm->id }}" name="symptoms[]" value="dying_tree">
+                                <label class="form-check-label" for="dying_tree_{{ $farm->id }}">The tree is dying - (Pagkamatay ng puno.)</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input custom-checkbox" id="circular_spots_{{ $farm->id }}" name="symptoms[]" value="circular_spots">
+                                <label class="form-check-label" for="circular_spots_{{ $farm->id }}">Small circular spots with yellow edges appear on the leaves. - (Paglitaw ng maliliit na bilog na mantsa na may dilaw ng gilid sa mga dahon.)</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input custom-checkbox" id="black_or_brown_spots_{{ $farm->id }}" name="symptoms[]" value="black_or_brown_spots">
+                                <label class="form-check-label" for="black_or_brown_spots_{{ $farm->id }}">The spots often turn black or brown. - (Ang mga mantsa ay kadalasang nagiging itim o kayumanggi.)</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input custom-checkbox" id="lost_leaves_{{ $farm->id }}" name="symptoms[]" value="lost_leaves">
+                                <label class="form-check-label" for="lost_leaves_{{ $farm->id }}">Leaves are lost. - (Pagkawala ng mga dahon.)</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input custom-checkbox" id="reduced_yield_{{ $farm->id }}" name="symptoms[]" value="reduced_yield">
+                                <label class="form-check-label" for="reduced_yield_{{ $farm->id }}">Yield is reduced. - (Pagbaba ng ani.)</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input custom-checkbox" id="reddish_brown_{{ $farm->id }}" name="symptoms[]" value="reddish_brown">
+                                <label class="form-check-label" for="reddish_brown_{{ $farm->id }}">Reddish-brown liquid is exuded from the openings on the tree trunk. - (Naglalabas ng reddish-brown na likido mula sa mga butas sa katawan ng puno.)</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input custom-checkbox" id="cracks_or_wounds_{{ $farm->id }}" name="symptoms[]" value="cracks_or_wounds">
+                                <label class="form-check-label" for="cracks_or_wounds_{{ $farm->id }}">Cracks or wounds are present on the trunk. - (Pagkakaroon ng mga bitak o sugat sa katawan.)</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input custom-checkbox" id="stem_decay_{{ $farm->id }}" name="symptoms[]" value="stem_decay">
+                                <label class="form-check-label" for="stem_decay_{{ $farm->id }}">Decay of the internal stem. - (Pagkabulok ng panloob na tangkay.)</label>
+                            </div>
+                        </div>
+                        <div class="form-group mt-3 px-2">
+                            <label for="image_proof_{{ $farm->id }}"><strong>Upload Image as Proof:</strong></label>
+                            <input type="file" class="form-control" id="image_proof_{{ $farm->id }}" name="image_proof" accept="image/*" required>
+                        </div>
+                        <button type="submit" id="identify-btn-{{ $farm->id }}" 
+                                class="btn btn-outline-success m-3 identify-btn" 
+                                data-farm-id="{{ $farm->id }}" disabled>
+                            <i class="fas fa-search"></i> Identify
+                        </button>
+                </form>
+            </div>
+        </div>
         
-<div class="modal fade" 
-    id="diagnosis-modal-{{ $farm->id }}" tabindex="-1" 
-    data-bs-backdrop="static"
-    data-bs-keyboard="false"
-    role="dialog"
-    aria-labelledby="diagnosisModalLabel-{{ $farm->id }}" 
-    aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content" style="background-color: #f0f8f0; border: 2px solid green;">
-            <div class="modal-header">
-                <h5 class="modal-title text-success" id="diagnosisModalLabel-{{ $farm->id }}"><strong>Diagnosis Result</strong></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-center" id="diagnosis-text-{{ $farm->id }}">
-            </div>
-            <div class="modal-footer d-flex flex-column">
-                <div class="d-flex flex-row justify-content-end">
-                    <button type="button" class="btn btn-outline-secondary me-2 fw-bold" 
-                            onclick="viewSolution(event, {{ $farm->id }})">View Solution</button>
-                    <button type="submit" class="btn btn-outline-success fw-bold"
-                            onclick="submitDiagnosis(event, {{ $farm->id }})">Report</button>
-                </div>
-                <div class="d-flex flex-row justify-content-center">
-                    <a class="farm-status d-none btn btn-secondary border-0 bg-transparent text-secondary fw-bold" href="{{route('user.farmer.reports')}}">
-                        <i class="fas fa-arrow-left"></i> <u>See farm status</u></a>
+        <div class="modal fade" 
+            id="diagnosis-modal-{{ $farm->id }}" tabindex="-1" 
+            data-bs-backdrop="static"
+            data-bs-keyboard="false"
+            role="dialog"
+            aria-labelledby="diagnosisModalLabel-{{ $farm->id }}" 
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content" style="background-color: #f0f8f0; border: 2px solid green;">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-success" id="diagnosisModalLabel-{{ $farm->id }}"><strong>Diagnosis Result</strong></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center" id="diagnosis-text-{{ $farm->id }}">
+                    </div>
+                    <div class="modal-footer d-flex flex-column">
+                        <div class="d-flex flex-row justify-content-end">
+                            <button type="button" class="btn btn-outline-secondary me-2 fw-bold" 
+                                    onclick="viewSolution(event, {{ $farm->id }})">View Solution</button>
+                            <button type="submit" class="btn btn-outline-success fw-bold"
+                                    onclick="submitDiagnosis(event, {{ $farm->id }})">Report</button>
+                        </div>
+                        <div class="d-flex flex-row justify-content-center">
+                            <a class="farm-status d-none btn btn-secondary border-0 bg-transparent text-secondary fw-bold" href="{{route('user.farmer.reports')}}">
+                                <i class="fas fa-arrow-left"></i> <u>See farm status</u></a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
-
-</section>
+    </section>
 </main>
 
 @include('user.partials.__footer')
 
- <script>
+<script>
     document.addEventListener('DOMContentLoaded', function() {
         const forms = document.querySelectorAll('[id^="report-form-"]');
         forms.forEach(form => {
@@ -520,8 +519,5 @@
             });
         });
     });
-  
-
-  
 </script>
 

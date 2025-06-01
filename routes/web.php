@@ -107,7 +107,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/user/farmer/settings', [ProfileController::class, 'index'])->name('user.settings');
         Route::middleware(['web'])->group(function () {
             Route::post('/user/add_farm', [FarmController::class, 'store'])->name('farm.store');
-            Route::post('/user/farmer/notifications/{id}/{status}/request-details', [ServicesController::class, 'updateStatus'])->name('update.status');
+            Route::post('/user/farmer/notifications/{id}/{status}/{remarks}/request-details', [ServicesController::class, 'updateStatus'])->name('update.status');
             Route::post('/user/farmer-report', [ServicesController::class, 'farmerReport'])->name('user.farmer-report');
             Route::post('/user/farmer/update-field', [ProfileController::class, 'updateField'])->name('user.farmer.updateField-profile');
             Route::post('/user/farmer/update-profile', [ProfileController::class, 'updateProfile'])->name('user.farmer.update-profile');
@@ -126,7 +126,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/user/monitor/{id}/report-details', [ReportsController::class, 'viewDetails'])->name('user.viewReportDetails');
         Route::get('/user/technician/settings', [ProfileController::class, 'index'])->name('user.settings');
         Route::middleware(['web'])->group(function () {
-            Route::post('/user/notifications/{id}/{status}/request-details', [ServicesController::class, 'updateStatus'])->name('update.status');
+            Route::post('/user/notifications/{id}/{status}/{remarks}/request-details', [ServicesController::class, 'updateStatus'])->name('update.status');
+            Route::post('/user/monitoring/{id}/{status}/{remarks}/request-details', [ServicesController::class, 'updateStatus']);
             Route::post('/user/technician-report', [ReportsController::class, 'technicianReport'])->name('user.technician-report');
             Route::post('/user/technician/update-field', [ProfileController::class, 'updateField'])->name('user.technician.updateField-profile');
             Route::post('/user/technician/update-profile', [ProfileController::class, 'updateProfile'])->name('user.technician.update-profile');

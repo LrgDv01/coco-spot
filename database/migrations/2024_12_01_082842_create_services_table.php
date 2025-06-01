@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('farmer_name');
             $table->integer('request_id');
             $table->string('status');
+            $table->string('remarks');
+            $table->string('visit_date')->default('Unscheduled')->nullable();
             $table->timestamps();
         });
     }
