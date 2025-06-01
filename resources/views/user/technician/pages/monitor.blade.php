@@ -19,14 +19,23 @@
                         @foreach ($reports as $report)
                             <li class="list-group-item d-flex flex-column align-items-start shadow-sm p-3 mb-2" 
                                 style="border: 1px solid #188754; border-radius: 8px;">
-                                <div class="mb-2 d-flex flex-column align-items-start">
-                                    <h5 class="card-title mt-0 pt-0 mb-1 fw-bold">{{ $report->farms->name }}</h5>
-                                    <p class="mb-1 text-muted">
-                                        <strong>Farmer Name :</strong> {{ $report->farmer_name }}<br>
-                                        <strong>Farmer Location :</strong> {{ $report->farm_location }}<br>
-                                        <strong>Date/Time :</strong> {{ $report->created_at->format('F d, Y | h:i A') }}
+                                <h5 class="card-title p-0 m-0">
+                                    <strong>{{ $report->farms->name }}</strong> 
+                                </h5>
+                                <hr class="bg-secondary px-3 w-100">
+                                <div class="card-text text-muted w-100">
+                                    <p class="d-flex flex-row mb-0 pb-0">
+                                        <span class="fw-bold me-2">Farmer Name:</span> {{ $report->farmer_name }}
+                                    </p>
+                                    <div class="mb-2 w-100">
+                                        <span class="fw-bold me-2">Farmer Location:</span>
+                                        <textarea class="form-control w-100" readonly style="resize: both;">{{ $report->farm_location}}</textarea>
+                                    </div>
+                                    <p class="d-flex flex-row mb-0 pb-0">
+                                        <span class="fw-bold me-2">Date/Time:</span> {{ $report->created_at->format('F d, Y | h:i A') }}
                                     </p>
                                 </div>
+      
                                 {{--             <div class="mt-3 align-self-end">
                                     <a href="{{ route('user.viewReportDetails', $report->id) }}" 
                                         class="btn fw-bold {{ $notifs->status === 'Acknowledged' || $notifs->status === 'Verified' ? 'btn-outline-secondary disabled' : 'btn-outline-success'}}">

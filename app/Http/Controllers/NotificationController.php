@@ -78,15 +78,6 @@ class NotificationController extends Controller
     // Technicians notification
     public function technicianNotif() {
         $technicianId = auth()->id();
-        // $notifications = ServicesModel::where('technician_id', $technicianId)
-        //     ->whereIn('remarks', ['Assigned by Admin', 'Viewed by Technician'])
-        //     ->orWhereIn('status', ['Confirmed', 'Rescheduled'])
-        //     // ->whereIn('status', ['Confirmed', 'Rescheduled'])
-        //     // ->orWhereIn('status', ['Confirmed', 'Rescheduled', 'Unverified'])
-        //     ->select('id', 'request_id', 'status', 'created_at', 'updated_at')
-        //     ->orderBy('created_at', 'desc') 
-        //     ->get();
-
         $notifications = ServicesModel::where(function($query) use ($technicianId) {
             $query->where('technician_id', $technicianId)
                       ->whereIn('remarks', ['Assigned by Admin', 'Viewed by Technician']);
