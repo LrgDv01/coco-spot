@@ -118,27 +118,28 @@
             <table class="table table-hover table-striped mb-0"> {{-- Added table-striped, table-hover for better visuals --}}
                 <thead class="table-dark">
                     <tr>
-                        <th scope="col" class="small text-uppercase">ID</th>
-                        <th scope="col" class="small text-uppercase">Farmer Name</th>
-                        <th scope="col" class="small text-uppercase">Disease</th>
-                        <th scope="col" class="small text-uppercase">Assigned Technician</th>
-                        <th scope="col" class="small text-uppercase">Status (Tech)</th>
-                        <th scope="col" class="small text-uppercase">Remarks (Report)</th>
-                        <th scope="col" class="small text-uppercase">Date Reported</th>
+                        <th scope="col" class="small text-uppercase border-end" style="font-size: 0.77rem;">ID</th>
+                        <th scope="col" class="small text-uppercase border-end" style="font-size: 0.77rem;">Farmer Name</th>
+                        <th scope="col" class="small text-uppercase border-end" style="font-size: 0.77rem;">Disease</th>
+                        <th scope="col" class="small text-uppercase border-end" style="font-size: 0.77rem;">Assigned Technician</th>
+                        <th scope="col" class="small text-uppercase border-end" style="font-size: 0.77rem;">Status (Tech)</th>
+                        <th scope="col" class="small text-uppercase border-end" style="font-size: 0.77rem;">Remarks (Report)</th>
+                        <th scope="col" class="small text-uppercase border-end" style="font-size: 0.77rem;">Visitation Date (Scheduled)</th>
+                        <th scope="col" class="small text-uppercase" style="font-size: 0.77rem;">Date Reported</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($reports as $report)
                         <tr>
-                            <td class="align-middle">{{ $report->id }}</td>
-                            <td class="align-middle">{{ $report->farmer_name }}</td>
-                            <td class="align-middle">
+                            <td class="align-middle small">{{ $report->id }}</td>
+                            <td class="align-middle small">{{ $report->farmer_name }}</td>
+                            <td class="align-middle small">
                                 {{ optional($report->technicianReports)->diagnosis_disease ? optional($report->technicianReports)->diagnosis_disease : optional($report->farmerReports)->disease }}
                             </td>
-                            <td class="align-middle">
+                            <td class="align-middle small">
                                 {{ $report->technicians->full_name ?? 'N/A' }}
                             </td>
-                            <td class="align-middle">
+                            <td class="align-middle small">
                                 @php
                                     $status = strtolower($report->status);
                                     $statusColors = [
@@ -160,8 +161,11 @@
                                 </span>
                             </td>
                         
-                            <td class="align-middle">
+                            <td class="align-middle small">
                                 {{($report->remarks ?? 'N/A') }}
+                            </td>
+                            <td class="align-middle small">
+                                {{($report->visit_date ?? 'N/A') }}
                             </td>
                             <td class="align-middle small">
                                 {{ $report->created_at instanceof \Carbon\Carbon ? $report->created_at->format('M d, Y H:i A') : $report->created_at }}
@@ -169,7 +173,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center p-5">
+                            <td colspan="7" class="text-center p-5 small">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-table text-muted mb-2" viewBox="0 0 16 16">
                                   <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm15 2h-4v3h4V4zm0 4h-4v3h4V8zm0 4h-4v3h3a1 1 0 0 0 1-1v-2zm-5 3v-3H6v3h4zm-5 0v-3H1v2a1 1 0 0 0 1 1h3zm-4-4h4V8H1v3zm0-4h4V4H1v3zm5-3v3h4V4H6zm4 4H6v3h4V8z"/>
                                 </svg>

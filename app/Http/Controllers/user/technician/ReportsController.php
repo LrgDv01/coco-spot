@@ -97,7 +97,7 @@ class ReportsController extends Controller
             }
         }
 
-        $reports = $query->latest('created_at')->paginate(10);
+        $reports = $query->oldest('created_at')->paginate(10);
         return view('admin.pages.reports', [
             'reports' => $reports,
             // 'request' => $request // The request object is globally available in Blade via request() helper

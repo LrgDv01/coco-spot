@@ -87,13 +87,10 @@
                 <button id="simulate-button" class="btn btn-outline-danger fw-bold">Simulate</button>
             </div>
         </div>
-        <div class="card position-absolute p-3 w-100 mx-2 rounded rounded-3"
-            style="bottom: 0; left: 0; right: 0; width: 95%; max-width: 95vw; z-index:10; overflow-y: auto; border-radius: 0;">
-            <div class="date-display mt-0 mb-3 d-flex justify-content-between flex-wrap responsive-date-display" 
-                style="width: 100%; max-width: 100vw; margin: 0 auto;"></div> 
-            <div class="progress-bar-container" 
-                style="width: 95%; height: 10px; background: #ddd; position: relative; margin: 0 auto;">
-            <div id="week-progress" style="height: 100%; background: #28a745; width: 0%;"></div>
+        <div class="card position-absolute p-1 w-100 mx-2 rounded rounded-3" style="bottom: 0; left: 0; right: 0; width: 97%; max-width: 97vw; z-index:10; overflow-y: auto; border-radius: 0;">
+            <div class="date-display mt-0 mb-3 d-flex justify-content-between flex-wrap responsive-date-display" style="width: 100%; max-width: 100vw; margin: 0 auto;"></div> 
+            <div class="progress-bar-container mb-2" style="width: 95%; height: 10px; background: #ddd; position: relative; margin: 0 auto;">
+                <div id="week-progress" style="height: 100%; background: #28a745; width: 0%;"></div>
             </div>
         </div>
         
