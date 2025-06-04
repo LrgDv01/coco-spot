@@ -6,11 +6,14 @@ use App\Models\farmer\FarmModel;
 use App\Models\technician\TechiniciansReportsModel;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class MapController extends Controller
 {
 
     public function get_map_locations() {
+        $user = Auth::user();
+        $farmerID = auth()->user()->id; 
         $map_loc = MapModel::all();
         $locations = [];
         foreach ($map_loc as $location) {
@@ -24,13 +27,14 @@ class MapController extends Controller
                 'meters' => $location->meters,
             ];
         }
-   
         $farm_loc = FarmModel::all();
-
-        // $diseases = TechiniciansReportsModel::with('farms')->pluck('diagnosis_disease')->toArray();
-        // $diseases = TechiniciansReportsModel::with('farms')->get();
-        $diseases = FarmModel::with('farmerReports', 'technicianReports')->get();
-
+        if ($user->isAdmin() || $user->isTechnician()) {
+            $diseases = FarmModel::with('farmerReports', 'technicianReports')->get();
+        } else {
+            $diseases = FarmModel::with('farmerReports', 'technicianReports')
+                ->where('farmer_id', $farmerID)
+                ->get();
+        }
         $res = [
             'locations' => $locations,
             'farm_loc' => $farm_loc,

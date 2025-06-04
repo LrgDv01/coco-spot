@@ -1,4 +1,3 @@
-
 function setSupported() {
     if (typeof mapboxgl !== 'undefined') {
         return true;
@@ -24,7 +23,7 @@ $(document).ready(function() {
                     // selectLocation();
                     displayMap(farm_loc, locations, mapboxgl);
                 } else if (simulationContainer) {
-                    mapSimulation(simulation, mapboxgl);
+                    mapSimulation(farm_loc, simulation, mapboxgl);
                 }
             },
         });
@@ -364,6 +363,7 @@ async function displayMap(farm_loc, locations, mapboxgl) {
             }
         });
 
+
         // farm_loc.forEach(element => {
         //     if (element.id === farm-points ) {
         //         document.getElementById('farm_name').textContent = element.name || 'N/A';
@@ -379,38 +379,52 @@ async function displayMap(farm_loc, locations, mapboxgl) {
         // });
         
         // Popup handling
-
-        // let popup = null;
-        // map_locations.on('mouseenter', 'farm-points', (e) => {
-        //     if (e.features.length > 0 && !popup) {
-        //         const { coordinates } = e.features[0].geometry;
-        //         const loc = locations.find(l => l.name === e.features[0].properties.name);
-                
-        //         if (loc) {
-        //             popup = new mapboxgl.Popup({ closeButton: false })
-        //                 .setLngLat(coordinates)
-        //                 .setHTML(`
-        //                     <div class="map-popup">
-        //                         <strong>${loc.name}</strong><br>
-        //                         ${Object.entries({
-        //                             'Lot Area': loc.lot_area,
-        //                             'Trees': loc.trees,
-        //                             'Meters': loc.meters
-        //                         }).map(([key, val]) => `
-        //                             ${key}: ${val || 'N/A'}
-        //                         `).join('<br>')}
-        //                     </div>
-        //                 `)
-        //                 .addTo(map_locations);
-        //         }
-        //     }
-        // });
-        // map_locations.on('mouseleave', 'farm-points', () => {
-        //     if (popup) {
-        //         popup.remove();
-        //         popup = null;
-        //     }
-        // });
+        let popup = null;
+        // Optional: Debounce for better UX (uncomment if desired)
+        // let popupTimer = null;
+        map_simulation.on('mouseenter', 'farm-points', (e) => {
+            // if (popupTimer) { clearTimeout(popupTimer); popupTimer = null; }
+            if (popup) { popup.remove(); popup = null; }
+            if (e.features.length > 0) {
+                const feature = e.features[0];
+                const coordinates = feature.geometry.coordinates.slice();
+                const farmId = feature.properties.farmId;
+                const farm = farm_loc.find(f => String(f.id) === String(farmId));
+                if (farm) {
+                    // Build popup HTML with conditional fields
+                    let detailsHTML = '';
+                    if (farm.address) detailsHTML += `<p><strong>Address:</strong> ${farm.address}</p>`;
+                    if (farm.district) detailsHTML += `<p><strong>District:</strong> ${farm.district}</p>`;
+                    if (farm.municipal) detailsHTML += `<p><strong>Municipal:</strong> ${farm.municipal}</p>`;
+                    if (farm.hectares) detailsHTML += `<p><strong>Hectares:</strong> ${farm.hectares}</p>`;
+                    if (farm.tree_age) detailsHTML += `<p><strong>Tree Age:</strong> ${farm.tree_age}</p>`;
+                    if (farm.planted_coconut) detailsHTML += `<p><strong>Planted Coconut:</strong> ${farm.planted_coconut}</p>`;
+                    if (farm.variety) detailsHTML += `<p><strong>Variety:</strong> ${farm.variety}</p>`;
+                    if (!detailsHTML) detailsHTML = '<p>No details available.</p>';
+                    const htmlContent = `
+                        <div class="custom-map-popup">
+                            <h3>${farm.name || 'Farm Details'}</h3>
+                            <div class="popup-details">
+                                ${detailsHTML}
+                            </div>
+                        </div>
+                    `;
+                    popup = new mapboxgl.Popup({
+                        closeButton: false,
+                        closeOnClick: false,
+                        offset: 15,
+                        className: 'my-custom-mapbox-popup'
+                    })
+                    .setLngLat(coordinates)
+                    .setHTML(htmlContent)
+                    .addTo(map_simulation);
+                }
+            }
+        });
+        map_simulation.on('mouseleave', 'farm-points', () => {
+            // if (popupTimer) { clearTimeout(popupTimer); popupTimer = null; }
+            if (popup) { popup.remove(); popup = null; }
+        });
 
 
 
@@ -456,7 +470,9 @@ function scalePolygon(polygon, k, zoomFactor = 1) {
     };
 }
 
-async function mapSimulation(simulate, mapboxgl) {
+async function mapSimulation(farm_loc, simulate, mapboxgl) {
+    console.log('simulate: ', simulate);
+    console.log('farm_loc: ', farm_loc);
     const simulationContainer = document.getElementById('simulationContainer');
     if (simulationContainer) simulationContainer.innerHTML = "";
     const map_simulation = new mapboxgl.Map({
@@ -1147,5 +1163,59 @@ async function mapSimulation(simulate, mapboxgl) {
             interval('simulate');
         });
         interval();
+
+
+  
+
+  // Popup handling
+        let popup = null;
+        // Optional: Debounce for better UX (uncomment if desired)
+        // let popupTimer = null;
+        map_simulation.on('mouseenter', 'farm-points', (e) => {
+            // if (popupTimer) { clearTimeout(popupTimer); popupTimer = null; }
+            if (popup) { popup.remove(); popup = null; }
+            if (e.features.length > 0) {
+                const feature = e.features[0];
+                const coordinates = feature.geometry.coordinates.slice();
+                const farmId = feature.properties.farmId;
+                const farm = farm_loc.find(f => String(f.id) === String(farmId));
+                if (farm) {
+                    // Build popup HTML with conditional fields
+                    let detailsHTML = '';
+                    if (farm.address) detailsHTML += `<p><strong>Address:</strong> ${farm.address}</p>`;
+                    if (farm.district) detailsHTML += `<p><strong>District:</strong> ${farm.district}</p>`;
+                    if (farm.municipal) detailsHTML += `<p><strong>Municipal:</strong> ${farm.municipal}</p>`;
+                    if (farm.hectares) detailsHTML += `<p><strong>Hectares:</strong> ${farm.hectares}</p>`;
+                    if (farm.tree_age) detailsHTML += `<p><strong>Tree Age:</strong> ${farm.tree_age}</p>`;
+                    if (farm.planted_coconut) detailsHTML += `<p><strong>Planted Coconut:</strong> ${farm.planted_coconut}</p>`;
+                    if (farm.variety) detailsHTML += `<p><strong>Variety:</strong> ${farm.variety}</p>`;
+                    if (!detailsHTML) detailsHTML = '<p>No details available.</p>';
+                    const htmlContent = `
+                        <div class="custom-map-popup">
+                            <h5><strong> ${farm.name || 'Farm Details'} </strong></h5>
+                            <hr>
+                            <div class="popup-details">
+                                ${detailsHTML}
+                            </div>
+                        </div>
+                    `;
+                    popup = new mapboxgl.Popup({
+                        closeButton: false,
+                        closeOnClick: false,
+                        offset: 15,
+                        className: 'my-custom-mapbox-popup'
+                    })
+                    .setLngLat(coordinates)
+                    .setHTML(htmlContent)
+                    .addTo(map_simulation);
+                }
+            }
+        });
+        map_simulation.on('mouseleave', 'farm-points', () => {
+            // if (popupTimer) { clearTimeout(popupTimer); popupTimer = null; }
+            if (popup) { popup.remove(); popup = null; }
+        });
+
+
     });
 }
