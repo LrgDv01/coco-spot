@@ -471,8 +471,6 @@ function scalePolygon(polygon, k, zoomFactor = 1) {
 }
 
 async function mapSimulation(farm_loc, simulate, mapboxgl) {
-    console.log('simulate: ', simulate);
-    console.log('farm_loc: ', farm_loc);
     const simulationContainer = document.getElementById('simulationContainer');
     if (simulationContainer) simulationContainer.innerHTML = "";
     const map_simulation = new mapboxgl.Map({
@@ -1163,24 +1161,19 @@ async function mapSimulation(farm_loc, simulate, mapboxgl) {
             interval('simulate');
         });
         interval();
-
-
-  
-
-  // Popup handling
+        
+        // Popup handling
         let popup = null;
-        // Optional: Debounce for better UX (uncomment if desired)
-        // let popupTimer = null;
+        let popupTimer = null;
         map_simulation.on('mouseenter', 'farm-points', (e) => {
-            // if (popupTimer) { clearTimeout(popupTimer); popupTimer = null; }
+            if (popupTimer) { clearTimeout(popupTimer); popupTimer = null; }
             if (popup) { popup.remove(); popup = null; }
             if (e.features.length > 0) {
                 const feature = e.features[0];
                 const coordinates = feature.geometry.coordinates.slice();
                 const farmId = feature.properties.farmId;
-                const farm = farm_loc.find(f => String(f.id) === String(farmId));
+                const farm = simulate.find(f => String(f.id) === String(farmId));
                 if (farm) {
-                    // Build popup HTML with conditional fields
                     let detailsHTML = '';
                     if (farm.address) detailsHTML += `<p><strong>Address:</strong> ${farm.address}</p>`;
                     if (farm.district) detailsHTML += `<p><strong>District:</strong> ${farm.district}</p>`;
@@ -1189,6 +1182,20 @@ async function mapSimulation(farm_loc, simulate, mapboxgl) {
                     if (farm.tree_age) detailsHTML += `<p><strong>Tree Age:</strong> ${farm.tree_age}</p>`;
                     if (farm.planted_coconut) detailsHTML += `<p><strong>Planted Coconut:</strong> ${farm.planted_coconut}</p>`;
                     if (farm.variety) detailsHTML += `<p><strong>Variety:</strong> ${farm.variety}</p>`;
+         
+
+                    // Show technician_reports[0] if available
+                    if (Array.isArray(farm.technician_reports) && farm.technician_reports.length > 0) {
+                        const tech = farm.technician_reports[0];
+                        if (tech.diagnosis_disease) {
+                            detailsHTML += `<p><strong>Status:</strong> Infected </p>`;
+                            detailsHTML += `<p><strong>Disease:</strong> ${tech.diagnosis_disease}</p>`;
+                        }
+                        if (tech.no_of_infected !== undefined && tech.no_of_infected !== null) {
+                            detailsHTML += `<p><strong>Trees Infected:</strong> ${tech.no_of_infected}</p>`;
+                        }
+                    }
+
                     if (!detailsHTML) detailsHTML = '<p>No details available.</p>';
                     const htmlContent = `
                         <div class="custom-map-popup">
@@ -1212,10 +1219,8 @@ async function mapSimulation(farm_loc, simulate, mapboxgl) {
             }
         });
         map_simulation.on('mouseleave', 'farm-points', () => {
-            // if (popupTimer) { clearTimeout(popupTimer); popupTimer = null; }
+            if (popupTimer) { clearTimeout(popupTimer); popupTimer = null; }
             if (popup) { popup.remove(); popup = null; }
         });
-
-
     });
 }
