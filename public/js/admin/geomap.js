@@ -1175,46 +1175,43 @@ async function mapSimulation(farm_loc, simulate, mapboxgl) {
                 const farm = simulate.find(f => String(f.id) === String(farmId));
                 if (farm) {
                     let detailsHTML = '';
-                    if (farm.address) detailsHTML += `<p><strong>Address:</strong> ${farm.address}</p>`;
-                    if (farm.district) detailsHTML += `<p><strong>District:</strong> ${farm.district}</p>`;
-                    if (farm.municipal) detailsHTML += `<p><strong>Municipal:</strong> ${farm.municipal}</p>`;
-                    if (farm.hectares) detailsHTML += `<p><strong>Hectares:</strong> ${farm.hectares}</p>`;
-                    if (farm.tree_age) detailsHTML += `<p><strong>Tree Age:</strong> ${farm.tree_age}</p>`;
-                    if (farm.planted_coconut) detailsHTML += `<p><strong>Planted Coconut:</strong> ${farm.planted_coconut}</p>`;
-                    if (farm.variety) detailsHTML += `<p><strong>Variety:</strong> ${farm.variety}</p>`;
-         
-
+                    // if (farm.district) detailsHTML += `<p><strong>District:</strong> ${farm.district}</p>`;
+                    // if (farm.municipal) detailsHTML += `<p><strong>Municipal:</strong> ${farm.municipal}</p>`;
+                    // if (farm.hectares) detailsHTML += `<p><strong>Hectares:</strong> ${farm.hectares}</p>`;
+                    // if (farm.tree_age) detailsHTML += `<p><strong>Tree Age:</strong> ${farm.tree_age}</p>`;
+                    // if (farm.planted_coconut) detailsHTML += `<p><strong>Planted Coconut:</strong> ${farm.planted_coconut}</p>`;
+                    // if (farm.variety) detailsHTML += `<p><strong>Variety:</strong> ${farm.variety}</p>`;
                     // Show technician_reports[0] if available
                     if (Array.isArray(farm.technician_reports) && farm.technician_reports.length > 0) {
                         const tech = farm.technician_reports[0];
                         if (tech.diagnosis_disease) {
-                            detailsHTML += `<p><strong>Status:</strong> Infected </p>`;
-                            detailsHTML += `<p><strong>Disease:</strong> ${tech.diagnosis_disease}</p>`;
-                        }
-                        if (tech.no_of_infected !== undefined && tech.no_of_infected !== null) {
-                            detailsHTML += `<p><strong>Trees Infected:</strong> ${tech.no_of_infected}</p>`;
+                            if (farm.address) detailsHTML += `<p><strong>Address:</strong> ${farm.address}</p>`;
+                            detailsHTML += `<p><strong>Status: <span class="text-danger">Infected</span></strong> </p>`;
+                            detailsHTML += `<p><strong>Disease: <span class="text-danger"> ${tech.diagnosis_disease}</span></strong> </p>`;
+                            if (tech.no_of_infected !== undefined && tech.no_of_infected !== null) {
+                                detailsHTML += `<p><strong>Trees Infected: <span class="text-danger">${tech.no_of_infected}</span></strong></p>`;
+                                const htmlContent = `
+                                    <div class="custom-map-popup">
+                                        <h5><strong> ${farm.name || 'Farm Details'} </strong></h5>
+                                        <hr>
+                                        <div class="popup-details">
+                                            ${detailsHTML}
+                                        </div>
+                                    </div>
+                                `;
+                                popup = new mapboxgl.Popup({
+                                    closeButton: false,
+                                    closeOnClick: false,
+                                    offset: 15,
+                                    className: 'my-custom-mapbox-popup'
+                                })
+                                .setLngLat(coordinates)
+                                .setHTML(htmlContent)
+                                .addTo(map_simulation);
+                            }
                         }
                     }
-
-                    if (!detailsHTML) detailsHTML = '<p>No details available.</p>';
-                    const htmlContent = `
-                        <div class="custom-map-popup">
-                            <h5><strong> ${farm.name || 'Farm Details'} </strong></h5>
-                            <hr>
-                            <div class="popup-details">
-                                ${detailsHTML}
-                            </div>
-                        </div>
-                    `;
-                    popup = new mapboxgl.Popup({
-                        closeButton: false,
-                        closeOnClick: false,
-                        offset: 15,
-                        className: 'my-custom-mapbox-popup'
-                    })
-                    .setLngLat(coordinates)
-                    .setHTML(htmlContent)
-                    .addTo(map_simulation);
+                    // if (!detailsHTML) detailsHTML = '<p>No details available.</p>';
                 }
             }
         });
