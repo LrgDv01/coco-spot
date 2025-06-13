@@ -74,7 +74,6 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/forum/post/{postId}', [ForumController::class, 'updatePost'])->name('forum.updatePost');
     Route::put('/forum/comment/{commentId}', [ForumController::class, 'updateComment'])->name('forum.updateComment');
 
-
     Route::middleware(['admin'])->group(function () {
         Route::get('/admin', [dashboardController::class, 'display_dashboard'])->name('admin.dashboard');
         Route::get('/reports', [ReportsController::class, 'diseaseReports'])->name('admin.reports');

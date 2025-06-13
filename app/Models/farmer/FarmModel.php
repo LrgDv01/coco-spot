@@ -12,12 +12,11 @@ use Illuminate\Database\Eloquent\Model;
 class FarmModel extends Model
 {
     use HasFactory;
-
     protected static function newFactory()
     {
         return \Database\Factories\farmer\FarmFactory::new();
     }
-
+    
     protected $table = 'farms';
     protected $fillable = [
         'farmer_id',
@@ -53,5 +52,4 @@ class FarmModel extends Model
     public function farmerReports() {
         return $this->hasMany(FarmerReportsModel::class, 'farm_id', 'id'); 
     }
-
 }

@@ -30,8 +30,7 @@
                     <div class="form-group mt-3">
                         <label for="disease" class="form-label fw-bold text-white">Type of Disease</label>
                         <select id="disease" class="form-select">
-                            <option value="All_Diseases" disabled selected hidden>Select Disease</option>
-                            <option value="All_Diseases">All Disease</option>
+                            <option value="All_Diseases" selected>All Disease</option>
                             <option value="Stem Bleeding">Stem Bleeding</option>
                             <option value="Lethal Yellowing">Lethal Yellowing</option>
                             <option value="Leaf Spot">Leaf Spot</option>

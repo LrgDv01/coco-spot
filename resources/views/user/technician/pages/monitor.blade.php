@@ -43,7 +43,7 @@
                                     </a>
                                 </div> --}}
                                 <div class="mt-3 align-self-end">
-                                    <a href="{{ route('user.viewReportDetails', $report->id) }}" 
+                                    <a href="{{ route('user.viewReportDetails', $report->services->id) }}" 
                                         class="btn fw-bold btn-outline-secondary">
                                         View Details
                                     </a>

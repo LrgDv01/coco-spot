@@ -67,7 +67,8 @@ class ServicesModel extends Model
     }
 
     public function technicianReports() {
-        return $this->hasOne(TechiniciansReportsModel::class, 'technician_id', 'technician_id');
+        return $this->belongsTo(TechiniciansReportsModel::class, 'technician_id', 'technician_id');
+        // return $this->hasOne(TechiniciansReportsModel::class, 'technician_id', 'technician_id');
     }
 
     public function farmerReports() {
@@ -79,4 +80,12 @@ class ServicesModel extends Model
     public function diseaseVerified() {
         return $this->hasOne(TechiniciansReportsModel::class, 'farm_id', 'farm_id');
     }
+
+    // public function technicianReports() {
+    //     return $this->hasMany(TechiniciansReportsModel::class, 'farm_id', 'id');
+    // }
+
+    // public function farmerReports() {
+    //     return $this->hasMany(FarmerReportsModel::class, 'farm_id', 'id'); 
+    // }
 }

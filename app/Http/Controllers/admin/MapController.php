@@ -29,12 +29,15 @@ class MapController extends Controller
         }
         $farm_loc = FarmModel::all();
         if ($user->isAdmin() || $user->isTechnician()) {
-            $diseases = FarmModel::with('farmerReports', 'technicianReports')->get();
+            $diseases = FarmModel::with('farmerReports', 'technicianReports', 'farmerServices')->get();
+            // $diseases = FarmModel::with('technicianReports')->get();
         } else {
-            $diseases = FarmModel::with('farmerReports', 'technicianReports')
+            $diseases = FarmModel::with('farmerReports', 'technicianReports', 'farmerServices')
+            // $diseases = FarmModel::with('technicianReports')
                 ->where('farmer_id', $farmerID)
                 ->get();
         }
+        // dd($diseases);
         $res = [
             'locations' => $locations,
             'farm_loc' => $farm_loc,

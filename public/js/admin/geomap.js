@@ -147,7 +147,7 @@ async function displayMap(farm_loc, locations, mapboxgl) {
 
         const farmPolygons = farmFeatures.map(farm => {
             // const originalFarm = simulate.find(f => f.id === farm.properties.farmId);
-            // const { isTreated, progress } = getFarmState(originalFarm); // Pass duration
+            // const { isVerified, progress } = getFarmState(originalFarm); // Pass duration
 
             const center = farm.geometry.coordinates;
             const polygon = generateRandomPolygon(center);
@@ -540,8 +540,8 @@ async function mapSimulation(farm_loc, simulate, mapboxgl) {
             type: 'fill',
             source: 'technician-geofences',
             paint: {
-                'fill-color': '#fffc02',
-                'fill-opacity': 0.3 // Initial opacity
+            'fill-color': '#ff6666', // Slightly red
+            'fill-opacity': 0.3 // Initial opacity
             }
         });
      
@@ -641,86 +641,208 @@ async function mapSimulation(farm_loc, simulate, mapboxgl) {
             const threeMonths = 3 * 30 * 24 * 60 * 60 * 1000; // 3 months in milliseconds (approx. 30 days per month)
             const tenDays = 10 * 24 * 60 * 60 * 1000; // 10 days in milliseconds
             const threeDays = 3 * 24 * 60 * 60 * 1000; // 3 days in milliseconds
-
             const latestFarmerReport = farm.farmer_reports.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
             const latestTechnicianReport = farm.technician_reports.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
+            const condition = farm.technician_reports.some(techReport => 
+                                farm.farmer_services.some(farmerService => 
+                                    techReport.farm_id === farmerService.farm_id && 
+                                    (techReport.diagnosis_disease === selectedDisease || 'All_Diseases' === selectedDisease) && 
+                                    farmerService.status === 'Treated'
+                                )
+                            );
 
-            if (selectedDisease === 'Stem Bleeding') {
-                
-                if (latestTechnicianReport && (!latestFarmerReport || new Date(latestTechnicianReport.created_at) > new Date(latestFarmerReport.created_at))) {
-                    const timeSinceTreatment = now - new Date(latestTechnicianReport.created_at);
-                    if (timeSinceTreatment > threeDays) {
-                        return { isTreated: true, progress: 1 };
-                    } else if (timeSinceTreatment) {
-                        const progress = Math.min(timeSinceTreatment / threeDays, 1);
-                        return { isTreated: true, progress };
-                    }
-                } else if (latestFarmerReport) {
-                    const timeSinceReport = now - new Date(latestFarmerReport.created_at);
-                    const progress = Math.min(timeSinceReport / threeDays, 1);
-                    return { isTreated: false, progress };
+            // filteredFarms = simulate.filter(farm => {
+            //     return farm.technician_reports.some(techReport => 
+            //         farm.farmer_services.some(farmerService => 
+            //             techReport.farm_id === farmerService.farm_id &&
+            //             !!(techReport.diagnosis_disease === selectedDisease && farmerService.status === 'Treated')
+            //         )
+            //     );
+            // });
+
+            if (selectedDisease === 'All_Diseases') {
+                // farm.farmer_reports.forEach(report => { 
+                // });
+                if (!condition) {
+                    if (latestTechnicianReport && (!latestFarmerReport || new Date(latestTechnicianReport.created_at) > new Date(latestFarmerReport.created_at))) {
+                            const timeSinceTreatment = now - new Date(latestTechnicianReport.created_at);
+                            // const timeSinceReport = now - new Date(latestFarmerReport.created_at);
+                            if (latestTechnicianReport.diagnosis_disease === 'Stem Bleeding') {
+                                if (timeSinceTreatment > threeDays) {
+                                    return { isVerified: true, isTreated: false, progress: 1 };
+                                } else if (timeSinceTreatment) {
+                                    const progress = Math.min(timeSinceTreatment / threeDays, 1);
+                                    return { isVerified: true, isTreated: false, progress };
+                                }
+                            } 
+                            if (latestTechnicianReport.diagnosis_disease === 'Lethal Yellowing') {
+                                if (timeSinceTreatment > threeMonths) {
+                                    return { isVerified: true, isTreated: false, progress: 1 };
+                                } else if (timeSinceTreatment) {
+                                    const progress = Math.min(timeSinceTreatment / threeMonths, 1);
+                                    return { isVerified: true, isTreated: false, progress };
+                                }
+                            }
+                            if (latestTechnicianReport.diagnosis_disease === 'Leaf Spot') {
+                                if (timeSinceTreatment > tenDays) {
+                                    return { isVerified: true, isTreated: false, progress: 1 };
+                                } else if (timeSinceTreatment) {
+                                    const progress = Math.min(timeSinceTreatment / tenDays, 1);
+                                    return { isVerified: true, isTreated: false, progress };
+                                }
+                            }
+                        } 
+                        // else if (latestFarmerReport) {
+                        //     // const timeSinceReport = now - new Date(latestFarmerReport.created_at);
+                        //     // const progress = Math.min(timeSinceReport / sevenDays, 1);
+                        //     // return { isVerified: false, progress };
+                        //     // return { isVerified: false, progress: 0 };
+                        //     // return { isVerified: false, progress : 1  };
+                        //       return { isVerified: false, isTreated: true, progress: 1 };
+                        // } 
                 } else {
-                    return { isTreated: false, progress: 1 };
+
+                    // if (latestTechnicianReport && (!latestFarmerReport || new Date(latestTechnicianReport.created_at) > new Date(latestFarmerReport.created_at))) {
+                            const timeSinceTreatment = now - new Date(latestTechnicianReport.created_at);
+                            // const timeSinceReport = now - new Date(latestFarmerReport.created_at);
+                            if (latestTechnicianReport.diagnosis_disease === 'Stem Bleeding') {
+                                if (timeSinceTreatment > threeDays) {
+                                    return { isVerified: false, isTreated: true, progress: 1};
+                                } else if (timeSinceTreatment) {
+                                    const progress = Math.min(timeSinceTreatment / threeDays, 1);
+                                    return { isVerified: false, isTreated: true, progress };
+                                }
+                            } 
+                            if (latestTechnicianReport.diagnosis_disease === 'Lethal Yellowing') {
+                                if (timeSinceTreatment > threeMonths) {
+                                    return { isVerified: false, isTreated: true, progress: 1 };
+                                } else if (timeSinceTreatment) {
+                                    const progress = Math.min(timeSinceTreatment / threeMonths, 1);
+                                    return { isVerified: false, isTreated: true, progress };
+                                }
+                            }
+                            if (latestTechnicianReport.diagnosis_disease === 'Leaf Spot') {
+                                if (timeSinceTreatment > tenDays) {
+                                    return { isVerified: false, isTreated: true, progress: 1};
+                                } else if (timeSinceTreatment) {
+                                    const progress = Math.min(timeSinceTreatment / tenDays, 1);
+                                    return { isVerified: false, isTreated: true, progress };
+                                }
+                            }
+                        // } 
+                        // else if (latestFarmerReport) {
+                        //     // const timeSinceReport = now - new Date(latestFarmerReport.created_at);
+                        //     // const progress = Math.min(timeSinceReport / sevenDays, 1);
+                        //     // return { isVerified: false, progress };
+                        //     // return { isVerified: false, progress: 0 };
+                        //     // return { isVerified: false, progress : 1  };
+                        //       return { isVerified: false, isTreated: true, progress: 1 };
+                        // } 
+                    // return { isVerified: false, isTreated: true, progress: 1 };
+                    // return { isVerified: false, progress: 0 };
+                }
+            }
+       
+            else if (selectedDisease === 'Stem Bleeding') {
+                if (!condition) {
+                    if (latestTechnicianReport && (!latestFarmerReport || new Date(latestTechnicianReport.created_at) > new Date(latestFarmerReport.created_at))) {
+                        const timeSinceTreatment = now - new Date(latestTechnicianReport.created_at);
+                        if (timeSinceTreatment > threeDays) {
+                             return { isVerified: true, isTreated: false, progress: 1 };
+                        } else if (timeSinceTreatment) {
+                            const progress = Math.min(timeSinceTreatment / threeDays, 1);
+                             return { isVerified: true, isTreated: false, progress };
+                        }
+                    } 
+                    // else if (latestFarmerReport) {
+                    //     // const timeSinceReport = now - new Date(latestFarmerReport.created_at);
+                    //     // const progress = Math.min(timeSinceReport / threeDays, 1);
+                    //     // return { isVerified: false, progress };
+                    //     // return { isVerified: false, progress : 1  };
+                    //     return { isVerified: false, isTreated: true, progress: 1 };
+                    // } 
+                }else {
+                    // return { isTreated: false, progress: 1 };
+                    // return { isVerified: false, isTreated: true, progress: 1 };
+                    const timeSinceTreatment = now - new Date(latestTechnicianReport.created_at);
+                    // const timeSinceReport = now - new Date(latestFarmerReport.created_at);
+                    if (latestTechnicianReport.diagnosis_disease === selectedDisease) {
+                        if (timeSinceTreatment > threeDays) {
+                            return { isVerified: false, isTreated: true, progress: 1};
+                        } else if (timeSinceTreatment) {
+                            const progress = Math.min(timeSinceTreatment / threeDays, 1);
+                            return { isVerified: false, isTreated: true, progress };
+                        }
+                    } 
+             
                 }
 
             } else if (selectedDisease === 'Lethal Yellowing') {
-                
-                if (latestTechnicianReport && (!latestFarmerReport || new Date(latestTechnicianReport.created_at) > new Date(latestFarmerReport.created_at))) {
-                    const timeSinceTreatment = now - new Date(latestTechnicianReport.created_at);
-                    if (timeSinceTreatment > threeMonths) {
-                        return { isTreated: true, progress: 1 };
-                    } else if (timeSinceTreatment) {
-                        const progress = Math.min(timeSinceTreatment / threeMonths, 1);
-                        return { isTreated: true, progress };
-                    }
-                } else if (latestFarmerReport) {
-                    const timeSinceReport = now - new Date(latestFarmerReport.created_at);
-                    const progress = Math.min(timeSinceReport / threeMonths, 1);
-                    return { isTreated: false, progress };
+                if (!condition) {
+                    if (latestTechnicianReport && (!latestFarmerReport || new Date(latestTechnicianReport.created_at) > new Date(latestFarmerReport.created_at))) {
+                        const timeSinceTreatment = now - new Date(latestTechnicianReport.created_at);
+                        if (timeSinceTreatment > threeMonths) {
+                            return { isVerified: true, progress: 1 };
+                        } else if (timeSinceTreatment) {
+                            const progress = Math.min(timeSinceTreatment / threeMonths, 1);
+                            return { isVerified: true, progress };
+                        }
+                    } else if (latestFarmerReport) {
+                        // const timeSinceReport = now - new Date(latestFarmerReport.created_at);
+                        // const progress = Math.min(timeSinceReport / threeMonths, 1);
+                        // return { isVerified: false, progress };
+                        return { isVerified: false, progress : 1  };
+                    } 
                 } else {
-                    return { isTreated: false, progress: 1 };
+                    // return { isTreated: false, progress: 1 };
+                    // return { isVerified: false, progress: 0 };
+                    const timeSinceTreatment = now - new Date(latestTechnicianReport.created_at);
+                    if (latestTechnicianReport.diagnosis_disease === selectedDisease) {
+                        if (timeSinceTreatment > threeMonths) {
+                            return { isVerified: false, isTreated: true, progress: 1 };
+                        } else if (timeSinceTreatment) {
+                            const progress = Math.min(timeSinceTreatment / threeMonths, 1);
+                            return { isVerified: false, isTreated: true, progress };
+                        }
+                    }
+                         
                 }
 
             } else if (selectedDisease === 'Leaf Spot') {
-
-                if (latestTechnicianReport && (!latestFarmerReport || new Date(latestTechnicianReport.created_at) > new Date(latestFarmerReport.created_at))) {
-                    const timeSinceTreatment = now - new Date(latestTechnicianReport.created_at);
-                    if (timeSinceTreatment > tenDays) {
-                        return { isTreated: true, progress: 1 };
-                    } else if (timeSinceTreatment) {
-                        const progress = Math.min(timeSinceTreatment / tenDays, 1);
-                        return { isTreated: true, progress };
-                    }
-                } else if (latestFarmerReport) {
-                    const timeSinceReport = now - new Date(latestFarmerReport.created_at);
-                    const progress = Math.min(timeSinceReport / tenDays, 1);
-                    return { isTreated: false, progress };
+                if (!condition) {
+                    if (latestTechnicianReport && (!latestFarmerReport || new Date(latestTechnicianReport.created_at) > new Date(latestFarmerReport.created_at))) {
+                        const timeSinceTreatment = now - new Date(latestTechnicianReport.created_at);
+                        if (timeSinceTreatment > tenDays) {
+                            // return { isVerified: true, progress: 1 };
+                              return { isVerified: true, isTreated: false, progress: 1 };
+                        } else if (timeSinceTreatment) {
+                            const progress = Math.min(timeSinceTreatment / tenDays, 1);
+                            // return { isVerified: true, progress };
+                              return { isVerified: true, isTreated: false, progress };
+                        }
+                    } 
+                    // else if (latestFarmerReport) {
+                    //     // const timeSinceReport = now - new Date(latestFarmerReport.created_at);
+                    //     // const progress = Math.min(timeSinceReport / tenDays, 1);
+                    //     // return { isVerified: false, progress };
+                    //     //    return { isVerified: false, progress : 1  };
+                    //     return { isVerified: false, isTreated: true, progress: 1 };
+                    // } 
                 } else {
-                    return { isTreated: false, progress: 1 };
+                    // return { isTreated: true, progress: 1 };
+                    // return { isVerified: false, isTreated: true, progress: 1 };
+                    const timeSinceTreatment = now - new Date(latestTechnicianReport.created_at);
+                    if (latestTechnicianReport.diagnosis_disease === selectedDisease) {
+                        if (timeSinceTreatment > tenDays) {
+                            return { isVerified: false, isTreated: true, progress: 1};
+                        } else if (timeSinceTreatment) {
+                            const progress = Math.min(timeSinceTreatment / tenDays, 1);
+                            return { isVerified: false, isTreated: true, progress };
+                        }
+                    }
                 }
 
-            } else {
-
-                // farm.farmer_reports.forEach(report => { 
-                //     console.log('farm', report.disease);
-                // });
-
-                if (latestTechnicianReport && (!latestFarmerReport || new Date(latestTechnicianReport.created_at) > new Date(latestFarmerReport.created_at))) {
-                    const timeSinceTreatment = now - new Date(latestTechnicianReport.created_at);
-                    if (timeSinceTreatment > sevenDays) {
-                        return { isTreated: true, progress: 1 };
-                    } else if (timeSinceTreatment) {
-                        const progress = Math.min(timeSinceTreatment / sevenDays, 1);
-                        return { isTreated: true, progress };
-                    }
-                } else if (latestFarmerReport) {
-                    const timeSinceReport = now - new Date(latestFarmerReport.created_at);
-                    const progress = Math.min(timeSinceReport / sevenDays, 1);
-                    return { isTreated: false, progress };
-                } else {
-                    return { isTreated: false, progress: 1 };
-                }
-            }
+            } 
         }
 
         function updateFarmData(selected, condition) {
@@ -729,36 +851,53 @@ async function mapSimulation(farm_loc, simulate, mapboxgl) {
             const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
             const orderedDays = [...days.slice(dayIndex), ...days.slice(0, dayIndex)];
             let filteredFarms;
-
             if (selected === 'All_Diseases') {
-                filteredFarms = simulate;
+                 if (condition === 'not_treated') {
+                    filteredFarms = simulate.filter(farm => {
+                        return farm.technician_reports.some(techReport => 
+                            farm.farmer_services.some(farmerService => 
+                                techReport.farm_id === farmerService.farm_id && 
+                                (farmerService.status === 'Verified' || farmerService.status === 'False Detection')
+                            ) 
+                        );
+                    });
+                } else if (condition === 'treated') {
+                    filteredFarms = simulate.filter(farm => {
+                        return farm.technician_reports.some(techReport => 
+                            farm.farmer_services.some(farmerService => 
+                                techReport.farm_id === farmerService.farm_id && farmerService.status === 'Treated'
+                            )
+                        );
+                    });
+                } 
+                else {
+                   filteredFarms = simulate; 
+                }
             }
             else {
                 if (condition === 'not_treated') {
                     filteredFarms = simulate.filter(farm => {
-                        return farm.farmer_reports.some(farmerReport => 
-                            farmerReport.disease === selected &&
-                            !farm.technician_reports.some(techReport => 
-                                techReport.farm_id === farmerReport.farm_id 
-                                // &&
-                                // farmerReport.disease === selected
+                        return farm.technician_reports.some(techReport => 
+                            farm.farmer_services.some(farmerService => 
+                                techReport.diagnosis_disease === selected  &&
+                                techReport.farm_id === farmerService.farm_id && 
+                                (farmerService.status === 'Verified' || farmerService.status === 'False Detection')
                             ) 
                         );
                     });
-                }else if (condition === 'treated') {
+                } else if (condition === 'treated') {
                     filteredFarms = simulate.filter(farm => {
                         return farm.technician_reports.some(techReport => 
-                            farm.farmer_reports.some(farmerReport => 
-                                techReport.farm_id === farmerReport.farm_id &&
-                                techReport.diagnosis_disease === selected
+                            farm.farmer_services.some(farmerService => 
+                                techReport.farm_id === farmerService.farm_id &&
+                                techReport.diagnosis_disease === selected && farmerService.status === 'Treated'
                             )
                         );
                     });
-                }else {
+                } else {
                     filteredFarms = simulate.filter(farm => {
-                        return farm.technician_reports.some(report => report.diagnosis_disease === selected) ||
-                            farm.farmer_reports.some(report => report.disease === selected)
-                        });
+                        return farm.technician_reports.some(report => report.diagnosis_disease === selected) 
+                    });
                 }
             }
             const farmFeatures = [];
@@ -770,14 +909,21 @@ async function mapSimulation(farm_loc, simulate, mapboxgl) {
                     console.warn(`Invalid coordinates for farm ${farm.id}: ${farm.longitude}, ${farm.latitude}`);
                     return;
                 }
-                const { isTreated, progress: farmProgress } = getFarmState(selected, farm);
+                const { isVerified, isTreated, progress: farmProgress } = getFarmState(selected, farm) ?? { isVerified: false, isTreated: false, progress: 0 };
+                // const { isVerified, isTreated, progress: farmProgress } = getFarmState(selected, farm);
                 let pointColor;
+                // if (farm.technician_reports.length === 0 || farm.technician_reports.length === 1) {
                 if (farm.farmer_reports.length === 0 && farm.technician_reports.length === 0) {
                     pointColor = '#00FF00';
-                } else if (isTreated) {
-                    pointColor = treatedInterpolateColor(farmProgress, [[255, 255, 0], [255, 0, 0]]);
-                } else {
+                } else if (isVerified) {
+                    // pointColor = treatedInterpolateColor(farmProgress, [[255, 255, 0], [255, 0, 0]]);
                     pointColor = unTreatedInterpolateColor(farmProgress, [[255, 0, 0], [255, 0, 0]]);
+                } 
+                else if (isTreated) {
+                    pointColor = treatedInterpolateColor(farmProgress, [[255, 255, 0], [255, 0, 0]]);
+                }
+                else {
+                    pointColor = '#00FF00';
                 }
                 // Add farm point
                 farmFeatures.push({
@@ -825,17 +971,43 @@ async function mapSimulation(farm_loc, simulate, mapboxgl) {
                         const minRadius = 0.01;
                         const maxRadius = 0.02;
                         let baseRadius, color;
-                        if (isTreated) {
-                            if (farmProgress > 0.6 || farmProgress > 0.2) {
-                                baseRadius = interpolateSize(1 - farmProgress, 0, maxRadius);
-                                color = treatedInterpolateColor(farmProgress, [[255, 255, 0], [255, 0, 0]]);
+                        // REMOVE: const isTreated = false;
+
+                        // if (farm.farmer_reports.length === 0 && farm.technician_reports.length === 0) {
+                        //      baseRadius = 0.00;
+                        // }
+                         if (isVerified) {
+                            // if (farmProgress > 0.6 || farmProgress > 0.2) {
+                            //     // baseRadius = interpolateSize(1 - farmProgress, 0, maxRadius);
+                            //     // color = treatedInterpolateColor(farmProgress, [[255, 255, 0], [255, 0, 0]]);
+                            //     baseRadius = interpolateSize(farmProgress, minRadius, maxRadius);
+                            //     color = unTreatedInterpolateColor(farmProgress, [[255, 0, 0], [0, 255, 0]]);
+                            // } else {
+                                // baseRadius = interpolateSize(farmProgress, minRadius, maxRadius);
+                                // color = treatedInterpolateColor(farmProgress, [[255, 255, 0], [255, 0, 0]]);
+                                baseRadius = interpolateSize(farmProgress, minRadius, maxRadius);
+                                color = unTreatedInterpolateColor(farmProgress, [[255, 0, 0], [0, 255, 0]]); 
+                            // }
+                        }
+                        else if (isTreated) {
+                            // baseRadius = interpolateSize(0.5 + farmProgress, minRadius, maxRadius);
+                            // color = unTreatedInterpolateColor(farmProgress, [[255, 0, 0], [255, 0, 0]]);
+                            // baseRadius = interpolateSize(farmProgress, minRadius, maxRadius);
+                             if (farmProgress > 0.6 || farmProgress > 0.2) {
+                                // baseRadius = interpolateSize(1 - farmProgress, 0, maxRadius);
+                                baseRadius = 0.00;
+                                color = treatedInterpolateColor(farmProgress, [[255, 255, 0], [255, 255, 0]]);
                             } else {
                                 baseRadius = interpolateSize(farmProgress, minRadius, maxRadius);
-                                color = treatedInterpolateColor(farmProgress, [[255, 255, 0], [255, 0, 0]]);
+                                // baseRadius = 0.00;
+                                color = treatedInterpolateColor(farmProgress, [[255, 255, 0], [255, 255, 0]]);
                             }
-                        } else {
-                            baseRadius = interpolateSize(farmProgress, minRadius, maxRadius);
-                            color = unTreatedInterpolateColor(farmProgress, [[255, 0, 0], [0, 255, 0]]);
+                        }
+                        else {
+                            // baseRadius = interpolateSize(1 - farmProgress, minRadius, maxRadius);
+                            baseRadius = 0.00;
+                            color = '#00FF00';
+                            // color = unTreatedInterpolateColor(farmProgress, [[255, 0, 0], [0, 255, 0]]);
                         }
                         const zoom = map_simulation.getZoom();
                         const zoomFactor = Math.pow(2, (9 - zoom)) * 1.5;
@@ -859,29 +1031,35 @@ async function mapSimulation(farm_loc, simulate, mapboxgl) {
                 .map(farm => {
                     const center = farm.geometry.coordinates;
                     const originalFarm = simulate.find(f => f.id === farm.properties.farmId);
-                    const { isTreated, progress: farmProgress } = getFarmState(selected, originalFarm);
-
+                    // const { isVerified, progress: farmProgress } = getFarmState(selected, originalFarm) ?? { isVerified: false, progress: 0 };
+                    const { isVerified, isTreated, progress: farmProgress } = getFarmState(selected, originalFarm) ?? { isVerified: false, isTreated: false, progress: 0 };
+                    // const { isVerified, isTreated, progress: farmProgress } = getFarmState(selected, originalFarm);
                     // const originalFarm = simulate.find(f => f.id === farm.properties.farmId);
-                    // // Pass durationMs here
-                    // const { isTreated, progress: farmProgress } = getFarmState(originalFarm, durationMs);
+                    // const { isVerified, progress: farmProgress } = getFarmState(originalFarm, durationMs);
                     if (originalFarm.farmer_reports.length === 0 && originalFarm.technician_reports.length === 0) {
                         return null;
                     }
                     const minRadius = 0.00;
                     const maxRadius = 0.010;
                     let baseRadius, color;
-                    if (isTreated) {
+                    if (isVerified) {
+                        baseRadius = interpolateSize(0.5 + farmProgress, minRadius, maxRadius);
+                        color = unTreatedInterpolateColor(farmProgress, [[255, 0, 0], [255, 0, 0]]); 
+                    } 
+                    else if (isTreated) {
                         if (farmProgress > 0.6 || farmProgress > 0.2) {
                             baseRadius = interpolateSize(1 - farmProgress, minRadius, maxRadius);
-                            color = treatedInterpolateColor(farmProgress, [[255, 255, 0], [255, 0, 0]]);
+                            color = treatedInterpolateColor(farmProgress, [[255, 255, 0], [255, 255, 0]]);
                         } else {
-                            baseRadius = interpolateSize(1 - farmProgress, minRadius, maxRadius);
-                            color = treatedInterpolateColor(farmProgress, [[255, 255, 0], [255, 0, 0]]);
+                            baseRadius = interpolateSize(1- farmProgress, minRadius, maxRadius);
+                            color = treatedInterpolateColor(farmProgress, [[255, 255, 0], [255, 255, 0]]);
                         }
-                    } else {
-                        baseRadius = interpolateSize(0.5 + farmProgress, minRadius, maxRadius);
-                        color = unTreatedInterpolateColor(farmProgress, [[255, 0, 0], [255, 0, 0]]);
                     }
+                    else {
+                        baseRadius = 0.00;
+                        color = treatedInterpolateColor(farmProgress, [[255, 255, 0], [255, 0, 0]]);
+                    }
+
                     const zoom = map_simulation.getZoom();
                     const zoomFactor = Math.pow(2, (9 - zoom)) * 1.5;
                     const polygon = simulateGenerateRandomPolygon(center, 9, baseRadius);
@@ -896,7 +1074,6 @@ async function mapSimulation(farm_loc, simulate, mapboxgl) {
                             baseRadius
                         }
                     };
-            
                 }).filter(p => p !== null && p.properties.color);
 
             map_simulation.getSource('farms').setData({
@@ -927,26 +1104,37 @@ async function mapSimulation(farm_loc, simulate, mapboxgl) {
             // Store initial states
             const initialPolygons = farmPolygons.map(p => ({ ...p }));
             const initialGeofences = map_simulation.getSource('technician-geofences')._data.features.map(g => ({ ...g }));
-        
+
             function step() {
                 const elapsedTime = Date.now() - startTime;
                 const animationProgress = Math.min(elapsedTime / duration, 1);
                 const zoom = map_simulation.getZoom();
                 const zoomFactor = Math.pow(2, (9 - zoom)) * 1.5;
-        
-                // Process both polygons and geofences
+
                 const processedData = [...initialPolygons, ...initialGeofences].map(feature => {
                     const farm = simulate.find(f => f.id === feature.properties.farmId);
-                    const { isTreated, progress: farmProgress } = getFarmState(selectedDisease, farm);
-                    // const { isTreated, progress: farmProgress } = getFarmState(farm);
+                    const { isVerified, progress: farmProgress } = farm ? getFarmState(selectedDisease, farm) : { isVerified: false, progress: 0 };
                     const isGeofence = feature.source === 'technician-geofences';
-        
                     let progress, color, scale;
-                    if (isTreated) {
+                    const isTreated = false;
+                    if (isVerified) {   
+                             progress = farmProgress + (animationProgress * (1 + farmProgress));
+                        color = unTreatedInterpolateColor(progress, [[255, 0, 0], [255, 0, 0]]);
+                        scale = 1 + animationProgress;
+                        const scaledFeature = scalePolygon(feature, scale, zoomFactor);
+                            return {
+                            ...scaledFeature,
+                            properties: {
+                                ...scaledFeature.properties,
+                                color: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
+                                sourceType: isGeofence ? 'geofence' : 'polygon'
+                            }
+                        };
+                    }
+                    else if (isTreated) {
                         progress = farmProgress + (animationProgress * (1 - farmProgress));
                         color = treatedInterpolateColor(progress, [[255, 255, 0], [255, 0, 0]]);
                         scale = 1 - animationProgress;
-                        // scale = farmProgress - animationProgress );
                         const scaledFeature = scalePolygon(feature, scale, zoomFactor);
                         return {
                             ...scaledFeature,
@@ -957,16 +1145,11 @@ async function mapSimulation(farm_loc, simulate, mapboxgl) {
                             }
                         };
                     } else {
-                        // progress = farmProgress + (animationProgress * (1 + farmProgress));
-                        // color = interpolateColor(progress, [[255, 0, 0], [0, 255, 0]]);
-                        scale = 1 + animationProgress;
-                        // scale = 1 + (animationProgress * (maxScale - 1));
-                        // scale = farmProgress + (animationProgress * (maxScale - 1));
-                        const scaledFeature = scalePolygon(feature, scale, zoomFactor);
                         return {
-                            ...scaledFeature,
+                            ...feature,
                             properties: {
-                                ...scaledFeature.properties,
+                                ...feature.properties,
+                                color: feature.properties.color || '#ff6666',
                                 sourceType: isGeofence ? 'geofence' : 'polygon'
                             }
                         };
@@ -1089,28 +1272,32 @@ async function mapSimulation(farm_loc, simulate, mapboxgl) {
                     document.getElementById('disease').disabled = false; 
                 }, 7000);
             } else {
-                intervalId = setInterval(updateFunction, 1000);
+                intervalId = setInterval(updateFunction, 1000); 
             }
         }
         // document.getElementById('condition').disabled = true;
         // document.getElementById('condition').prop('disabled', true);
-        $('#condition').prop('disabled', true);
-        document.getElementById('condition').style.opacity = 0.7;
+        $('#condition').prop('disabled', false);
+        document.getElementById('condition').style.opacity = null;
         document.getElementById('disease').addEventListener('change', (event) => {
             const selectedDisease = event.target.value;
             descriptionText.innerHTML =  descriptions[selectedDisease] || `<p class="mt-2 text-center">Please select a disease to view its descriptions.</p>`;
             const { farmPolygons } = updateFarmData(selectedDisease, null);
+            console.log('farmPolygons', farmPolygons);
             // const { farmPolygons } = updateFarmData(selectedDisease);
-            // console.log('selectedDisease', selectedDisease);
-            if ((farmPolygons.length > 0) && (selectedDisease !== 'All_Diseases')) {
+            if ((farmPolygons.length > 0) || (selectedDisease === 'All_Diseases')) {
                 document.getElementById('condition').disabled = false;
                 document.getElementById('condition').style.opacity = null;
                 map_simulation.setZoom(0);
-            } else if (selectedDisease === 'All_Diseases') {
+            } else if ( farmPolygons.length === 0) {
                 map_simulation.setZoom(0);
                 document.getElementById('condition').disabled = true;
                 document.getElementById('condition').style.opacity = 0.7;
-            }
+            } 
+            // else {
+            //     document.getElementById('condition').disabled = false;
+            //     document.getElementById('condition').style.opacity = null;
+            // }
             document.getElementById('condition').addEventListener('change', (event) => {
                 const selectedCondition = event.target.value;
                 const { farmPolygons } = updateFarmData(selectedDisease, selectedCondition);
@@ -1173,15 +1360,13 @@ async function mapSimulation(farm_loc, simulate, mapboxgl) {
                 const coordinates = feature.geometry.coordinates.slice();
                 const farmId = feature.properties.farmId;
                 const farm = simulate.find(f => String(f.id) === String(farmId));
-                if (farm) {
+                const condition = farm.technician_reports.some(techReport => 
+                    farm.farmer_services.some(farmerService => 
+                        techReport.farm_id === farmId && farmerService.status === 'Treated'
+                    )
+                );
+                if (!condition && farm) {
                     let detailsHTML = '';
-                    // if (farm.district) detailsHTML += `<p><strong>District:</strong> ${farm.district}</p>`;
-                    // if (farm.municipal) detailsHTML += `<p><strong>Municipal:</strong> ${farm.municipal}</p>`;
-                    // if (farm.hectares) detailsHTML += `<p><strong>Hectares:</strong> ${farm.hectares}</p>`;
-                    // if (farm.tree_age) detailsHTML += `<p><strong>Tree Age:</strong> ${farm.tree_age}</p>`;
-                    // if (farm.planted_coconut) detailsHTML += `<p><strong>Planted Coconut:</strong> ${farm.planted_coconut}</p>`;
-                    // if (farm.variety) detailsHTML += `<p><strong>Variety:</strong> ${farm.variety}</p>`;
-                    // Show technician_reports[0] if available
                     if (Array.isArray(farm.technician_reports) && farm.technician_reports.length > 0) {
                         const tech = farm.technician_reports[0];
                         if (tech.diagnosis_disease) {
