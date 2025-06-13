@@ -1113,10 +1113,12 @@ async function mapSimulation(farm_loc, simulate, mapboxgl) {
 
                 const processedData = [...initialPolygons, ...initialGeofences].map(feature => {
                     const farm = simulate.find(f => f.id === feature.properties.farmId);
-                    const { isVerified, progress: farmProgress } = farm ? getFarmState(selectedDisease, farm) : { isVerified: false, progress: 0 };
+                    // const { isVerified, progress: farmProgress } = farm ? getFarmState(selectedDisease, farm) : { isVerified: false, progress: 0 };
+                    const { isVerified, isTreated, progress: farmProgress } = getFarmState(selectedDisease, farm) ?? { isVerified: false, isTreated: false, progress: 0 };
+
                     const isGeofence = feature.source === 'technician-geofences';
                     let progress, color, scale;
-                    const isTreated = false;
+                    // const isTreated = true;
                     if (isVerified) {   
                              progress = farmProgress + (animationProgress * (1 + farmProgress));
                         color = unTreatedInterpolateColor(progress, [[255, 0, 0], [255, 0, 0]]);
