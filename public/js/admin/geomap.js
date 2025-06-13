@@ -1110,17 +1110,14 @@ async function mapSimulation(farm_loc, simulate, mapboxgl) {
                 const animationProgress = Math.min(elapsedTime / duration, 1);
                 const zoom = map_simulation.getZoom();
                 const zoomFactor = Math.pow(2, (9 - zoom)) * 1.5;
-
                 const processedData = [...initialPolygons, ...initialGeofences].map(feature => {
                     const farm = simulate.find(f => f.id === feature.properties.farmId);
                     // const { isVerified, progress: farmProgress } = farm ? getFarmState(selectedDisease, farm) : { isVerified: false, progress: 0 };
                     const { isVerified, isTreated, progress: farmProgress } = getFarmState(selectedDisease, farm) ?? { isVerified: false, isTreated: false, progress: 0 };
-
                     const isGeofence = feature.source === 'technician-geofences';
                     let progress, color, scale;
-                    // const isTreated = true;
                     if (isVerified) {   
-                             progress = farmProgress + (animationProgress * (1 + farmProgress));
+                        progress = farmProgress + (animationProgress * (1 + farmProgress));
                         color = unTreatedInterpolateColor(progress, [[255, 0, 0], [255, 0, 0]]);
                         scale = 1 + animationProgress;
                         const scaledFeature = scalePolygon(feature, scale, zoomFactor);
@@ -1285,8 +1282,6 @@ async function mapSimulation(farm_loc, simulate, mapboxgl) {
             const selectedDisease = event.target.value;
             descriptionText.innerHTML =  descriptions[selectedDisease] || `<p class="mt-2 text-center">Please select a disease to view its descriptions.</p>`;
             const { farmPolygons } = updateFarmData(selectedDisease, null);
-            console.log('farmPolygons', farmPolygons);
-            // const { farmPolygons } = updateFarmData(selectedDisease);
             if ((farmPolygons.length > 0) || (selectedDisease === 'All_Diseases')) {
                 document.getElementById('condition').disabled = false;
                 document.getElementById('condition').style.opacity = null;
@@ -1363,20 +1358,39 @@ async function mapSimulation(farm_loc, simulate, mapboxgl) {
                 const farmId = feature.properties.farmId;
                 const farm = simulate.find(f => String(f.id) === String(farmId));
                 const condition = farm.technician_reports.some(techReport => 
-                    farm.farmer_services.some(farmerService => 
-                        techReport.farm_id === farmId && farmerService.status === 'Treated'
-                    )
-                );
-                if (!condition && farm) {
-                    let detailsHTML = '';
-                    if (Array.isArray(farm.technician_reports) && farm.technician_reports.length > 0) {
-                        const tech = farm.technician_reports[0];
-                        if (tech.diagnosis_disease) {
-                            if (farm.address) detailsHTML += `<p><strong>Address:</strong> ${farm.address}</p>`;
-                            detailsHTML += `<p><strong>Status: <span class="text-danger">Infected</span></strong> </p>`;
-                            detailsHTML += `<p><strong>Disease: <span class="text-danger"> ${tech.diagnosis_disease}</span></strong> </p>`;
-                            if (tech.no_of_infected !== undefined && tech.no_of_infected !== null) {
-                                detailsHTML += `<p><strong>Trees Infected: <span class="text-danger">${tech.no_of_infected}</span></strong></p>`;
+                        farm.farmer_services.some(farmerService => 
+                            techReport.farm_id === farmId && farmerService.status === 'Treated'
+                        )
+                    );
+                // Get all diagnosis_disease values from technician_reports
+                const d = farm.technician_reports
+                    .map(techReport => techReport.diagnosis_disease)
+                    .filter(disease => disease !== undefined && disease !== null);
+
+                // If you want just the first non-null value:
+                // const d = (farm.technician_reports.find(techReport => techReport.diagnosis_disease) || {}).diagnosis_disease || 'Unknown';
+                let { isVerified, isTreated, progress: farmProgress } = getFarmState(d[0], farm) ?? { isVerified: false, isTreated: false, progress: 0 };
+                // Track farmProgress changes for this farm
+                if (!farm._prevFarmProgress) farm._prevFarmProgress = farmProgress;
+                if (farmProgress !== farm._prevFarmProgress) {
+                    farm._prevFarmProgress = farmProgress;
+                    // Increment mt if farmProgress changed
+                    if (typeof window.mt === 'undefined') window.mt = 0;
+                    window.mt += farmProgress;
+                    console.log('mt incremented:', Math.floor(window.mt) / 100);
+                    if (!condition && farm) {
+                        let detailsHTML = '';
+                        if (Array.isArray(farm.technician_reports) && farm.technician_reports.length > 0) {
+                            const tech = farm.technician_reports[0];
+                            if (tech.diagnosis_disease) {
+                                if (farm.address) detailsHTML += `<p><strong>Address:</strong> ${farm.address}</p>`;
+                                detailsHTML += `<p><strong>Status: <span class="text-danger">Infected</span></strong> </p>`;
+                                detailsHTML += `<p><strong>Disease: <span class="text-danger"> ${tech.diagnosis_disease}</span></strong> </p>`;
+                                if (tech.no_of_infected !== undefined && tech.no_of_infected !== null) {
+                                    detailsHTML += `<p><strong>Trees Infected: <span class="text-danger">${tech.no_of_infected}</span></strong></p>`;
+                                }
+                                detailsHTML += `<p><strong>Area Infected: <span class="text-danger"> ${Math.floor(window.mt) / 100} meters </span></strong> </p>`;
+                                detailsHTML += `<p><strong>Insights: <span class="text-danger">Currently, the area infected was expand to a total of ${Math.floor(window.mt) / 100} meters </span></strong> </p>`;
                                 const htmlContent = `
                                     <div class="custom-map-popup">
                                         <h5><strong> ${farm.name || 'Farm Details'} </strong></h5>
@@ -1398,7 +1412,6 @@ async function mapSimulation(farm_loc, simulate, mapboxgl) {
                             }
                         }
                     }
-                    // if (!detailsHTML) detailsHTML = '<p>No details available.</p>';
                 }
             }
         });

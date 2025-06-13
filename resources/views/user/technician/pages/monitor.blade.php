@@ -31,7 +31,7 @@
                                         <span class="fw-bold me-2">Farmer Location:</span>
                                         <textarea class="form-control w-100" readonly style="resize: both;">{{ $report->farm_location}}</textarea>
                                     </div>
-                                    <p class="d-flex flex-row mb-0 pb-0">
+                                      <p class="d-flex flex-row mb-0 pb-0">
                                         <span class="fw-bold me-2">Date/Time:</span> {{ $report->created_at->format('F d, Y | h:i A') }}
                                     </p>
                                 </div>
