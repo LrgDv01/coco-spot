@@ -1362,22 +1362,15 @@ async function mapSimulation(farm_loc, simulate, mapboxgl) {
                             techReport.farm_id === farmId && farmerService.status === 'Treated'
                         )
                     );
-                // Get all diagnosis_disease values from technician_reports
                 const d = farm.technician_reports
                     .map(techReport => techReport.diagnosis_disease)
                     .filter(disease => disease !== undefined && disease !== null);
-
-                // If you want just the first non-null value:
-                // const d = (farm.technician_reports.find(techReport => techReport.diagnosis_disease) || {}).diagnosis_disease || 'Unknown';
                 let { isVerified, isTreated, progress: farmProgress } = getFarmState(d[0], farm) ?? { isVerified: false, isTreated: false, progress: 0 };
-                // Track farmProgress changes for this farm
                 if (!farm._prevFarmProgress) farm._prevFarmProgress = farmProgress;
                 if (farmProgress !== farm._prevFarmProgress) {
                     farm._prevFarmProgress = farmProgress;
-                    // Increment mt if farmProgress changed
                     if (typeof window.mt === 'undefined') window.mt = 0;
                     window.mt += farmProgress;
-                    console.log('mt incremented:', Math.floor(window.mt) / 100);
                     if (!condition && farm) {
                         let detailsHTML = '';
                         if (Array.isArray(farm.technician_reports) && farm.technician_reports.length > 0) {
@@ -1390,7 +1383,7 @@ async function mapSimulation(farm_loc, simulate, mapboxgl) {
                                     detailsHTML += `<p><strong>Trees Infected: <span class="text-danger">${tech.no_of_infected}</span></strong></p>`;
                                 }
                                 detailsHTML += `<p><strong>Area Infected: <span class="text-danger"> ${Math.floor(window.mt) / 100} meters </span></strong> </p>`;
-                                detailsHTML += `<p><strong>Insights: <span class="text-danger">Currently, the area infected was expand to a total of ${Math.floor(window.mt) / 100} meters </span></strong> </p>`;
+                                detailsHTML += `<p><strong>Insights: <span class="text-danger">Currently, the area infected was expanded to a total of ${Math.floor(window.mt) / 100} meters </span></strong> </p>`;
                                 const htmlContent = `
                                     <div class="custom-map-popup">
                                         <h5><strong> ${farm.name || 'Farm Details'} </strong></h5>
