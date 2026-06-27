@@ -1,66 +1,201 @@
-php<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Coco Spot
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Coco Spot is a Laravel-based web application for coconut farm monitoring, disease reporting, and response coordination between farmers, technicians, and administrators.
 
-## About Laravel
+The platform is built around three main user roles:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Administrators manage dashboard insights, map data, reports, and notifications.
+- Farmers register farms, submit coconut disease reports, view responses, and track updates.
+- Technicians review reports, diagnose issues, submit findings, and monitor assigned cases.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Table of Contents
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- [Overview](#overview)
+- [Key Features](#key-features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Environment Setup](#environment-setup)
+- [Running the Project](#running-the-project)
+- [Useful Commands](#useful-commands)
+- [Notes](#notes)
+- [License](#license)
 
-## Learning Laravel
+## Overview
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Coco Spot is designed to support coconut disease monitoring workflows from first report to final diagnosis.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+The application includes:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- role-based authentication and access control
+- farm and location management
+- disease reporting and diagnosis tracking
+- map-based visualization and simulation views
+- real-time notifications through broadcasting
+- report export support for PDF, Excel, and CSV formats
+- community forum features for authenticated users
 
-## Laravel Sponsors
+## Key Features
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+### Authentication and Roles
 
-### Premium Partners
+- Login, registration, password reset, and logout flows
+- Role-aware routing for admins, farmers, and technicians
+- Device-aware login behavior for mobile access
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+### Farmer Workflow
 
-## Contributing
+- Add and manage farm details
+- View farm locations on the map
+- Submit coconut disease reports
+- View submitted reports and notification updates
+- Update profile information and profile image
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Technician Workflow
 
-## Code of Conduct
+- Review assigned notifications and requests
+- Monitor reports that require diagnosis
+- Submit technician reports and recommendations
+- Track report details and status changes
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Admin Workflow
 
-## Security Vulnerabilities
+- View dashboard analytics and summary counts
+- Manage map location data
+- Review disease reports
+- Export report data to PDF, Excel, or CSV
+- Mark notifications as read and manage verified reports
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Community and Communication
+
+- Authenticated forum posts
+- Comments and reactions
+- Broadcast notification channels for live updates
+
+## Tech Stack
+
+- PHP 8.1+
+- Laravel 10
+- Blade templates
+- Vite
+- Bootstrap-based frontend
+- Laravel Sanctum
+- Laravel Broadcasting with Pusher
+- DomPDF for PDF exports
+- Maatwebsite Excel for spreadsheet exports
+- Simple QR Code
+- Mobile Detect
+
+## Project Structure
+
+The codebase follows the standard Laravel layout with a few notable areas:
+
+- `app/Http/Controllers` - authentication, admin, farmer, technician, forum, and notification logic
+- `app/Models` - Eloquent models for users, farms, reports, notifications, posts, comments, and reactions
+- `app/Events` - broadcast events for real-time updates
+- `resources/views` - Blade views for admin, user, technician, auth, and public pages
+- `routes/web.php` - main web routes and role-based route groups
+- `routes/channels.php` - broadcast channel authorization
+- `database/migrations` - database schema definitions
+- `public/` - public assets
+
+## Requirements
+
+- PHP 8.1 or newer
+- Composer
+- Node.js and npm
+- A database server supported by Laravel
+
+## Installation
+
+1. Clone the repository.
+2. Install PHP dependencies:
+
+```bash
+composer install
+```
+
+3. Install frontend dependencies:
+
+```bash
+npm install
+```
+
+4. Copy the environment file:
+
+```bash
+cp .env.example .env
+```
+
+If you are using Windows PowerShell, `copy .env.example .env` works as well.
+
+5. Generate the application key:
+
+```bash
+php artisan key:generate
+```
+
+6. Run the database migrations:
+
+```bash
+php artisan migrate
+```
+
+7. If the project includes seeders for your local setup, run them as needed:
+
+```bash
+php artisan db:seed
+```
+
+## Environment Setup
+
+Update your `.env` file with the correct values for:
+
+- `APP_NAME`
+- `APP_URL`
+- database connection settings
+- mail settings if you want email features to work locally
+- broadcasting settings for Pusher
+- any storage or queue configuration required by your environment
+
+Example environment values may also be needed for:
+
+- `PUSHER_APP_ID`
+- `PUSHER_APP_KEY`
+- `PUSHER_APP_SECRET`
+- `PUSHER_APP_CLUSTER`
+
+## Running the Project
+
+Open two terminal windows and run:
+
+```bash
+php artisan serve
+```
+
+and:
+
+```bash
+npm run dev
+```
+
+If broadcasting or queued jobs are enabled in your environment, make sure the corresponding Laravel services are also running.
+
+## Useful Commands
+
+- Start the Laravel server: `php artisan serve`
+- Build frontend assets: `npm run build`
+- Run tests: `php artisan test`
+- Clear configuration cache: `php artisan config:clear`
+- Clear application cache: `php artisan cache:clear`
+
+## Notes
+
+- The app uses role-based middleware to separate access between admin, farmer, and technician sections.
+- Several views rely on real-time notifications and location-based data, so keep the database and broadcast settings aligned with your local or production environment.
+- Export features are available for report management and can generate PDF and spreadsheet outputs.
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is licensed under the MIT License.
